@@ -32,33 +32,33 @@ export async function tryPurchaseHouse(player: Player, houseId: number): Promise
 
   const house = getHouse(houseId);
   if (!house || house.ownerId !== null) {
-    player.sendClientMessage(Color.error, "Этот дом уже куплен.");
+    player.sendClientMessage(Color.error, "This house has already been purchased.");
     return;
   }
 
   if (account.level < MIN_BUY_LEVEL) {
-    player.sendClientMessage(Color.error, "Купить дом можно с 3 уровня.");
+    player.sendClientMessage(Color.error, "You can buy a house from level 3.");
     return;
   }
 
   if (!account.passport) {
-    player.sendClientMessage(Color.error, "Нужен паспорт. Оформите его в мэрии.");
+    player.sendClientMessage(Color.error, "A passport is required. Get one at City Hall.");
     return;
   }
 
   if (findOwnedHouse(account.id)) {
-    player.sendClientMessage(Color.error, "У вас уже есть дом.");
+    player.sendClientMessage(Color.error, "You already own a house.");
     return;
   }
 
   const cash = Math.max(0, Math.floor(account.money));
   if (cash < house.price) {
-    player.sendClientMessage(Color.error, "Недостаточно наличных.");
+    player.sendClientMessage(Color.error, "Not enough cash.");
     return;
   }
 
   if (!isNearHouseEntrance(player, houseId)) {
-    player.sendClientMessage(Color.error, "Подойдите к пикапу дома.");
+    player.sendClientMessage(Color.error, "Move closer to the house pickup.");
     return;
   }
 
@@ -73,26 +73,26 @@ export async function tryPurchaseHouse(player: Player, houseId: number): Promise
   } catch (error: unknown) {
     buying.delete(account.id);
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] покупка дома ${houseId} (${account.name}): ${message}`);
-    player.sendClientMessage(Color.error, "Покупка не прошла. Попробуйте ещё раз.");
+    omp.log(`[${SERVER_TAG}] house purchase ${houseId} (${account.name}): ${message}`);
+    player.sendClientMessage(Color.error, "Purchase failed. Try again.");
     return;
   }
   buying.delete(account.id);
 
   if (!result.ok) {
     if (result.reason === "owned") {
-      player.sendClientMessage(Color.error, "У вас уже есть дом.");
+      player.sendClientMessage(Color.error, "You already own a house.");
       return;
     }
     if (result.reason === "funds") {
-      player.sendClientMessage(Color.error, "Недостаточно наличных.");
+      player.sendClientMessage(Color.error, "Not enough cash.");
       return;
     }
     if (result.reason === "sold") {
-      player.sendClientMessage(Color.error, "Этот дом уже куплен.");
+      player.sendClientMessage(Color.error, "This house has already been purchased.");
       return;
     }
-    player.sendClientMessage(Color.error, "Покупка не прошла. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Purchase failed. Try again.");
     return;
   }
 
@@ -106,7 +106,7 @@ export async function tryPurchaseHouse(player: Player, houseId: number): Promise
 
   const owned = setHouseOwner(houseId, account.id, account.name);
   if (!owned) {
-    player.sendClientMessage(Color.error, "Покупка не прошла. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Purchase failed. Try again.");
     return;
   }
 
@@ -120,27 +120,27 @@ export async function tryPurchaseHouse(player: Player, houseId: number): Promise
 
   void saveUserMoney(account.id, result.cashLeft, account.bank).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить деньги ${account.name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] could not save money for ${account.name}: ${message}`);
   });
 
   updateEntrancePickup(houseId);
   refreshAllHouseMapIcons();
 
   if (!teleportToHouseInterior(player, owned)) {
-    player.sendClientMessage(Color.error, "Дом куплен, но телепорт не удался.");
+    player.sendClientMessage(Color.error, "House purchased, but teleportation failed.");
     return;
   }
 
   player.sendClientMessage(
     Color.info,
-    `Поздравляем с покупкой дома №${owned.id} за $${owned.price}!`
+    `Congratulations on purchasing house #${owned.id} for $${owned.price}!`
   );
   player.sendClientMessage(
     Color.info,
-    "Дом оплачен на сегодня. Для продления обратитесь в банк и оплатите жильё."
+    "The house is paid through today. To extend it, pay for housing at the bank."
   );
   player.sendClientMessage(
     Color.info,
-    "Для управления домом используйте /hmenu внутри интерьера."
+    "Use /hmenu inside the interior to manage your house."
   );
 }

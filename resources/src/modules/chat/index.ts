@@ -49,7 +49,7 @@ export const chatModule: GameModule = {
 
       const account = getAccount(player);
       const inOrg = account ? getMembership(account) : null;
-      const verb = byGender(account?.gender ?? null, "сказал", "сказала");
+      const verb = byGender(account?.gender ?? null, "said", "said");
       sendNearby(
         player,
         CHAT_RADIUS,

@@ -87,7 +87,7 @@ export const spawnModule: GameModule = {
         try {
           writeSpawnInfo(player, skin, pickJailCell());
         } catch {
-          // Игрок уже вышел.
+          // The player has already disconnected.
         }
         patchAccount(player, { health: MAX_HEALTH });
         return;
@@ -99,7 +99,7 @@ export const spawnModule: GameModule = {
       try {
         writeSpawnInfo(player, skin, hospital);
       } catch {
-        // Игрок уже вышел.
+        // The player has already disconnected.
       }
 
       patchAccount(player, { health: HOSPITAL_HEALTH, hospitalized: true });
@@ -126,7 +126,7 @@ export const spawnModule: GameModule = {
         }
         player.setCameraBehind();
       } catch {
-        // Игрок уже вышел.
+        // The player has already disconnected.
       }
 
       if (account && isJailedAccount(account)) {
@@ -140,14 +140,14 @@ export const spawnModule: GameModule = {
           placeInJail(player);
           applyHealth(player, account.health);
         } catch {
-          // Игрок уже вышел.
+          // The player has already disconnected.
         }
 
         if (firstSpawn) {
           applyWallet(player, account);
         }
 
-        player.sendClientMessage(Color.error, "Вы отбываете срок в тюрьме.");
+        player.sendClientMessage(Color.error, "You are serving a prison sentence.");
         return;
       }
 
@@ -157,7 +157,7 @@ export const spawnModule: GameModule = {
           applyHealth(player, HOSPITAL_HEALTH);
           refreshStreamForPlayer(player);
         } catch {
-          // Игрок уже вышел.
+          // The player has already disconnected.
         }
 
         patchAccount(player, { health: HOSPITAL_HEALTH });
@@ -168,12 +168,12 @@ export const spawnModule: GameModule = {
           seenWorldSpawn.add(id);
         }
 
-        player.sendClientMessage(Color.info, "Вы потеряли сознание...");
+        player.sendClientMessage(Color.info, "You lost consciousness...");
         player.sendClientMessage(
           Color.gray,
-          "Врачи доставили вас в городскую больницу All Saints."
+          "Doctors took you to All Saints City Hospital."
         );
-        player.sendClientMessage(Color.gray, "Займите койку: /hospital.");
+        player.sendClientMessage(Color.gray, "Take a bed: /hospital.");
         return;
       }
 
@@ -184,7 +184,7 @@ export const spawnModule: GameModule = {
           applyHealth(player, account.health);
           refreshStreamForPlayer(player);
         } catch {
-          // Игрок уже вышел.
+          // The player has already disconnected.
         }
 
         const id = playerId(player);
@@ -199,7 +199,7 @@ export const spawnModule: GameModule = {
 
         player.sendClientMessage(
           Color.gray,
-          "Лечение не закончено. Займите койку: /hospital."
+          "Treatment is not complete. Take a bed: /hospital."
         );
         return;
       }
@@ -214,7 +214,7 @@ export const spawnModule: GameModule = {
         applyWallet(player, account);
         player.sendClientMessage(
           Color.gray,
-          "Ты появился на спавне. /help — список команд."
+          "You spawned. /help — command list."
         );
       }
 
@@ -227,7 +227,7 @@ export const spawnModule: GameModule = {
               placeAt(player, orgSpawn);
               refreshStreamForPlayer(player);
             } catch {
-              // Игрок уже вышел.
+              // The player has already disconnected.
             }
           }
         }

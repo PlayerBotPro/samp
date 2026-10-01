@@ -8,11 +8,11 @@ export const databaseModule: GameModule = {
   async start() {
     try {
       await connectDatabase();
-      omp.log(`[${SERVER_TAG}] MySQL подключен`);
+      omp.log(`[${SERVER_TAG}] MySQL connected`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] MySQL не подключен: ${message}`);
-      omp.log(`[${SERVER_TAG}] Проверь .env (MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE)`);
+      omp.log(`[${SERVER_TAG}] MySQL not connected: ${message}`);
+      omp.log(`[${SERVER_TAG}] Check .env (MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE)`);
     }
   },
 };

@@ -61,7 +61,7 @@ export type VehicleAcState = {
 const players = new Map<number, PlayerAcState>();
 const vehicles = new Map<number, VehicleAcState>();
 const ipConnects = new Map<string, number>();
-/** Последний дисконнект: ip -> { name, at } */
+/** Last disconnect: ip -> { name, at } */
 const recentDisconnects = new Map<string, { name: string; at: number }>();
 
 function emptyWeapons(): WeaponSlotState[] {
@@ -163,7 +163,7 @@ export function markDisconnect(ip: string, name: string): void {
   recentDisconnects.set(ip, { name: name.trim().toLowerCase(), at: Date.now() });
 }
 
-/** Возвращает gap мс только если с того же IP зашел тот же ник слишком быстро. */
+/** Returns a gap in ms only if the same nickname reconnects from the same IP too quickly. */
 export function takeReconnectGap(ip: string, name: string): number | null {
   if (!ip) return null;
   const prev = recentDisconnects.get(ip);

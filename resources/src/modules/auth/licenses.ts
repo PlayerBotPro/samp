@@ -25,11 +25,11 @@ export const EMPTY_LICENSES: Licenses = {
 };
 
 export const LICENSE_ROWS: readonly LicenseDef[] = [
-  { key: "car", label: "Автомобили", offer: "на автомобили", min: 5000, max: 50000 },
-  { key: "moto", label: "Мотоциклы", offer: "на мотоциклы", min: 3000, max: 30000 },
-  { key: "fly", label: "Полёты", offer: "на полёты", min: 20000, max: 150000 },
-  { key: "boat", label: "Водный транспорт", offer: "на водный транспорт", min: 10000, max: 80000 },
-  { key: "gun", label: "Оружие", offer: "на оружие", min: 15000, max: 100000 },
+  { key: "car", label: "Cars", offer: "for cars", min: 5000, max: 50000 },
+  { key: "moto", label: "Motorcycles", offer: "for motorcycles", min: 3000, max: 30000 },
+  { key: "fly", label: "Flight", offer: "for flying", min: 20000, max: 150000 },
+  { key: "boat", label: "Watercraft", offer: "for watercraft", min: 10000, max: 80000 },
+  { key: "gun", label: "Weapons", offer: "for weapons", min: 15000, max: 100000 },
 ];
 
 export function licenseFlag(value: unknown): boolean {

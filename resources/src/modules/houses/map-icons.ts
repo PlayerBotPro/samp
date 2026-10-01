@@ -77,7 +77,7 @@ export function refreshHouseMapIcons(player: Player): void {
     const interior = player.getInterior();
     updatePlayerIcons(player, id, pos.x, pos.y, world, interior);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -103,7 +103,7 @@ function tickHouseIcons(): void {
       const interior = player.getInterior();
       updatePlayerIcons(player, id, pos.x, pos.y, world, interior, houses);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -205,7 +205,7 @@ function showHouseIcon(
       MAPICON_LOCAL
     );
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -218,7 +218,7 @@ function hideHouseIcon(
   try {
     player.removeMapIcon(slot);
   } catch {
-    // Иконки не было.
+    // Icon did not exist.
   }
 
   state.active.delete(houseId);

@@ -57,7 +57,7 @@ export function updateEntrancePickup(houseId: number): void {
     try {
       current.destroy();
     } catch {
-      // Пикап уже уничтожен.
+      // The pickup has already been destroyed.
     }
   }
 
@@ -164,7 +164,7 @@ function tickHouseEntrances(): void {
       pendingEnterHouse.set(id, house.id);
       showOccupiedHouseDialog(player, house);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -188,13 +188,13 @@ function findHouseAt(x: number, y: number, z: number): HouseRecord | null {
 
 function showFreeHouseDialog(player: Player, house: HouseRecord): void {
   const body = [
-    `${LABEL}Тип:\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
-    `${LABEL}Номер дома:\t\t${VALUE}${house.id}`,
-    `${LABEL}Стоимость:\t\t${VALUE}${house.price}$`,
-    `${LABEL}Аренда:\t\t${VALUE}$${dailyHouseRent(house.price)}/день`,
+    `${LABEL}Type:\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
+    `${LABEL}House number:\t\t${VALUE}${house.id}`,
+    `${LABEL}Price:\t\t${VALUE}${house.price}$`,
+    `${LABEL}Rent:\t\t${VALUE}$${dailyHouseRent(house.price)}/day`,
     "",
-    `${LABEL}При покупке дом оплачен на сегодня.`,
-    `${LABEL}Продление — в банке.`,
+    `${LABEL}The house is paid through today when purchased.`,
+    `${LABEL}Renew at the bank.`,
   ].join("\n");
 
   try {
@@ -202,24 +202,24 @@ function showFreeHouseDialog(player: Player, house: HouseRecord): void {
       player,
       HOUSE_BUY_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${FREE_TITLE}Дом свободен`,
+      `${FREE_TITLE}Vacant house`,
       body,
-      "Купить",
-      "Закрыть"
+      "Buy",
+      "Close"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть окно дома.");
+    player.sendClientMessage(Color.error, "Could not open the house window.");
   }
 }
 
 function showOccupiedHouseDialog(player: Player, house: HouseRecord): void {
-  const owner = house.ownerName ?? "Неизвестно";
+  const owner = house.ownerName ?? "Unknown";
   const body = [
-    `${LABEL}Владелец:\t\t${OWNER_VALUE}${owner}`,
-    `${LABEL}Тип:\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
-    `${LABEL}Номер дома:\t\t${VALUE}${house.id}`,
-    `${LABEL}Стоимость:\t\t${VALUE}${house.price}$`,
-    `${LABEL}Статус:\t\t${VALUE}${houseLockStatusLabel(house.isLocked)}`,
+    `${LABEL}Owner:\t\t${OWNER_VALUE}${owner}`,
+    `${LABEL}Type:\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
+    `${LABEL}House number:\t\t${VALUE}${house.id}`,
+    `${LABEL}Price:\t\t${VALUE}${house.price}$`,
+    `${LABEL}Status:\t\t${VALUE}${houseLockStatusLabel(house.isLocked)}`,
   ].join("\n");
 
   try {
@@ -227,13 +227,13 @@ function showOccupiedHouseDialog(player: Player, house: HouseRecord): void {
       player,
       HOUSE_ENTER_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${OCCUPIED_TITLE}Дом занят`,
+      `${OCCUPIED_TITLE}Occupied house`,
       body,
-      "Войти",
-      "Отмена"
+      "Enter",
+      "Cancel"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть окно дома.");
+    player.sendClientMessage(Color.error, "Could not open the house window.");
   }
 }
 

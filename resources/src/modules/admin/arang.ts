@@ -58,7 +58,7 @@ function isSamePlayer(a: Player, b: Player): boolean {
 export function bindAdminArang(): void {
   registerCommand(
     "arang",
-    "Повысить или понизить уровень админки",
+    "Raise or lower an admin level",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -68,35 +68,35 @@ export function bindAdminArang(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /arang [id] [+/-]"
+          "Usage: /arang [id] [+/-]"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (isSamePlayer(player, target)) {
         player.sendClientMessage(
           Color.error,
-          "Нельзя изменить уровень админки себе."
+          "You cannot change your own admin level."
         );
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (account.adminLevel < MIN_TARGET_LEVEL) {
         player.sendClientMessage(
           Color.error,
-          "Игрок не является администратором."
+          "The player is not an administrator."
         );
         return;
       }
@@ -104,7 +104,7 @@ export function bindAdminArang(): void {
       if (account.adminLevel > MAX_TARGET_LEVEL) {
         player.sendClientMessage(
           Color.error,
-          "Уровень 7 можно менять только через /makeadmin."
+          "Level 7 can only be changed with /makeadmin."
         );
         return;
       }
@@ -113,7 +113,7 @@ export function bindAdminArang(): void {
       if (next < MIN_TARGET_LEVEL || next > MAX_TARGET_LEVEL) {
         player.sendClientMessage(
           Color.error,
-          `Уровень админки игрока ${MIN_TARGET_LEVEL}-${MAX_TARGET_LEVEL}.`
+          `Player admin level: ${MIN_TARGET_LEVEL}-${MAX_TARGET_LEVEL}.`
         );
         return;
       }
@@ -137,7 +137,7 @@ async function applyAdminRank(
   if (pending.has(account.id)) {
     admin.sendClientMessage(
       Color.error,
-      "Уровень админки этого игрока уже меняют. Подождите."
+      "This player's admin level is already being changed. Please wait."
     );
     return;
   }
@@ -149,7 +149,7 @@ async function applyAdminRank(
     if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
       admin.sendClientMessage(
         Color.info,
-        `Уровень админки сохранён: ${nextLevel}. Игрок вышел.`
+        `Admin level saved: ${nextLevel}. The player disconnected.`
       );
       return;
     }
@@ -161,14 +161,14 @@ async function applyAdminRank(
 
     admin.sendClientMessage(
       Color.info,
-      `Вы установили уровень админки ${targetTag}: ${nextLevel}.`
+      `You set ${targetTag}'s admin level to ${nextLevel}.`
     );
     target.sendClientMessage(
       Color.info,
-      `Администратор ${adminTag} установил вам уровень админки: ${nextLevel}.`
+      `Administrator ${adminTag} set your admin level to ${nextLevel}.`
     );
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось сохранить уровень админки.");
+    admin.sendClientMessage(Color.error, "Failed to save the admin level.");
   } finally {
     pending.delete(account.id);
   }

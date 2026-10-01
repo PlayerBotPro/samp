@@ -16,7 +16,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Открыть могут сотрудники LSPD, областной полиции и FBI.";
+const DENY = "LSPD, county police, and FBI personnel can open this.";
 
 type LspdDoor = {
   pickup: { x: number; y: number; z: number; interior: number };
@@ -36,7 +36,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: LSPD_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "LSPD\nВход",
+    label: "LSPD\nEntrance",
     staffOnly: false,
   },
   {
@@ -49,7 +49,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Выход на улицу",
+    label: "Exit to street",
     staffOnly: false,
   },
   {
@@ -62,7 +62,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Гараж\nСлужебный выход",
+    label: "Garage\nStaff exit",
     staffOnly: true,
   },
   {
@@ -75,7 +75,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: LSPD_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Гараж\nСлужебный вход",
+    label: "Garage\nStaff entrance",
     staffOnly: true,
   },
 ];
@@ -143,7 +143,7 @@ function tickLspdDoors(): void {
         }
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -152,7 +152,7 @@ function tryUse(player: Player, door: LspdDoor): void {
   if (door.staffOnly) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+      deny(player, "You need treatment. Take a bed: /hospital.");
       return;
     }
 
@@ -183,7 +183,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -205,7 +205,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

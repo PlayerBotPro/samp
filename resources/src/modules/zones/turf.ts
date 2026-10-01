@@ -13,7 +13,7 @@ import {
 
 const EMPTY_COLOR = 0x808080aa;
 
-/** Id зон респа из старого дампа — их нельзя каптить. */
+/** Spawn-zone IDs from the old dump — they cannot be captured. */
 const LEGACY_SPAWN_ZONE_IDS: ReadonlySet<number> = new Set([7, 25, 67, 74, 90]);
 
 export type LiveTurf = {
@@ -97,7 +97,7 @@ export function findTurfAtPlayer(player: Player): LiveTurf | null {
 
 export async function startGangTurf(): Promise<void> {
   if (!isDatabaseReady()) {
-    omp.log(`[${SERVER_TAG}] гангзоны: нет БД`);
+    omp.log(`[${SERVER_TAG}] gang zones: no database`);
     return;
   }
 
@@ -122,12 +122,12 @@ export async function startGangTurf(): Promise<void> {
           zone,
         });
       } catch {
-        // Пул зон заполнен.
+        // Zone pool is full.
       }
     }
 
     turfs = markSpawnProtected(created);
-    omp.log(`[${SERVER_TAG}] гангзоны: ${turfs.length}/${records.length}`);
+    omp.log(`[${SERVER_TAG}] gang zones: ${turfs.length}/${records.length}`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] gang_zones: ${message}`);
@@ -143,7 +143,7 @@ export function showGangTurf(player: Player): void {
     try {
       turf.zone.showForPlayer(player, turfColor(turf.orgId));
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   }
 }
@@ -173,7 +173,7 @@ export async function setGangZoneOwner(zoneId: number, orgId: number): Promise<b
     turf.zone.stopFlashForAll();
     turf.zone.showForAll(turfColor(orgId));
   } catch {
-    // Зона уже уничтожена.
+    // Zone already destroyed.
   }
   return true;
 }

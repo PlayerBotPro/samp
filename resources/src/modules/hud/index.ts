@@ -45,7 +45,7 @@ function showLogo(player: Player): void {
     try {
       draw.showForPlayer(player);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   }
 }
@@ -55,7 +55,7 @@ function hideLogo(player: Player): void {
     try {
       draw.hideForPlayer(player);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   }
 }
@@ -65,7 +65,7 @@ export const hudModule: GameModule = {
   start() {
     layers = createLogo();
     if (layers.length === 0) {
-      omp.log(`[${SERVER_TAG}] логотип не создан`);
+      omp.log(`[${SERVER_TAG}] logo was not created`);
     }
 
     startSpeedo();

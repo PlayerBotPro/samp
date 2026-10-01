@@ -13,37 +13,37 @@ export type SpawnPoint = {
 
 export type PlaceAtOptions = {
   /**
-   * мс заморозки после телепорта (прогрузка коллизий/текстур).
-   * `false` — не замораживать. По умолчанию: interior>0 или не улица → 2500 мс.
+   * milliseconds to freeze after teleportation (for collision/texture loading).
+   * `false` — do not freeze. Default: interior>0 or not outdoors → 2500 ms.
    */
   settleMs?: number | false;
 };
 
 export const NO_TEAM = 255;
 
-/** Скин для class-селектора, если у игрока ещё нет аккаунта. */
+/** Skin for the class selector when the player does not yet have an account. */
 export const DEFAULT_SPAWN_SKIN = 26;
 
 export const STREET_WORLD = 0;
 
-/** Пауза после входа в интерьер / кастомный VW, пока подтянутся объекты. */
+/** Delay after entering an interior/custom VW while objects load. */
 export const INTERIOR_SETTLE_MS = 2500;
 
-/** Отдельный VW больницы: игроки и пикапы внутри не пересекаются с улицей. */
+/** Separate hospital VW: players and pickups inside do not overlap with the street. */
 export const HOSPITAL_WORLD = 1;
 
-/** Отдельный VW тюрьмы: интерьер в небе не пересекается с улицей. Банк = 2. */
+/** Separate prison VW: sky interior does not overlap with the street. Bank = 2. */
 export const PRISON_WORLD = 3;
 
-/** Двор тюрьмы на координатах участка: игроки не пересекаются с улицей. */
+/** Prison yard at station coordinates: players do not overlap with the street. */
 export const PRISON_YARD_WORLD = 4;
 
-/** Мафии (интерьер 5): LCN VW 14, Yakuza 15, Русская 16 — `org/mafias.ts`. */
-/** Банды (дома): Grove VW 9, Ballas 10, Vagos 11, Rifa 12, Aztecas 13 — `org/gangs.ts`. */
-/** Радиоцентр (кастомный интерьер): VW 8 — `org/radio.ts`. */
-/** Мэрия (кастомный интерьер): VW 3 (= org id) — `org/meriya.ts`. Совпадает с PRISON_WORLD; координаты далеко. */
+/** Mafias (interior 5): LCN VW 14, Yakuza 15, Russian 16 — `org/mafias.ts`. */
+/** Gangs (houses): Grove VW 9, Ballas 10, Vagos 11, Rifa 12, Aztecas 13 — `org/gangs.ts`. */
+/** Radio center (custom interior): VW 8 — `org/radio.ts`. */
+/** City Hall (custom interior): VW 3 (= org id) — `org/meriya.ts`. Matches PRISON_WORLD; coordinates are far apart. */
 
-/** Обычный спавн, пока игрок не в организации. */
+/** Normal spawn while the player is not in an organization. */
 export const DEFAULT_SPAWN: SpawnPoint = {
   x: 1760.2538,
   y: -1898.8334,
@@ -97,7 +97,7 @@ export const HOSPITAL_SPAWNS: readonly SpawnPoint[] = [
 ];
 
 const settleTimers = new Map<number, ReturnType<typeof setTimeout>>();
-/** Токен активной settle-сессии (просроченный таймер не трогает управление). */
+/** Token for the active settle session (an expired timer does not affect controls). */
 const settleTokens = new Map<number, object>();
 
 export function pickHospitalSpawn(): SpawnPoint {
@@ -128,7 +128,7 @@ export function writeSpawnInfo(player: Player, skin: number, point: SpawnPoint):
 }
 
 export function placeAt(player: Player, point: SpawnPoint, options?: PlaceAtOptions): void {
-  // Снимает прошлую settle-заморозку (иначе выход на улицу / новый ТП = вечный лок).
+  // Clear the previous settle freeze (otherwise exit/new teleport causes a permanent lock).
   clearPlaceAtSettle(player);
 
   player.setInterior(point.interior);
@@ -171,13 +171,13 @@ export function placeAt(player: Player, point: SpawnPoint, options?: PlaceAtOpti
           player.toggleControllable(true);
         }
       } catch {
-        // Игрок уже вышел.
+        // The player has already disconnected.
       }
     }, settleMs)
   );
 }
 
-/** Снять отложенную разморозку (дисконнект / новый телепорт). */
+/** Clear pending unfreeze (disconnect / new teleport). */
 export function clearPlaceAtSettle(player: Player): void {
   const id = playerId(player);
   if (id === null) {
@@ -193,7 +193,7 @@ export function clearPlaceAtSettle(player: Player): void {
   }
   settleTokens.delete(id);
 
-  // Размораживаем только если замораживали мы (не шахта / станок / скин-пикер).
+  // Unfreeze only if we froze the player (not mine / machine / skin picker).
   if (!hadSettle) {
     return;
   }
@@ -203,7 +203,7 @@ export function clearPlaceAtSettle(player: Player): void {
       player.toggleControllable(true);
     }
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -216,7 +216,7 @@ function resolveSettleMs(point: SpawnPoint, options?: PlaceAtOptions): number {
     return Math.max(0, options.settleMs);
   }
 
-  // Интерьер или кастомный VW (больница, тюрьма, завод, HQ…) — ждём коллизии.
+  // Interior or custom VW (hospital, prison, factory, HQ…) — wait for collision loading.
   if (point.interior > 0 || point.world !== STREET_WORLD) {
     return INTERIOR_SETTLE_MS;
   }

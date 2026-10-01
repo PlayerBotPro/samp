@@ -18,7 +18,7 @@ function broadcastAdmins(text: string): void {
     try {
       other.sendClientMessage(Color.gray, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -29,7 +29,7 @@ function slapPlayer(target: Player): boolean {
       target.removeFromVehicle();
     }
   } catch {
-    // Уже не в транспорте.
+    // No longer in a vehicle.
   }
 
   try {
@@ -43,7 +43,7 @@ function slapPlayer(target: Player): boolean {
   try {
     target.setVelocity(0, 0, SLAP_VELOCITY);
   } catch {
-    // Позиция уже сдвинута вверх.
+    // Position is already moved up.
   }
 
   return true;
@@ -52,7 +52,7 @@ function slapPlayer(target: Player): boolean {
 export function bindAdminSlap(): void {
   registerCommand(
     "slap",
-    "Подкинуть игрока вверх",
+    "Launch a player upward",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -60,39 +60,39 @@ export function bindAdminSlap(): void {
 
       const idPart = args.trim();
       if (!idPart) {
-        player.sendClientMessage(Color.error, "Использование: /slap [id]");
+        player.sendClientMessage(Color.error, "Usage: /slap [id]");
         return;
       }
 
       const slot = Number(idPart);
       if (!Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Использование: /slap [id]");
+        player.sendClientMessage(Color.error, "Usage: /slap [id]");
         return;
       }
 
       const target = omp.players.at(slot);
       if (!target || !isPlayerActive(target)) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       try {
         if (target.isNPC()) {
-          player.sendClientMessage(Color.error, "Игрок не найден.");
+          player.sendClientMessage(Color.error, "Player not found.");
           return;
         }
       } catch {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (!slapPlayer(target)) {
-        player.sendClientMessage(Color.error, "Не удалось подкинуть игрока.");
+        player.sendClientMessage(Color.error, "Failed to launch the player.");
         return;
       }
 
       broadcastAdmins(
-        `Администратор ${playerChatName(player)} подбросил ${playerChatName(target)}.`
+        `Administrator ${playerChatName(player)} launched ${playerChatName(target)}.`
       );
     },
     true

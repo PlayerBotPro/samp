@@ -21,11 +21,11 @@ const PICKUP_TYPE = 1;
 const PLAYER_STATE_ONFOOT = 1;
 const PICKUP_RADIUS = 1.6;
 const TICK_MS = 400;
-/** Интервал выдачи патронов, пока стоишь на ящике. */
+/** Ammunition dispensing interval while standing on a crate. */
 const LOOT_INTERVAL_MS = 2500;
-/** Сколько патронов забирается со склада армии за тик. */
+/** Ammunition taken from the Army warehouse per tick. */
 const AMMO_PER_TICK = 20;
-/** Доля патронов, теряемых при смерти на базе. */
+/** Fraction of ammunition lost on death at the base. */
 const DEATH_AMMO_LOSS_RATIO = 0.3;
 const EMPTY_MSG_COOLDOWN_MS = 4000;
 
@@ -42,7 +42,7 @@ const CRATES: readonly { x: number; y: number; z: number }[] = [
   { x: 2743.3081, y: -2454.3604, z: 13.8623 },
 ];
 
-/** Зона военной базы (смерть → потеря % патронов). */
+/** Military-base zone (death → ammunition percentage loss). */
 const ARMY_BASE_ZONE = {
   minX: 2664.8,
   minY: -2589.1,
@@ -141,7 +141,7 @@ function tryLootCrate(player: Player): void {
 
   const nextAmmo = account.ammo + take;
   if (!Number.isSafeInteger(nextAmmo)) {
-    player.sendClientMessage(Color.error, "Слишком много патронов при себе.");
+    player.sendClientMessage(Color.error, "You are carrying too much ammunition.");
     return;
   }
 
@@ -152,10 +152,10 @@ function tryLootCrate(player: Player): void {
 
   patchAccount(player, { ammo: nextAmmo });
   void saveUserInventory(account.id, account.drugs, nextAmmo, account.metal).catch(() => {
-    // Кэш уже обновлён.
+    // Cache already updated.
   });
   refreshArmyAmmoStockLabel();
-  player.sendClientMessage(Color.info, `+${take} патронов (склад армии).`);
+  player.sendClientMessage(Color.info, `+${take} ammunition (Army warehouse).`);
 }
 
 function notifyEmpty(player: Player, id: number, now: number): void {
@@ -164,7 +164,7 @@ function notifyEmpty(player: Player, id: number, now: number): void {
   }
 
   lastEmptyMsgAt.set(id, now);
-  player.sendClientMessage(Color.error, "Ящик пуст: на складе армии нет патронов.");
+  player.sendClientMessage(Color.error, "The crate is empty: the Army warehouse has no ammunition.");
 }
 
 function onDeathInArmyBase(player: Player): void {
@@ -198,11 +198,11 @@ function onDeathInArmyBase(player: Player): void {
 
   patchAccount(player, { ammo: nextAmmo });
   void saveUserInventory(account.id, account.drugs, nextAmmo, account.metal).catch(() => {
-    // Кэш уже обновлён.
+    // Cache already updated.
   });
   player.sendClientMessage(
     Color.error,
-    `На военной базе вы потеряли ${lost} патронов.`
+    `You lost ${lost} ammunition at the military base.`
   );
 }
 

@@ -51,11 +51,11 @@ export type Account = {
   metal: number;
   passport: boolean;
   hospitalized: boolean;
-  /** Розыск 0–6 (звёзды SA). */
+  /** Wanted level 0–6 (SA stars). */
   wantedLevel: number;
-  /** Военный билет. */
+  /** Military ID. */
   militaryId: boolean;
-  /** Медицинская карта. */
+  /** Medical card. */
   medcard: boolean;
   invitedBy: string | null;
   birthDate: string;
@@ -112,7 +112,7 @@ export function applyWallet(player: Player, account: Account): void {
       player.giveMoney(account.money);
     }
   } catch {
-    // Слот ещё не в игре.
+    // Slot is not in game yet.
   }
   trustMoney(player, account.money);
 }
@@ -121,7 +121,7 @@ export function applyHealth(player: Player, health: number): void {
   try {
     player.setHealth(health);
   } catch {
-    // Слот ещё не в игре.
+    // Slot is not in game yet.
   }
   trustHealth(player, health);
 }
@@ -130,17 +130,17 @@ export function applyScore(player: Player, level: number): void {
   try {
     player.setScore(Math.max(0, Math.floor(level)));
   } catch {
-    // Слот ещё не в игре.
+    // Slot is not in game yet.
   }
 }
 
-/** Звёзды розыска GTA SA (0–6). */
+/** GTA SA wanted stars (0–6). */
 export function applyWantedLevel(player: Player, level: number): void {
   const wanted = normalizeWantedLevel(level);
   try {
     player.setWantedLevel(wanted);
   } catch {
-    // Слот ещё не в игре.
+    // Slot is not in game yet.
   }
 }
 

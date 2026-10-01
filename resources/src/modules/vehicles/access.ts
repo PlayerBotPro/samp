@@ -19,7 +19,7 @@ const DENY_COOLDOWN_MS = 2500;
 /** F / Enter. KEY_SECONDARY_ATTACK = 16. */
 const KEY_ENTER_VEHICLE = 16;
 const ENTER_RANGE = 5;
-const DEFAULT_DENY = "Вы не можете сидеть в этом транспорте.";
+const DEFAULT_DENY = "You cannot enter this vehicle.";
 
 type OrgVehicleAccess = {
   orgIds: readonly number[];
@@ -97,7 +97,7 @@ export function bindOrgVehicleAccess(): void {
         newState === PLAYER_STATE_PASSENGER
       );
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -132,7 +132,7 @@ function ejectFromForbiddenOrgVehicle(player: Player): void {
       player.getState() === PLAYER_STATE_PASSENGER
     );
   } catch {
-    // Слот пустой.
+    // Slot is empty.
   }
 }
 
@@ -193,7 +193,7 @@ function nearestVehicle(player: Player, range: number): Vehicle | null {
         best = vehicle;
       }
     } catch {
-      // Транспорт уже уничтожен.
+      // Vehicle already destroyed.
     }
   }
 
@@ -232,7 +232,7 @@ function eject(player: Player, entering: boolean): void {
     }
     player.removeFromVehicle();
   } catch {
-    // Уже не в транспорте.
+    // No longer in the vehicle.
   }
 }
 
@@ -248,7 +248,7 @@ function applyDoorLock(vehicle: Vehicle, player: Player): void {
       : DOORS_LOCKED;
     vehicle.setParamsForPlayer(player, 0, locked);
   } catch {
-    // Слот или транспорт уже не в мире.
+    // Slot or vehicle is no longer in the world.
   }
 }
 
@@ -356,6 +356,6 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Слот пустой.
+    // Slot is empty.
   }
 }

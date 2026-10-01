@@ -7,7 +7,7 @@ const PLAYER_STATE_DRIVER = 2;
 const UPDATE_MS = 500;
 const SPEED_FACTOR = 120.666667;
 
-/** Статика: топливо и буквы кроме M. Живые: скорость, HP кузова, мотор. */
+/** Static: fuel and letters except M. Dynamic: speed, body HP, engine. */
 const STATIC_FUEL = "Fuel 100";
 
 type SpeedoDraws = {
@@ -106,7 +106,7 @@ function destroyPlayerDraws(id: number): void {
     try {
       draw.destroy();
     } catch {
-      // Уже уничтожен.
+      // Already destroyed.
     }
   }
 
@@ -132,7 +132,7 @@ function hideFor(player: Player, id: number): void {
     hud.status.hideForPlayer(player);
     background?.hideForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -195,7 +195,7 @@ function updateSpeed(player: Player, id: number): void {
         return;
       }
     } catch {
-      // Слот уже невалиден.
+      // Slot is no longer valid.
     }
     hideFor(player, id);
     return;
@@ -208,7 +208,7 @@ function updateSpeed(player: Player, id: number): void {
       statusLine(isEngineOn(vehicle), isLightsOn(vehicle), getVehicleLimit(vehicle))
     );
   } catch {
-    // Textdraw уже уничтожен.
+    // Textdraw is already destroyed.
   }
 }
 
@@ -302,7 +302,7 @@ export function startSpeedo(): void {
         showFor(player, id);
       }
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   }
 }

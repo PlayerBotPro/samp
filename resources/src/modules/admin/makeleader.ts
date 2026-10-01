@@ -18,7 +18,7 @@ import { hasAdminAccess } from "./session";
 export const MAKELEADER_DIALOG_ID = 12;
 
 const DIALOG_STYLE_LIST = 2;
-const REMOVE_LABEL = "Снять с лидерки";
+const REMOVE_LABEL = "Remove leader status";
 
 type PendingMakeleader = {
   slot: number;
@@ -37,11 +37,11 @@ function clearPending(player: Player): void {
 function targetBlocked(target: Player): string | null {
   const account = getAccount(target);
   if (!account) {
-    return "Игрок не найден.";
+    return "Player not found.";
   }
 
   if (!account.passport) {
-    return "У игрока нет паспорта.";
+    return "Player has no passport.";
   }
 
   return null;
@@ -78,14 +78,14 @@ function showOrgList(player: Player): boolean {
       player,
       MAKELEADER_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Лидерка",
+      "Leader management",
       orgListLines().join("\n"),
-      "Выбрать",
-      "Отмена"
+      "Select",
+      "Cancel"
     );
     return true;
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть список.");
+    player.sendClientMessage(Color.error, "Failed to open the list.");
     return false;
   }
 }
@@ -136,12 +136,12 @@ async function applyLeader(
   try {
     await saveUserOrg(account.id, orgId, orgRank);
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось сохранить в базу.");
+    admin.sendClientMessage(Color.error, "Failed to save to database.");
     return;
   }
 
   if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
-    admin.sendClientMessage(Color.error, "Игрок не найден.");
+    admin.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
@@ -152,19 +152,19 @@ async function applyLeader(
 
   const tag = playerChatName(target);
   if (orgId === ORG_NONE) {
-    admin.sendClientMessage(Color.info, `Вы сняли ${tag} с лидерки.`);
+    admin.sendClientMessage(Color.info, `You removed ${tag} as leader.`);
     if (isPlayerActive(target)) {
-      target.sendClientMessage(Color.info, "Вас сняли с лидерки.");
+      target.sendClientMessage(Color.info, "You have been removed as leader.");
     }
     return;
   }
 
-  const orgName = getOrganization(orgId)?.name ?? "организации";
-  admin.sendClientMessage(Color.info, `Вы назначили ${tag} лидером: ${orgName}.`);
+  const orgName = getOrganization(orgId)?.name ?? "organization";
+  admin.sendClientMessage(Color.info, `You appointed ${tag} leader of ${orgName}.`);
   if (isPlayerActive(target)) {
     target.sendClientMessage(
       Color.info,
-      `Вас назначили лидером организации ${orgName}.`
+      `You have been appointed leader of ${orgName}.`
     );
   }
 }
@@ -172,7 +172,7 @@ async function applyLeader(
 export function bindAdminMakeleader(): void {
   registerCommand(
     "makeleader",
-    "Назначить лидера организации",
+    "Appoint an organization leader",
     (player, args) => {
       if (!hasAdminAccess(player, 5)) {
         return;
@@ -181,13 +181,13 @@ export function bindAdminMakeleader(): void {
       const rawId = args.trim();
       const slot = Number(rawId);
       if (!rawId || !Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Использование: /makeleader [id]");
+        player.sendClientMessage(Color.error, "Usage: /makeleader [id]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
@@ -234,7 +234,7 @@ export function bindAdminMakeleader(): void {
     const target = findTarget(pending.slot);
     const targetAccount = target ? getAccount(target) : null;
     if (!target || !targetAccount || targetAccount.id !== pending.accountId) {
-      player.sendClientMessage(Color.error, "Игрок не найден.");
+      player.sendClientMessage(Color.error, "Player not found.");
       return;
     }
 

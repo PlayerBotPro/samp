@@ -5,7 +5,7 @@ import { createServerVehicle } from "./spawn";
 import type { Vehicle } from "@omp-node/core";
 
 const RESPAWN_SEC = 100;
-const DENY = "Вы не состоите в радиоцентре.";
+const DENY = "You are not a member of the radio station.";
 
 const RADIO_VEHICLES: ReadonlyArray<{
   model: number;
@@ -68,6 +68,6 @@ function rememberFleet(vehicle: Vehicle, retried = false): void {
 
     fleetIds.add(Number(id));
   } catch {
-    // Транспорт уже уничтожен.
+    // Vehicle already destroyed.
   }
 }

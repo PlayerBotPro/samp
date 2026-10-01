@@ -10,20 +10,20 @@ export const ORG_ARMY_ID = 1;
 const ARMY_COLOR = 0x9c7a4bff;
 const ARMY_GATE_ORG_IDS = [ORG_ARMY_ID, ORG_POLICE_ID, ORG_LSPD_ID, ORG_FBI_ID] as const;
 const ARMY_GATE_DENY =
-  "Открыть могут сотрудники Армии, областной полиции, LSPD и FBI.";
+  "Army, county police, LSPD, and FBI personnel can open this.";
 
 function armyRanks(): OrgRankDef[] {
   const rows: Array<{ title: string; male: number; female: number; pay: number }> = [
-    { title: "Рядовой", male: 287, female: 191, pay: 1500 },
-    { title: "Ефрейтор", male: 287, female: 191, pay: 1900 },
-    { title: "Сержант", male: 179, female: 191, pay: 2400 },
-    { title: "Старшина", male: 179, female: 191, pay: 3000 },
-    { title: "Лейтенант", male: 255, female: 191, pay: 3700 },
-    { title: "Капитан", male: 255, female: 191, pay: 4500 },
-    { title: "Майор", male: 255, female: 191, pay: 5400 },
-    { title: "Подполковник", male: 61, female: 191, pay: 6400 },
-    { title: "Полковник", male: 61, female: 191, pay: 7500 },
-    { title: "Генерал", male: 61, female: 191, pay: 9000 },
+    { title: "Private", male: 287, female: 191, pay: 1500 },
+    { title: "Corporal", male: 287, female: 191, pay: 1900 },
+    { title: "Sergeant", male: 179, female: 191, pay: 2400 },
+    { title: "Staff Sergeant", male: 179, female: 191, pay: 3000 },
+    { title: "Lieutenant", male: 255, female: 191, pay: 3700 },
+    { title: "Captain", male: 255, female: 191, pay: 4500 },
+    { title: "Major", male: 255, female: 191, pay: 5400 },
+    { title: "Lieutenant Colonel", male: 61, female: 191, pay: 6400 },
+    { title: "Colonel", male: 61, female: 191, pay: 7500 },
+    { title: "General", male: 61, female: 191, pay: 9000 },
   ];
 
   return rows.map((row, index) => ({
@@ -36,7 +36,7 @@ function armyRanks(): OrgRankDef[] {
 
 export const ARMY: OrganizationDef = {
   id: ORG_ARMY_ID,
-  name: "Армия",
+  name: "Army",
   color: ARMY_COLOR,
   gov: true,
   illegal: false,
@@ -52,7 +52,7 @@ export const ARMY: OrganizationDef = {
 };
 
 if (ARMY.ranks.length !== MAX_ORG_RANK) {
-  throw new Error("Армия: нужно 10 рангов");
+  throw new Error("Army: 10 ranks required");
 }
 
 const ARMY_GATE = {

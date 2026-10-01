@@ -14,10 +14,10 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-registerCommand("lic", "Лицензии: посмотреть или показать по id", (player, args) => {
+registerCommand("lic", "Licenses: view or show by ID", (player, args) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Сначала войди в аккаунт.");
+    player.sendClientMessage(Color.error, "Log in first.");
     return;
   }
 
@@ -29,13 +29,13 @@ registerCommand("lic", "Лицензии: посмотреть или показ
 
   const slot = Number(rawId);
   if (!Number.isInteger(slot) || slot < 0) {
-    player.sendClientMessage(Color.error, "Использование: /lic [id]");
+    player.sendClientMessage(Color.error, "Usage: /lic [id]");
     return;
   }
 
   const target = omp.players.at(slot);
   if (!target || !isPlayerActive(target)) {
-    player.sendClientMessage(Color.error, "Игрок не найден.");
+    player.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
@@ -45,20 +45,20 @@ registerCommand("lic", "Лицензии: посмотреть или показ
   }
 
   if (!getAccount(target)) {
-    player.sendClientMessage(Color.error, "Игрок не найден.");
+    player.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
   if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-    player.sendClientMessage(Color.error, "Игрок слишком далеко.");
+    player.sendClientMessage(Color.error, "Player is too far away.");
     return;
   }
 
   showLicenses(target, account);
   const shownTo = playerName(target);
-  const verb = byGender(account.gender, "показал", "показала");
-  player.sendClientMessage(Color.gray, `Вы ${verb} лицензии: ${shownTo}.`);
-  target.sendClientMessage(Color.gray, `${account.name} ${verb} вам лицензии.`);
+  const verb = byGender(account.gender, "showed", "showed");
+  player.sendClientMessage(Color.gray, `You ${verb} your licenses to ${shownTo}.`);
+  target.sendClientMessage(Color.gray, `${account.name} ${verb} you their licenses.`);
 });
 
 function licRow(label: string, value: string): string {
@@ -67,7 +67,7 @@ function licRow(label: string, value: string): string {
 
 function showLicenses(viewer: Player, owner: Account): void {
   const body = LICENSE_ROWS.map((row) =>
-    licRow(row.label, owner.licenses[row.key] ? "Есть" : "Нет")
+    licRow(row.label, owner.licenses[row.key] ? "Yes" : "No")
   ).join("\n");
 
   try {
@@ -75,12 +75,12 @@ function showLicenses(viewer: Player, owner: Account): void {
       viewer,
       LICENSES_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}Лицензии ${owner.name}`,
+      `${TITLE}${owner.name}'s Licenses`,
       body,
-      "Закрыть",
+      "Close",
       ""
     );
   } catch {
-    viewer.sendClientMessage(Color.error, "Не удалось открыть лицензии.");
+    viewer.sendClientMessage(Color.error, "Unable to open licenses.");
   }
 }

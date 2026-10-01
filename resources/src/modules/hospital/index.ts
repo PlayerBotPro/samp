@@ -75,7 +75,7 @@ const FROM_INTERIOR: SpawnPoint = {
   world: STREET_WORLD,
 };
 
-/** Холл приёмного → служебный блок (кадры, оперблок, руководство…). */
+/** Reception hall → service block (personnel, operating unit, management…). */
 const HALL_TO_SERVICE_PICKUP = {
   x: 1165.1902,
   y: -1322.7876,
@@ -91,7 +91,7 @@ const TO_SERVICE_BLOCK: SpawnPoint = {
   world: HOSPITAL_WORLD,
 };
 
-/** Служебный блок → холл приёмного. */
+/** Service block → reception hall. */
 const SERVICE_TO_HALL_PICKUP = {
   x: 1151.0732,
   y: -1366.5275,
@@ -157,8 +157,8 @@ export const hospitalModule: GameModule = {
       HOSPITAL_WORLD
     );
 
-    createPickupLabel(STREET_PICKUP, STREET_WORLD, "Городская больница\nВход");
-    createPickupLabel(INTERIOR_PICKUP, HOSPITAL_WORLD, "Выход на улицу");
+    createPickupLabel(STREET_PICKUP, STREET_WORLD, "City Hospital\nEntrance");
+    createPickupLabel(INTERIOR_PICKUP, HOSPITAL_WORLD, "Exit to street");
 
     new Pickup(
       PICKUP_MODEL,
@@ -176,8 +176,8 @@ export const hospitalModule: GameModule = {
       SERVICE_TO_HALL_PICKUP.z,
       HOSPITAL_WORLD
     );
-    createPickupLabel(HALL_TO_SERVICE_PICKUP, HOSPITAL_WORLD, "Служебный блок\nВход");
-    createPickupLabel(SERVICE_TO_HALL_PICKUP, HOSPITAL_WORLD, "Приёмный холл\nВыход");
+    createPickupLabel(HALL_TO_SERVICE_PICKUP, HOSPITAL_WORLD, "Service block\nEntrance");
+    createPickupLabel(SERVICE_TO_HALL_PICKUP, HOSPITAL_WORLD, "Reception hall\nExit");
 
     for (let i = 0; i < BEDS.length; i++) {
       const bed = BEDS[i];
@@ -225,12 +225,12 @@ export function tryOccupyHospitalBed(player: Player): void {
 
   const account = getAccount(player);
   if (!account?.hospitalized) {
-    player.sendClientMessage(Color.error, "Вам не нужно лечение.");
+    player.sendClientMessage(Color.error, "You do not need treatment.");
     return;
   }
 
   if (bedByPlayer.has(id)) {
-    player.sendClientMessage(Color.gray, "Вы уже лежите на койке.");
+    player.sendClientMessage(Color.gray, "You are already in a bed.");
     return;
   }
 
@@ -244,7 +244,7 @@ export function tryOccupyHospitalBed(player: Player): void {
   }
 
   if (world !== HOSPITAL_WORLD) {
-    player.sendClientMessage(Color.error, "Койки только в больнице.");
+    player.sendClientMessage(Color.error, "Beds are only available in the hospital.");
     return;
   }
 
@@ -272,7 +272,7 @@ export function tryOccupyHospitalBed(player: Player): void {
     if (dist <= nearestBusyDist) {
       nearestBusyDist = dist;
       const other = getAccountBySlot(occupant);
-      nearestBusyName = other?.name ?? "Игрок";
+      nearestBusyName = other?.name ?? "Player";
     }
   }
 
@@ -282,11 +282,11 @@ export function tryOccupyHospitalBed(player: Player): void {
   }
 
   if (nearestBusyName) {
-    player.sendClientMessage(Color.error, `Койка занята: ${nearestBusyName}.`);
+    player.sendClientMessage(Color.error, `Bed is occupied: ${nearestBusyName}.`);
     return;
   }
 
-  player.sendClientMessage(Color.error, "Подойдите к свободной койке.");
+  player.sendClientMessage(Color.error, "Move closer to a free bed.");
 }
 
 function occupyBed(player: Player, playerSlot: number, bedIndex: number): void {
@@ -308,7 +308,7 @@ function occupyBed(player: Player, playerSlot: number, bedIndex: number): void {
 
   player.sendClientMessage(
     Color.info,
-    `Вы заняли койку №${bedIndex + 1}. Лечение началось.`
+    `You took bed #${bedIndex + 1}. Treatment has started.`
   );
 }
 
@@ -336,7 +336,7 @@ function finishTreatment(player: Player, playerSlot: number): void {
     queueSave(player);
   }
 
-  player.sendClientMessage(Color.info, "Лечение завершено. Можете выйти на улицу.");
+  player.sendClientMessage(Color.info, "Treatment is complete. You may leave to the street.");
 }
 
 function getAccountBySlot(slot: number): ReturnType<typeof getAccount> {
@@ -351,7 +351,7 @@ function getAccountBySlot(slot: number): ReturnType<typeof getAccount> {
 
 function createBedLabels(bed: SpawnPoint, index: number): BedLabelSet {
   const title = new TextLabel(
-    `Койка №${index + 1}`,
+    `Bed #${index + 1}`,
     Color.white,
     bed.x,
     bed.y,
@@ -361,7 +361,7 @@ function createBedLabels(bed: SpawnPoint, index: number): BedLabelSet {
     false
   );
   const status = new TextLabel(
-    "Свободна",
+    "Free",
     Color.tryOk,
     bed.x,
     bed.y,
@@ -391,18 +391,18 @@ function updateBedLabel(index: number): void {
   }
 
   const occupant = occupantByBed[index];
-  const name = occupant === null ? null : getAccountBySlot(occupant)?.name ?? "Игрок";
+  const name = occupant === null ? null : getAccountBySlot(occupant)?.name ?? "Player";
 
   try {
     if (name) {
-      labels.status.updateText(Color.error, `Занята: ${name}`);
+      labels.status.updateText(Color.error, `Occupied: ${name}`);
       labels.hint.updateText(Color.gray, " ");
     } else {
-      labels.status.updateText(Color.tryOk, "Свободна");
+      labels.status.updateText(Color.tryOk, "Free");
       labels.hint.updateText(Color.gray, "/hospital");
     }
   } catch {
-    // Лейбл уже уничтожен.
+    // The label has already been destroyed.
   }
 }
 
@@ -498,7 +498,7 @@ function tickHospital(): void {
         teleport(player, TO_RECEPTION_HALL);
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -531,7 +531,7 @@ function healOccupiedBeds(): void {
 
       if (distance3d(pos.x, pos.y, pos.z, bed.x, bed.y, bed.z) > BED_USE_RADIUS) {
         releaseBed(id);
-        player.sendClientMessage(Color.gray, "Вы встали с койки. Лечение остановлено.");
+        player.sendClientMessage(Color.gray, "You left the bed. Treatment stopped.");
         return;
       }
     } catch {
@@ -542,7 +542,7 @@ function healOccupiedBeds(): void {
     try {
       live = player.getHealth();
     } catch {
-      // Берём из аккаунта.
+      // Get it from the account.
     }
 
     const next = Math.min(MAX_HEALTH, live + HEAL_AMOUNT);
@@ -572,7 +572,7 @@ function tryLeaveHospital(player: Player): void {
     lastExitMsgAt.set(id, now);
     player.sendClientMessage(
       Color.error,
-      "Вам нужно лечение. Займите койку: /hospital."
+      "You need treatment. Take a bed: /hospital."
     );
     return;
   }
@@ -612,7 +612,7 @@ function updateHospitalIcon(
       );
       iconShown.add(id);
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
     return;
   }
@@ -624,7 +624,7 @@ function updateHospitalIcon(
   try {
     player.removeMapIcon(HOSPITAL_MAP_ICON_SLOT);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
   iconShown.delete(id);
 }
@@ -662,6 +662,6 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }

@@ -4,22 +4,22 @@ import { MAX_ORG_RANK } from "./types";
 export const ORG_MERIYA_ID = 3;
 
 const MERIYA_COLOR = 0xffff00ff;
-/** Кастомный интерьер мэрии (`maps/cityhall.txt`): interior 0, VW = org id. */
+/** Custom city hall interior (`maps/cityhall.txt`): interior 0, VW = org id. */
 export const MERIYA_WORLD = ORG_MERIYA_ID;
 export const MERIYA_CUSTOM_INTERIOR = 0;
 
 function meriyaRanks(): OrgRankDef[] {
   const rows: Array<{ title: string; male: number; female: number; pay: number }> = [
-    { title: "Охранник", male: 164, female: 141, pay: 2500 },
-    { title: "Секретарь", male: 185, female: 141, pay: 3300 },
-    { title: "Старший секретарь", male: 59, female: 141, pay: 4200 },
-    { title: "Начальник охраны", male: 165, female: 141, pay: 5300 },
-    { title: "Адвокат", male: 57, female: 141, pay: 6600 },
-    { title: "Помощник депутата", male: 98, female: 76, pay: 8100 },
-    { title: "Советник", male: 227, female: 76, pay: 9800 },
-    { title: "Депутат", male: 187, female: 76, pay: 11800 },
-    { title: "Зам. Мэра", male: 17, female: 76, pay: 14200 },
-    { title: "Мэр", male: 147, female: 150, pay: 17000 },
+    { title: "Guard", male: 164, female: 141, pay: 2500 },
+    { title: "Secretary", male: 185, female: 141, pay: 3300 },
+    { title: "Senior Secretary", male: 59, female: 141, pay: 4200 },
+    { title: "Head of Security", male: 165, female: 141, pay: 5300 },
+    { title: "Lawyer", male: 57, female: 141, pay: 6600 },
+    { title: "Councilor's Assistant", male: 98, female: 76, pay: 8100 },
+    { title: "Advisor", male: 227, female: 76, pay: 9800 },
+    { title: "Councilor", male: 187, female: 76, pay: 11800 },
+    { title: "Deputy Mayor", male: 17, female: 76, pay: 14200 },
+    { title: "Mayor", male: 147, female: 150, pay: 17000 },
   ];
 
   return rows.map((row, index) => ({
@@ -32,7 +32,7 @@ function meriyaRanks(): OrgRankDef[] {
 
 export const MERIYA: OrganizationDef = {
   id: ORG_MERIYA_ID,
-  name: "Мэрия",
+  name: "City Hall",
   color: MERIYA_COLOR,
   gov: true,
   illegal: false,
@@ -48,5 +48,5 @@ export const MERIYA: OrganizationDef = {
 };
 
 if (MERIYA.ranks.length !== MAX_ORG_RANK) {
-  throw new Error("Мэрия: нужно 10 рангов");
+  throw new Error("City Hall: 10 ranks required");
 }

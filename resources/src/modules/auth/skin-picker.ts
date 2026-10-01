@@ -57,7 +57,7 @@ function startFacingLock(player: Player, id: number): void {
       try {
         player.setFacingAngle(pickerPoint(player).angle);
       } catch {
-        // Игрок уже вышел.
+        // Player has already disconnected.
       }
     }, 100)
   );
@@ -81,7 +81,7 @@ function playPickerSound(player: Player, soundId: number): void {
     try {
       player.playGameSound(soundId, 0, 0, 0);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   }
 }
@@ -263,7 +263,7 @@ function createDraws(): PickerDraws | null {
       try {
         draw?.destroy();
       } catch {
-        // Не создан.
+        // Not created.
       }
     }
     return null;
@@ -284,14 +284,14 @@ function showDraws(player: Player): void {
     try {
       draw.showForPlayer(player);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   }
 
   try {
     player.selectTextDraw(HOVER_COLOR);
   } catch {
-    // Курсор не обязателен с первой попытки.
+    // Cursor is optional on the first attempt.
   }
 }
 
@@ -306,7 +306,7 @@ function hideDraws(player: Player): void {
       try {
         draw.hideForPlayer(player);
       } catch {
-        // Игрок уже вышел.
+        // Player has already disconnected.
       }
     }
   }
@@ -314,7 +314,7 @@ function hideDraws(player: Player): void {
   try {
     player.cancelSelectTextDraw();
   } catch {
-    // Курсор уже скрыт.
+    // Cursor is already hidden.
   }
 
   if (id !== null) {
@@ -330,7 +330,7 @@ function applyCamera(player: Player): void {
     player.setCameraPos(CAMERA.x, CAMERA.y, CAMERA.z);
     player.setCameraLookAt(point.x, point.y, point.z + 0.62, 2);
   } catch {
-    // Слот ещё не готов.
+    // Slot is not ready yet.
   }
 }
 
@@ -340,7 +340,7 @@ function preloadPickerAnims(player: Player): void {
     player.applyAnimation("DEALER", "DEALER_IDLE", 4.1, false, false, false, false, 1, ANIM_SYNC_ALL);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Библиотека подтянется на следующей попытке.
+    // The library will load on the next attempt.
   }
 }
 
@@ -355,7 +355,7 @@ function lockFacing(player: Player): void {
     try {
       player.setFacingAngle(angle);
     } catch {
-      // Слот ещё не готов.
+      // Slot is not ready yet.
     }
   }
 }
@@ -373,7 +373,7 @@ function applyPreview(player: Player, skinId: number): void {
     applyCamera(player);
     lockFacing(player);
   } catch {
-    // Слот ещё не готов.
+    // Slot is not ready yet.
   }
 }
 
@@ -387,7 +387,7 @@ function holdPreview(player: Player): void {
     applyCamera(player);
     lockFacing(player);
   } catch {
-    // Слот ещё не готов.
+    // Slot is not ready yet.
   }
 }
 
@@ -407,7 +407,7 @@ function leaveSpectate(player: Player, skinId: number): void {
     try {
       player.toggleSpectating(false);
     } catch {
-      // Спавн ещё не доступен.
+      // Spawn is not available yet.
     }
   }
 }
@@ -488,7 +488,7 @@ export function closeSkinPicker(player: Player): void {
   try {
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Анимации уже сброшены.
+    // Animations are already reset.
   }
 }
 
@@ -541,7 +541,7 @@ function isCancelClick(clicked: unknown): boolean {
       return true;
     }
   } catch {
-    // Невалидный объект клика.
+    // Invalid click object.
   }
 
   const numeric = Number(clicked);

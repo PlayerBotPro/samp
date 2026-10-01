@@ -16,7 +16,7 @@ export const mappingModule: GameModule = {
     try {
       files = readdirSync(MAPS_DIR).filter((name) => name.toLowerCase().endsWith(".txt"));
     } catch {
-      omp.log(`[${SERVER_TAG}] папка maps не найдена`);
+      omp.log(`[${SERVER_TAG}] maps directory not found`);
       return;
     }
 
@@ -30,17 +30,17 @@ export const mappingModule: GameModule = {
         objects.push(...parsed.objects);
         removals.push(...parsed.removals);
         omp.log(
-          `[${SERVER_TAG}] карта ${file}: в стример ${parsed.objects.length}, удалений ${parsed.removals.length}`
+          `[${SERVER_TAG}] map ${file}: ${parsed.objects.length} streamed, ${parsed.removals.length} removals`
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        omp.log(`[${SERVER_TAG}] карта ${file} не загрузилась: ${message}`);
+        omp.log(`[${SERVER_TAG}] map ${file} failed to load: ${message}`);
       }
     }
 
     startObjectStream(objects, removals);
     omp.log(
-      `[${SERVER_TAG}] стример объектов: всего ${objects.length}, удалений зданий ${removals.length}`
+      `[${SERVER_TAG}] object streamer: ${objects.length} total, ${removals.length} building removals`
     );
   },
 };

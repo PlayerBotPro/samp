@@ -2,7 +2,7 @@ import type { Player, Vehicle } from "@omp-node/core";
 import { getAccount } from "../auth/session";
 import type { LicenseKey } from "../auth/licenses";
 
-/** Faggio у ЖД и Pizzaboy — скутера, права не нужны. */
+/** Faggio at the railway station and Pizzaboy are scooters; no license required. */
 const SCOOTERS = new Set([448, 462]);
 const BICYCLES = new Set([481, 509, 510]);
 const MOTORCYCLES = new Set([
@@ -18,9 +18,9 @@ const NO_LICENSE = new Set([
 ]);
 
 const DENY: Record<"car" | "moto" | "fly", string> = {
-  car: "У вас нет лицензии на автомобили.",
-  moto: "У вас нет лицензии на мотоциклы.",
-  fly: "У вас нет лицензии на полёты.",
+  car: "You do not have a car license.",
+  moto: "You do not have a motorcycle license.",
+  fly: "You do not have a flight license.",
 };
 
 export type DriveLicense = Extract<LicenseKey, "car" | "moto" | "fly">;
@@ -48,7 +48,7 @@ export function requiredDriveLicense(model: number): DriveLicense | null {
 export function driveLicenseDeny(player: Player, vehicle: Vehicle): string | null {
   const account = getAccount(player);
   if (!account) {
-    return "Сначала войди в аккаунт.";
+    return "Log in first.";
   }
 
   let model = 0;

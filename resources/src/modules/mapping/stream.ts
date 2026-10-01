@@ -58,7 +58,7 @@ function applyBuildingRemovals(player: Player): void {
     }
     removalsApplied.add(id);
   } catch {
-    // Слот ещё не готов — повторит второй таймер.
+    // The slot is not ready yet — the second timer will retry.
   }
 }
 
@@ -112,7 +112,7 @@ export function refreshStreamForPlayer(player: Player): void {
         try {
           current.destroy();
         } catch {
-          // Уже уничтожен.
+          // Already destroyed.
         }
         bag.delete(i);
       }
@@ -135,7 +135,7 @@ export function refreshStreamForPlayer(player: Player): void {
       try {
         current.destroy();
       } catch {
-        // Уже уничтожен.
+        // Already destroyed.
       }
       bag.delete(i);
     }
@@ -166,7 +166,7 @@ function spawnForPlayer(player: Player, def: MapObjectDef): PlayerObject | null 
           material.color
         );
       } catch {
-        // Слот материала не принял движок.
+        // The engine did not accept the material slot.
       }
     }
 
@@ -184,7 +184,7 @@ function spawnForPlayer(player: Player, def: MapObjectDef): PlayerObject | null 
           text.alignment
         );
       } catch {
-        // Текст на объекте не принял движок.
+        // The engine did not accept the text on the object.
       }
     }
 
@@ -228,7 +228,7 @@ function clearPlayerObjects(player: Player): void {
     try {
       object.destroy();
     } catch {
-      // Уже уничтожен.
+      // Already destroyed.
     }
   }
 

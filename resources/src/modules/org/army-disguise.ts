@@ -24,7 +24,7 @@ const GHETTO_GANG_IDS: ReadonlySet<number> = new Set([
   ORG_AZTECAS_ID,
 ]);
 
-/** Слоты игроков в армейской маскировке (банды у Смоки). */
+/** Player slots using Army disguises (gangs at Smokey). */
 const disguised = new Set<number>();
 
 export function isArmyDisguised(player: Player): boolean {
@@ -32,7 +32,7 @@ export function isArmyDisguised(player: Player): boolean {
   return id !== null && disguised.has(id);
 }
 
-/** Форма действует только у члена банды гетто вне тюрьмы. */
+/** Uniform only applies to a ghetto gang member outside prison. */
 export function canKeepArmyDisguise(player: Player): boolean {
   const account = getAccount(player);
   if (!account || account.jailSeconds > 0) {
@@ -52,11 +52,11 @@ export function applyArmyDisguiseVisuals(player: Player, account: Account): void
     player.setSkin(armyDisguiseSkin(account));
     player.setColor(ARMY.color);
   } catch {
-    // Слот ещё не в игре.
+    // Slot is not in-game yet.
   }
 }
 
-/** Включить маскировку (скин + цвет армии). Банда не меняется. */
+/** Enable disguise (Army skin + color). Gang does not change. */
 export function startArmyDisguise(player: Player): boolean {
   const id = playerId(player);
   const account = getAccount(player);
@@ -69,7 +69,7 @@ export function startArmyDisguise(player: Player): boolean {
   return true;
 }
 
-/** Снять маскировку. Визуал восстанавливает вызывающая сторона через applyOrgVisuals. */
+/** Remove disguise. The caller restores visuals through applyOrgVisuals. */
 export function clearArmyDisguise(player: Player): boolean {
   const id = playerId(player);
   if (id === null || !disguised.has(id)) {
@@ -81,8 +81,8 @@ export function clearArmyDisguise(player: Player): boolean {
 }
 
 /**
- * Если маскировка больше невалидна (тюрьма / кик из банды) — снять флаг.
- * Возвращает true, если игрок сейчас должен выглядеть как армия.
+ * If the disguise is no longer valid (prison / removed from gang), clear the flag.
+ * Returns true if the player should now look like Army personnel.
  */
 export function syncArmyDisguise(player: Player): boolean {
   if (!isArmyDisguised(player)) {
@@ -104,7 +104,7 @@ export function bindArmyDisguise(): void {
     }
 
     if (isPlayerActive(player)) {
-      player.sendClientMessage(Color.gray, "Армейская форма снята.");
+      player.sendClientMessage(Color.gray, "Army uniform removed.");
     }
   });
 

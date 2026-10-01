@@ -33,7 +33,7 @@ import { addWarehouseAmmo, takeWarehouseAmmo } from "../warehouse";
 
 const TRUCK_MODEL = 433;
 const MAX_CRATES = 5;
-/** Патронов в одном ящике (списывается со склада Армии при взятии). */
+/** Ammunition per crate (deducted from Army storage when taken). */
 const AMMO_PER_CRATE = 100;
 const PAY_PER_CRATE = 75;
 
@@ -56,7 +56,7 @@ const SLOT_CRATE = 1;
 
 const LABEL_DRAW_DISTANCE = 40;
 const LABEL_OFFSET_Z = 2.5;
-/** Слегка жёлто-оранжевый текст лейбла груза. */
+/** Slightly yellow-orange text for cargo labels. */
 const LABEL_COLOR = 0xffaa33ff;
 
 const STOCK_POINT = {
@@ -83,7 +83,7 @@ const DROP_POINTS: readonly DropPoint[] = [
   },
   {
     orgId: ORG_POLICE_ID,
-    name: "Областная полиция",
+    name: "County Police",
     x: 618.8522,
     y: -586.4384,
     z: 17.233,
@@ -102,12 +102,12 @@ type TruckCargo = {
   label: TextLabel | null;
 };
 
-/** Источник ящика в руках: склад базы или id грузовика. */
+/** Source of the carried crate: base storage or truck ID. */
 type CarrySource = "stock" | number;
 
 type CarryState = {
   source: CarrySource;
-  /** Активный чекпоинт разгрузки (orgId), если рядом с точкой. */
+  /** Active unloading checkpoint (orgId), if near the point. */
   dropOrgId: number | null;
 };
 
@@ -123,7 +123,7 @@ export function isArmyAmmoCarrying(player: Player): boolean {
   return id !== null && carrying.has(id);
 }
 
-/** Привязать Barracks (433) к системе ящиков. */
+/** Link Barracks (433) to the crate system. */
 export function bindArmyAmmoTruck(vehicle: Vehicle): void {
   const id = liveVehicleId(vehicle);
   if (id === null) {
@@ -154,7 +154,7 @@ export function bindArmyAmmoDelivery(): void {
     STREET_WORLD
   );
   new TextLabel(
-    "Склад патронов\nЯщики для доставки",
+    "Ammunition storage\nDelivery crates",
     Color.info,
     STOCK_POINT.x,
     STOCK_POINT.y,
@@ -164,10 +164,10 @@ export function bindArmyAmmoDelivery(): void {
     false
   );
 
-  registerCommand("putammo", "Положить ящик с патронами в грузовик", (player) => {
+  registerCommand("putammo", "Put an ammunition crate into a truck", (player) => {
     onPutAmmo(player);
   });
-  registerCommand("takeammo", "Взять ящик с патронами из грузовика", (player) => {
+  registerCommand("takeammo", "Take an ammunition crate from a truck", (player) => {
     onTakeAmmo(player);
   });
 
@@ -186,12 +186,12 @@ export function bindArmyAmmoDelivery(): void {
       newState === PLAYER_STATE_DRIVER ||
       newState === PLAYER_STATE_PASSENGER
     ) {
-      returnCarried(player, "Вы сели в транспорт — патроны возвращены на склад.");
+      returnCarried(player, "You entered a vehicle — the ammunition was returned to storage.");
     }
   });
 
   omp.on("playerDeath", (player) => {
-    returnCarried(player, "Вы потеряли ящик — патроны возвращены на склад.");
+    returnCarried(player, "You lost the crate — the ammunition was returned to storage.");
   });
 
   omp.on("playerDisconnect", (player) => {
@@ -200,7 +200,7 @@ export function bindArmyAmmoDelivery(): void {
   });
 
   omp.on("playerConnect", (player) => {
-    // Слот мог остаться «грязным» после краша без disconnect — сначала возврат на склад.
+    // The slot may remain dirty after a crash without disconnect — return to storage first.
     returnCarried(player, null);
     clearPlayer(player);
   });
@@ -236,7 +236,7 @@ function tickDelivery(): void {
       tickStockPickup(player, id);
       tickDropProximity(player, id);
     } catch {
-      // Слот пустой.
+      // The slot is empty.
     }
   });
 }
@@ -268,7 +268,7 @@ function tickStockPickup(player: Player, id: number): void {
 
 function tryTakeFromStock(player: Player, id: number): void {
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "Ящики может брать только Армия.");
+    player.sendClientMessage(Color.error, "Only the Army can take crates.");
     return;
   }
 
@@ -277,11 +277,11 @@ function tryTakeFromStock(player: Player, id: number): void {
   }
 
   if (!takeWarehouseAmmo(ORG_ARMY_ID, AMMO_PER_CRATE)) {
-    // Снимаем «залипание» на пикапе, чтобы после пополнения склада можно было взять снова.
+    // Clear the pickup lock so it can be taken again after storage is replenished.
     atStock.delete(id);
     player.sendClientMessage(
       Color.error,
-      `На складе Армии недостаточно патронов (нужно ${AMMO_PER_CRATE}).`
+      `Not enough ammunition in Army storage (need ${AMMO_PER_CRATE}).`
     );
     return;
   }
@@ -290,7 +290,7 @@ function tryTakeFromStock(player: Player, id: number): void {
     addWarehouseAmmo(ORG_ARMY_ID, AMMO_PER_CRATE);
     refreshArmyAmmoStockLabel();
     atStock.delete(id);
-    player.sendClientMessage(Color.error, "Не удалось взять ящик. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Failed to take the crate. Try again.");
     return;
   }
 
@@ -298,7 +298,7 @@ function tryTakeFromStock(player: Player, id: number): void {
   carrying.set(id, { source: "stock", dropOrgId: null });
   player.sendClientMessage(
     Color.info,
-    `Ящик в руках (+${AMMO_PER_CRATE} патронов). Подойдите к Barracks и введите /putammo.`
+    `Crate in hand (+${AMMO_PER_CRATE} ammunition). Go to a Barracks and enter /putammo.`
   );
 }
 
@@ -326,7 +326,7 @@ function tickDropProximity(player: Player, id: number): void {
       atDrop.add(id);
       player.sendClientMessage(
         Color.info,
-        `Точка разгрузки: ${near.name}. Встаньте на чекпоинт.`
+        `Unloading point: ${near.name}. Stand on the checkpoint.`
       );
     }
   } catch {
@@ -351,7 +351,7 @@ function clearDropCheckpoint(player: Player, id: number): void {
   try {
     Checkpoint.disable(player);
   } catch {
-    // Уже выключен.
+    // Already disabled.
   }
 }
 
@@ -376,7 +376,7 @@ function onDropCheckpoint(player: Player): void {
   }
 
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "Разгружать может только Армия.");
+    player.sendClientMessage(Color.error, "Only the Army can unload.");
     return;
   }
 
@@ -386,7 +386,7 @@ function onDropCheckpoint(player: Player): void {
   try {
     Checkpoint.disable(player);
   } catch {
-    // Ок.
+    // OK.
   }
 
   const total = addWarehouseAmmo(drop.orgId, AMMO_PER_CRATE);
@@ -395,7 +395,7 @@ function onDropCheckpoint(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `${drop.name}: сдано +${AMMO_PER_CRATE} патронов (склад: ${total}). +$${PAY_PER_CRATE}`
+    `${drop.name}: delivered +${AMMO_PER_CRATE} ammunition (storage: ${total}). +$${PAY_PER_CRATE}`
   );
 }
 
@@ -410,19 +410,19 @@ function onPutAmmo(player: Player): void {
   }
 
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "Команда только для Армии.");
+    player.sendClientMessage(Color.error, "This command is for the Army only.");
     return;
   }
 
   const carry = carrying.get(id);
   if (!carry) {
-    player.sendClientMessage(Color.error, "У вас нет ящика в руках.");
+    player.sendClientMessage(Color.error, "You do not have a crate in hand.");
     return;
   }
 
   try {
     if (player.getState() !== PLAYER_STATE_ONFOOT) {
-      player.sendClientMessage(Color.error, "Нужно быть пешком у грузовика.");
+      player.sendClientMessage(Color.error, "You must be on foot near the truck.");
       return;
     }
   } catch {
@@ -431,7 +431,7 @@ function onPutAmmo(player: Player): void {
 
   const truck = nearestArmyTruck(player, TRUCK_RANGE);
   if (!truck) {
-    player.sendClientMessage(Color.error, "Рядом нет грузовика Barracks (433).");
+    player.sendClientMessage(Color.error, "No Barracks (433) truck is nearby.");
     return;
   }
 
@@ -449,7 +449,7 @@ function onPutAmmo(player: Player): void {
   if (cargo.crates >= MAX_CRATES) {
     player.sendClientMessage(
       Color.error,
-      `В грузовике уже максимум ящиков (${MAX_CRATES}).`
+      `The truck already has the maximum number of crates (${MAX_CRATES}).`
     );
     return;
   }
@@ -462,7 +462,7 @@ function onPutAmmo(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Ящик загружен. В кузове: ${cargo.crates}/${MAX_CRATES}.`
+    `Crate loaded. In the cargo bed: ${cargo.crates}/${MAX_CRATES}.`
   );
 }
 
@@ -477,18 +477,18 @@ function onTakeAmmo(player: Player): void {
   }
 
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "Команда только для Армии.");
+    player.sendClientMessage(Color.error, "This command is for the Army only.");
     return;
   }
 
   if (carrying.has(id)) {
-    player.sendClientMessage(Color.error, "У вас уже есть ящик в руках.");
+    player.sendClientMessage(Color.error, "You already have a crate in hand.");
     return;
   }
 
   try {
     if (player.getState() !== PLAYER_STATE_ONFOOT) {
-      player.sendClientMessage(Color.error, "Нужно быть пешком у грузовика.");
+      player.sendClientMessage(Color.error, "You must be on foot near the truck.");
       return;
     }
   } catch {
@@ -497,7 +497,7 @@ function onTakeAmmo(player: Player): void {
 
   const truck = nearestArmyTruck(player, TRUCK_RANGE);
   if (!truck) {
-    player.sendClientMessage(Color.error, "Рядом нет грузовика Barracks (433).");
+    player.sendClientMessage(Color.error, "No Barracks (433) truck is nearby.");
     return;
   }
 
@@ -509,7 +509,7 @@ function onTakeAmmo(player: Player): void {
   ensureTruck(truckId, truck);
   const cargo = trucks.get(truckId);
   if (!cargo || cargo.crates <= 0) {
-    player.sendClientMessage(Color.error, "В грузовике нет ящиков.");
+    player.sendClientMessage(Color.error, "There are no crates in the truck.");
     return;
   }
 
@@ -519,7 +519,7 @@ function onTakeAmmo(player: Player): void {
   if (!giveCrate(player)) {
     cargo.crates += 1;
     updateTruckLabel(truckId, cargo);
-    player.sendClientMessage(Color.error, "Не удалось взять ящик. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Failed to take the crate. Try again.");
     return;
   }
 
@@ -527,7 +527,7 @@ function onTakeAmmo(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Ящик в руках. В кузове осталось: ${cargo.crates}/${MAX_CRATES}.`
+    `Crate in hand. Remaining in the cargo bed: ${cargo.crates}/${MAX_CRATES}.`
   );
 }
 
@@ -548,10 +548,10 @@ function returnCarried(player: Player, message: string | null): void {
   try {
     Checkpoint.disable(player);
   } catch {
-    // Ок.
+    // OK.
   }
 
-  // Смерть / выход / посадка: патроны всегда обратно на склад Армии.
+  // Death / disconnect / entering a vehicle: ammunition always returns to Army storage.
   addWarehouseAmmo(ORG_ARMY_ID, AMMO_PER_CRATE);
   refreshArmyAmmoStockLabel();
 
@@ -654,7 +654,7 @@ function updateTruckLabel(truckId: number, cargo: TruckCargo): void {
 }
 
 function cratesLabelText(crates: number): string {
-  return `Загружено ящиков: ${crates}`;
+  return `Crates loaded: ${crates}`;
 }
 
 function destroyLabel(label: TextLabel | null): void {
@@ -665,7 +665,7 @@ function destroyLabel(label: TextLabel | null): void {
   try {
     label.destroy();
   } catch {
-    // Уже уничтожен.
+    // Already destroyed.
   }
 }
 
@@ -699,14 +699,14 @@ function clearCrate(player: Player): void {
   try {
     player.removeAttachedObject(SLOT_CRATE);
   } catch {
-    // Слота не было.
+    // The slot did not exist.
   }
 
   try {
     player.setSpecialAction(SPECIAL_ACTION_NONE);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -736,7 +736,7 @@ function nearestArmyTruck(player: Player, range: number): Vehicle | null {
         best = vehicle;
       }
     } catch {
-      // Уничтожен.
+      // Destroyed.
     }
   }
 

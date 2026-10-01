@@ -12,13 +12,13 @@ import { getMembership } from "../org";
 import { registerCommand } from "./registry";
 
 const BUBBLE_MS = 3000;
-const BUBBLE_TEXT = "Сообщение по рации.";
+const BUBBLE_TEXT = "Radio message.";
 
-registerCommand("r", "Рация организации", (player, args) => {
+registerCommand("r", "Organization radio", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership) {
-    player.sendClientMessage(Color.error, "Вы не состоите в организации.");
+    player.sendClientMessage(Color.error, "You are not a member of an organization.");
     return;
   }
 
@@ -28,7 +28,7 @@ registerCommand("r", "Рация организации", (player, args) => {
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Использование: /r [текст]");
+    player.sendClientMessage(Color.error, "Usage: /r [text]");
     return;
   }
 
@@ -59,13 +59,13 @@ registerCommand("r", "Рация организации", (player, args) => {
     try {
       other.sendClientMessage(Color.radio, line);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 
   try {
     player.setChatBubble(BUBBLE_TEXT, Color.radio, CHAT_RADIUS, BUBBLE_MS);
   } catch {
-    // Пузырь не обязателен.
+    // Bubble is optional.
   }
 });

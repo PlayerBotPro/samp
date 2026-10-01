@@ -1,6 +1,6 @@
 import { showSellHouseDialog } from "../houses/sell";
 import { registerCommand } from "./registry";
 
-registerCommand("sellhouse", "Продать дом государству", (player) => {
+registerCommand("sellhouse", "Sell a house to the state", (player) => {
   showSellHouseDialog(player);
 });

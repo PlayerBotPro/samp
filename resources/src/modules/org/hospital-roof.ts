@@ -21,7 +21,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Вы не состоите в больнице.";
+const DENY = "You are not a member of the hospital.";
 
 type StaffDoor = {
   pickup: { x: number; y: number; z: number; world: number };
@@ -40,7 +40,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Парковка\nНа крышу",
+    label: "Parking\nTo Roof",
   },
   {
     pickup: { x: 1161.5471, y: -1330.0697, z: 31.4935, world: STREET_WORLD },
@@ -52,7 +52,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Крыша\nНа парковку",
+    label: "Roof\nTo Parking",
   },
   {
     pickup: { x: 1147.801, y: -1317.7454, z: 13.6535, world: STREET_WORLD },
@@ -64,7 +64,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: HOSPITAL_WORLD,
     },
-    label: "Больница\nВход",
+    label: "Hospital\nEntrance",
   },
   {
     pickup: { x: 1148.1534, y: -1345.9833, z: 3001.0845, world: HOSPITAL_WORLD },
@@ -76,7 +76,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Выход на парковку",
+    label: "Exit to Parking",
   },
 ];
 
@@ -144,7 +144,7 @@ function tickStaffDoors(): void {
         }
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -152,7 +152,7 @@ function tickStaffDoors(): void {
 function tryUse(player: Player, dest: SpawnPoint): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+    deny(player, "You need treatment. Take a bed: /hospital.");
     return;
   }
 
@@ -181,7 +181,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -203,7 +203,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

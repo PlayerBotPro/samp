@@ -29,45 +29,45 @@ type GpsTarget = {
 };
 
 const TARGETS: readonly GpsTarget[] = [
-  { key: "hall", label: "Мэрия", x: 1481.1039, y: -1767.4878, z: 18.7958 },
+  { key: "hall", label: "City Hall", x: 1481.1039, y: -1767.4878, z: 18.7958 },
   {
     key: "hospital",
-    label: "Городская больница",
+    label: "City Hospital",
     x: 1177.869,
     y: -1323.4761,
     z: 14.092,
   },
   {
     key: "mine",
-    label: "Шахта",
+    label: "Mine",
     x: 1023.8627,
     y: -368.1405,
     z: 73.8935,
   },
   {
     key: "loader",
-    label: "Склад (грузчик)",
+    label: "Warehouse (Loader)",
     x: 2236.532,
     y: -2212.7854,
     z: 13.5469,
   },
   {
     key: "station",
-    label: "ЖД ЛС",
+    label: "LS Railway Station",
     x: 1814.2401,
     y: -1889.4424,
     z: 13.4141,
   },
   {
     key: "prison",
-    label: "Тюрьма",
+    label: "Prison",
     x: 1810.8636,
     y: -1576.4412,
     z: 13.5167,
   },
   {
     key: "police",
-    label: "Областная полиция",
+    label: "County Police",
     x: 635.6895,
     y: -571.6663,
     z: 16.3359,
@@ -88,14 +88,14 @@ const TARGETS: readonly GpsTarget[] = [
   },
   {
     key: "autoschool",
-    label: "Автошкола",
+    label: "Driving School",
     x: 738.8304,
     y: -1412.7374,
     z: 13.5284,
   },
   {
     key: "bank",
-    label: "Банк",
+    label: "Bank",
     x: 1458.5426,
     y: -1024.3342,
     z: 23.8281,
@@ -116,7 +116,7 @@ const TARGETS: readonly GpsTarget[] = [
   },
   {
     key: "russian_mafia",
-    label: "Русская мафия",
+    label: "Russian Mafia",
     x: 962.1949,
     y: -946.551,
     z: 40.2929,
@@ -178,7 +178,7 @@ export function showGpsMenu(player: Player): void {
   const id = playerId(player);
   if (id !== null && activeByPlayer.has(id)) {
     clearRoute(player, id);
-    player.sendClientMessage(Color.gray, "Вы отключили GPS.");
+    player.sendClientMessage(Color.gray, "You disabled GPS.");
     return;
   }
 
@@ -190,11 +190,11 @@ export function showGpsMenu(player: Player): void {
       DIALOG_STYLE_LIST,
       "GPS",
       body,
-      "Выбрать",
-      "Закрыть"
+      "Select",
+      "Close"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть GPS.");
+    player.sendClientMessage(Color.error, "Unable to open GPS.");
   }
 }
 
@@ -256,7 +256,7 @@ function setRoute(player: Player, target: GpsTarget): void {
       Checkpoint.set(player, target.x, target.y, target.z, CHECKPOINT_RADIUS);
     }
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось поставить метку.");
+    player.sendClientMessage(Color.error, "Unable to set the marker.");
     return;
   }
 
@@ -267,7 +267,7 @@ function setRoute(player: Player, target: GpsTarget): void {
   );
   player.sendClientMessage(
     Color.info,
-    `Метка: ${target.label}. Дистанция: ${meters} m.`
+    `Marker: ${target.label}. Distance: ${meters} m.`
   );
 }
 
@@ -302,7 +302,7 @@ function tickGps(): void {
         Checkpoint.set(player, target.x, target.y, target.z, CHECKPOINT_RADIUS);
       }
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
   });
 }
@@ -321,7 +321,7 @@ function arrive(player: Player): void {
   clearRoute(player, id);
   player.sendClientMessage(
     Color.info,
-    `Вы прибыли к месту: ${target.label}.`
+    `You arrived at: ${target.label}.`
   );
 }
 
@@ -339,6 +339,6 @@ function clearRoute(player: Player, id: number): void {
       Checkpoint.disable(player);
     }
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }

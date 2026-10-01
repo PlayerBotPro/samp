@@ -45,7 +45,7 @@ export function bindHouseMenuDialogs(): void {
 
       const house = findOwnedHouseAtInterior(player);
       if (!house || house.ownerId !== account.id) {
-        player.sendClientMessage(Color.error, "Меню дома доступно только внутри вашего дома.");
+        player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
         return;
       }
 
@@ -94,14 +94,14 @@ export function bindHouseMenuDialogs(): void {
 export function showHouseMenu(player: Player): void {
   const house = findOwnedHouseAtInterior(player);
   if (!house) {
-    player.sendClientMessage(Color.error, "Меню дома доступно только внутри вашего дома.");
+    player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
     return;
   }
 
   const items = [
-    `Статус (${houseLockStatusLabel(house.isLocked)})`,
-    "Аптечка",
-    "Информация",
+    `Status (${houseLockStatusLabel(house.isLocked)})`,
+    "Medkit",
+    "Information",
   ];
 
   try {
@@ -109,13 +109,13 @@ export function showHouseMenu(player: Player): void {
       player,
       HOUSE_MENU_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      `${MENU_TITLE}Меню дома`,
+      `${MENU_TITLE}House menu`,
       items.join("\n"),
-      "Выбрать",
-      "Закрыть"
+      "Select",
+      "Close"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть меню дома.");
+    player.sendClientMessage(Color.error, "Could not open the house menu.");
   }
 }
 
@@ -127,7 +127,7 @@ async function toggleHouseLock(player: Player, houseId: number): Promise<void> {
 
   const house = findOwnedHouseAtInterior(player);
   if (!house || house.id !== houseId || house.ownerId !== account.id) {
-    player.sendClientMessage(Color.error, "Меню дома доступно только внутри вашего дома.");
+    player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
     return;
   }
 
@@ -143,20 +143,20 @@ async function toggleHouseLock(player: Player, houseId: number): Promise<void> {
     saved = await saveHouseLock(houseId, account.id, nextLocked);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] замок дома ${houseId} (${account.name}): ${message}`);
+    omp.log(`[${SERVER_TAG}] house lock ${houseId} (${account.name}): ${message}`);
   } finally {
     savingLock.delete(account.id);
   }
 
   if (!saved) {
-    player.sendClientMessage(Color.error, "Не удалось изменить статус дома.");
+    player.sendClientMessage(Color.error, "Could not change house status.");
     return;
   }
 
   setHouseLock(houseId, nextLocked);
   player.sendClientMessage(
     Color.info,
-    nextLocked ? "Дом закрыт." : "Дом открыт."
+    nextLocked ? "The house is locked." : "The house is open."
   );
   showHouseMenu(player);
 }
@@ -173,12 +173,12 @@ async function openMedkitFlow(player: Player, houseId: number): Promise<void> {
   }
 
   if (!findOwnedHouseAtInterior(player)) {
-    player.sendClientMessage(Color.error, "Меню дома доступно только внутри вашего дома.");
+    player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
     return;
   }
 
   if (house.hasMedkit) {
-    player.sendClientMessage(Color.info, "В доме уже есть аптечка.");
+    player.sendClientMessage(Color.info, "The house already has a medkit.");
     showHouseMenu(player);
     return;
   }
@@ -189,14 +189,14 @@ async function openMedkitFlow(player: Player, houseId: number): Promise<void> {
       player,
       HOUSE_MEDKIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Аптечка",
-      `Купить аптечку за $${MEDKIT_PRICE}?`,
-      "Купить",
-      "Отмена"
+      "Medkit",
+      `Buy a medkit for $${MEDKIT_PRICE}?`,
+      "Buy",
+      "Cancel"
     );
   } catch {
     pendingMedkitHouse.delete(account.id);
-    player.sendClientMessage(Color.error, "Не удалось открыть покупку аптечки.");
+    player.sendClientMessage(Color.error, "Could not open the medkit purchase.");
   }
 }
 
@@ -212,18 +212,18 @@ async function buyMedkit(player: Player, houseId: number): Promise<void> {
   }
 
   if (!findOwnedHouseAtInterior(player)) {
-    player.sendClientMessage(Color.error, "Покупка доступна только внутри вашего дома.");
+    player.sendClientMessage(Color.error, "Purchase is available only inside your house.");
     return;
   }
 
   if (house.hasMedkit) {
-    player.sendClientMessage(Color.info, "В доме уже есть аптечка.");
+    player.sendClientMessage(Color.info, "The house already has a medkit.");
     return;
   }
 
   const cash = Math.max(0, Math.floor(account.money));
   if (cash < MEDKIT_PRICE) {
-    player.sendClientMessage(Color.error, "Недостаточно наличных.");
+    player.sendClientMessage(Color.error, "Not enough cash.");
     return;
   }
 
@@ -238,23 +238,23 @@ async function buyMedkit(player: Player, houseId: number): Promise<void> {
   } catch (error: unknown) {
     buyingMedkit.delete(account.id);
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] аптечка дома ${houseId} (${account.name}): ${message}`);
-    player.sendClientMessage(Color.error, "Покупка не прошла. Попробуйте ещё раз.");
+    omp.log(`[${SERVER_TAG}] house medkit ${houseId} (${account.name}): ${message}`);
+    player.sendClientMessage(Color.error, "Purchase failed. Try again.");
     return;
   }
   buyingMedkit.delete(account.id);
 
   if (!result.ok) {
     if (result.reason === "exists") {
-      player.sendClientMessage(Color.info, "В доме уже есть аптечка.");
+      player.sendClientMessage(Color.info, "The house already has a medkit.");
       setHouseMedkit(houseId, true);
       return;
     }
     if (result.reason === "funds") {
-      player.sendClientMessage(Color.error, "Недостаточно наличных.");
+      player.sendClientMessage(Color.error, "Not enough cash.");
       return;
     }
-    player.sendClientMessage(Color.error, "Покупка не прошла. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Purchase failed. Try again.");
     return;
   }
 
@@ -271,10 +271,10 @@ async function buyMedkit(player: Player, houseId: number): Promise<void> {
 
   void saveUserMoney(account.id, result.cashLeft, account.bank).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить деньги ${account.name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] could not save money for ${account.name}: ${message}`);
   });
 
-  player.sendClientMessage(Color.info, `Аптечка куплена за $${MEDKIT_PRICE}.`);
+  player.sendClientMessage(Color.info, `Medkit purchased for $${MEDKIT_PRICE}.`);
   showHouseMenu(player);
 }
 
@@ -286,9 +286,9 @@ function showHouseInfoDialog(player: Player, house: ReturnType<typeof findOwnedH
   const daysLeft = rentDaysRemaining(house.rentPaidUntil);
   const rentLines = buildRentInfoLines(house.rentPaidUntil, daysLeft);
   const body = [
-    `${MENU_LABEL}Номер дома:\t\t${MENU_VALUE}${house.id}`,
-    `${MENU_LABEL}Класс:\t\t\t${MENU_VALUE}${houseClassLabel(house.classId)}`,
-    `${MENU_LABEL}Гос. стоимость:\t${MENU_VALUE}$${house.price}`,
+    `${MENU_LABEL}House number:\t\t${MENU_VALUE}${house.id}`,
+    `${MENU_LABEL}Class:\t\t\t${MENU_VALUE}${houseClassLabel(house.classId)}`,
+    `${MENU_LABEL}State price:\t${MENU_VALUE}$${house.price}`,
     ...rentLines,
   ].join("\n");
 
@@ -297,13 +297,13 @@ function showHouseInfoDialog(player: Player, house: ReturnType<typeof findOwnedH
       player,
       HOUSE_INFO_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${MENU_TITLE}Информация о доме`,
+      `${MENU_TITLE}House information`,
       body,
-      "Назад",
+      "Back",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть информацию о доме.");
+    player.sendClientMessage(Color.error, "Could not open house information.");
   }
 }
 
@@ -312,11 +312,11 @@ function buildRentInfoLines(
   daysLeft: number | null
 ): string[] {
   if (rentPaidUntil === null) {
-    return [`${MENU_LABEL}Оплата:\t\t${MENU_VALUE}не оплачен`];
+    return [`${MENU_LABEL}Payment:\t\t${MENU_VALUE}unpaid`];
   }
 
   const lines = [
-    `${MENU_LABEL}Оплачено до:\t\t${MENU_VALUE}${formatRentDate(rentPaidUntil)}`,
+    `${MENU_LABEL}Paid through:\t\t${MENU_VALUE}${formatRentDate(rentPaidUntil)}`,
   ];
 
   if (daysLeft === null) {
@@ -324,12 +324,12 @@ function buildRentInfoLines(
   }
 
   if (daysLeft === 0) {
-    lines.push(`${MENU_LABEL}Срок:\t\t\t${MENU_VALUE}сегодня последний день`);
+    lines.push(`${MENU_LABEL}Deadline:\t\t\t${MENU_VALUE}today is the last day`);
     return lines;
   }
 
   lines.push(
-    `${MENU_LABEL}Осталось:\t\t${MENU_VALUE}${daysLeft} ${rentDaysLeftLabel(daysLeft)}`
+    `${MENU_LABEL}Remaining:\t\t${MENU_VALUE}${daysLeft} ${rentDaysLeftLabel(daysLeft)}`
   );
   return lines;
 }

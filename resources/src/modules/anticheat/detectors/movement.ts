@@ -53,7 +53,7 @@ export function checkMovement(player: Player): void {
   const inVeh =
     pState === PLAYER_STATE.driver || pState === PLAYER_STATE.passenger;
 
-  // Ожидаемый путь с запасом на лаг (velocity SA → м/с ≈ speed/179).
+  // Expected distance with lag allowance (SA velocity → m/s ≈ speed/179).
   const expected = (speed / 179.28625) * dtSec * 2.2 + 2.5;
 
   if (!inVeh && isCodeEnabled(AcCode.SpeedHackFoot) && speed > cfg.speedFootMax) {

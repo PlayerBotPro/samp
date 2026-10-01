@@ -275,7 +275,7 @@ function resumeIfAfk(player: Player, track: Track, now: number): void {
     track.fromPause = false;
     player.sendClientMessage(
       Color.info,
-      `Вы простояли в AFK ${formatSpoken(lasted)}.`
+      `You were AFK for ${formatSpoken(lasted)}.`
     );
   }
 
@@ -325,12 +325,12 @@ function formatSpoken(ms: number): string {
   const s = total % 60;
   const parts: string[] = [];
   if (h > 0) {
-    parts.push(`${h} ч`);
+    parts.push(`${h} h`);
   }
   if (m > 0 || h > 0) {
-    parts.push(`${m} мин`);
+    parts.push(`${m} min`);
   }
-  parts.push(`${s} сек`);
+  parts.push(`${s} sec`);
   return parts.join(" ");
 }
 

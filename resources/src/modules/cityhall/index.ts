@@ -93,7 +93,7 @@ export const cityHallModule: GameModule = {
     );
 
     new TextLabel(
-      "Мэрия\nВход",
+      "City Hall\nEntrance",
       Color.info,
       STREET_PICKUP.x,
       STREET_PICKUP.y,
@@ -103,7 +103,7 @@ export const cityHallModule: GameModule = {
       false
     );
     new TextLabel(
-      "Выход на улицу",
+      "Exit to street",
       Color.info,
       INTERIOR_PICKUP.x,
       INTERIOR_PICKUP.y,
@@ -123,7 +123,7 @@ export const cityHallModule: GameModule = {
     );
 
     new TextLabel(
-      "Получить паспорт",
+      "Get passport",
       Color.info,
       PASSPORT_PICKUP.x,
       PASSPORT_PICKUP.y,
@@ -160,7 +160,7 @@ function spawnPassportClerk(): void {
   actor.setInvulnerable(true);
 
   new TextLabel(
-    "Паспортистка\nВыдача документов",
+    "Passport clerk\nDocument issuance",
     Color.info,
     PASSPORT_CLERK.x,
     PASSPORT_CLERK.y,
@@ -229,7 +229,7 @@ function tickCityHall(): void {
         tryGivePassport(player);
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -268,7 +268,7 @@ function updateIcon(
       );
       iconShown.add(id);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
     return;
   }
@@ -280,7 +280,7 @@ function updateIcon(
   try {
     player.removeMapIcon(MAP_ICON_SLOT);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
   iconShown.delete(id);
 }
@@ -318,7 +318,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -338,19 +338,19 @@ function tryGivePassport(player: Player): void {
   lastPassportMsgAt.set(id, now);
 
   if (account.passport) {
-    player.sendClientMessage(Color.gray, "У вас уже есть паспорт.");
+    player.sendClientMessage(Color.gray, "You already have a passport.");
     return;
   }
 
   patchAccount(player, { passport: true });
   void saveUserPassport(account.id).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить паспорт ${account.name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] failed to save passport for ${account.name}: ${message}`);
   });
 
-  player.sendClientMessage(Color.info, "Вы получили паспорт Los Santos.");
+  player.sendClientMessage(Color.info, "You received a Los Santos passport.");
   player.sendClientMessage(
     Color.gray,
-    "/pass — посмотреть, /pass [id] — показать другому."
+    "/pass — view, /pass [id] — show another player."
   );
 }

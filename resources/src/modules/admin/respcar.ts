@@ -18,7 +18,7 @@ function broadcastAll(color: number, text: string): void {
     try {
       other.sendClientMessage(color, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -47,7 +47,7 @@ function occupiedVehicleIds(): Set<number> {
         ids.add(id);
       }
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
   return ids;
@@ -68,7 +68,7 @@ function respawnEmptyVehicles(): void {
 
       vehicle.setToRespawn();
     } catch {
-      // Транспорт уже уничтожен.
+      // Vehicle is already destroyed.
     }
   }
 }
@@ -76,7 +76,7 @@ function respawnEmptyVehicles(): void {
 export function bindAdminRespcar(): void {
   registerCommand(
     "respcar",
-    "Респаун всех машин через 30 секунд",
+    "Respawn all vehicles in 30 seconds",
     (player) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -85,7 +85,7 @@ export function bindAdminRespcar(): void {
       if (pending) {
         player.sendClientMessage(
           Color.error,
-          "Таймер респауна транспорта уже запущен."
+          "Vehicle respawn timer is already running."
         );
         return;
       }
@@ -93,7 +93,7 @@ export function bindAdminRespcar(): void {
       const tag = playerChatName(player);
       broadcastAll(
         Color.info,
-        `Администратор ${tag} запустил респаун транспорта. Машины без игроков вернутся на точки через 30 секунд.`
+        `Administrator ${tag} started a vehicle respawn. Unoccupied vehicles will return to their spawn points in 30 seconds.`
       );
 
       pending = setTimeout(() => {
@@ -101,7 +101,7 @@ export function bindAdminRespcar(): void {
         respawnEmptyVehicles();
         broadcastAll(
           Color.info,
-          `Администратор ${tag} респавнил весь свободный транспорт на сервере.`
+          `Administrator ${tag} respawned all unoccupied vehicles on the server.`
         );
       }, DELAY_MS);
     },

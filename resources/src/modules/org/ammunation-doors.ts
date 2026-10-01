@@ -9,7 +9,7 @@ import { ORG_FBI_ID } from "./fbi";
 import { ORG_LSPD_ID } from "./lspd";
 import { getMembership } from "./membership";
 
-/** Общий интерьер аммунации; VW = org_id склада (1 армия, 4 полиция, 5 LSPD, 6 FBI). */
+/** Shared ammunation interior; VW = warehouse org_id (1 Army, 4 Police, 5 LSPD, 6 FBI). */
 export const AMMUNATION_INTERIOR = 6;
 
 const PICKUP_MODEL = 19132;
@@ -40,7 +40,7 @@ type AmmoDoor = {
   pickup: { x: number; y: number; z: number; interior: number; world: number };
   dest: SpawnPoint;
   label: string;
-  /** null = выход, проверка органа не нужна */
+  /** null = exit; organization check not required */
   allowedOrgIds: readonly number[] | null;
   denyMessage: string;
 };
@@ -76,7 +76,7 @@ function ammoBranch(
         world: orgId,
       },
       dest: streetExit,
-      label: "Выход",
+      label: "Exit",
       allowedOrgIds: null,
       denyMessage,
     },
@@ -89,7 +89,7 @@ const ARMY_ALLOWED = [ORG_ARMY_ID, ORG_FBI_ID] as const;
 const DOORS: readonly AmmoDoor[] = [
   ...ammoBranch(
     ORG_LSPD_ID,
-    "Аммунация\nLSPD",
+    "Ammunation\nLSPD",
     { x: 1568.6284, y: -1690.084, z: 6.2188 },
     {
       x: 1568.538,
@@ -100,11 +100,11 @@ const DOORS: readonly AmmoDoor[] = [
       world: STREET_WORLD,
     },
     LSPD_ARMY_ALLOWED,
-    "Войти могут сотрудники LSPD и FBI."
+    "LSPD and FBI personnel can enter."
   ),
   ...ammoBranch(
     ORG_ARMY_ID,
-    "Аммунация\nАрмия",
+    "Ammunation\nArmy",
     { x: 2721.2046, y: -2380.3906, z: 17.3403 },
     {
       x: 2721.2527,
@@ -115,7 +115,7 @@ const DOORS: readonly AmmoDoor[] = [
       world: STREET_WORLD,
     },
     ARMY_ALLOWED,
-    "Войти могут сотрудники Армии и FBI."
+    "Army and FBI personnel can enter."
   ),
 ];
 
@@ -179,7 +179,7 @@ function tickAmmunationDoors(): void {
         }
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -188,7 +188,7 @@ function tryUse(player: Player, door: AmmoDoor): void {
   if (door.allowedOrgIds) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+      deny(player, "You need treatment. Take a bed: /hospital.");
       return;
     }
 
@@ -219,7 +219,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -241,7 +241,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

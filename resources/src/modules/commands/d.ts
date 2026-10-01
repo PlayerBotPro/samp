@@ -12,22 +12,22 @@ import { getMembership } from "../org";
 import { registerCommand } from "./registry";
 
 const BUBBLE_MS = 3000;
-const BUBBLE_TEXT = "Сообщение по департаменту.";
+const BUBBLE_TEXT = "Department message.";
 
-registerCommand("d", "Рация департамента", (player, args) => {
+registerCommand("d", "Department radio", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership || !membership.org.gov) {
     player.sendClientMessage(
       Color.error,
-      "Вы не состоите в государственной организации."
+      "You are not a member of a government organization."
     );
     return;
   }
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Использование: /d [текст]");
+    player.sendClientMessage(Color.error, "Usage: /d [text]");
     return;
   }
 
@@ -57,13 +57,13 @@ registerCommand("d", "Рация департамента", (player, args) => {
     try {
       other.sendClientMessage(Color.dept, line);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 
   try {
     player.setChatBubble(BUBBLE_TEXT, Color.dept, CHAT_RADIUS, BUBBLE_MS);
   } catch {
-    // Пузырь не обязателен.
+    // Bubble is optional.
   }
 });

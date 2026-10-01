@@ -25,21 +25,21 @@ import { createServerVehicle } from "./spawn";
 export const HOSPITAL_MED_DELIVERY_DIALOG_ID = 62;
 
 const RESPAWN_SEC = 100;
-const DENY = "Вы не состоите в больнице.";
+const DENY = "You are not a member of the hospital.";
 const PLAYER_STATE_ONFOOT = 1;
 const PLAYER_STATE_DRIVER = 2;
 const DIALOG_STYLE_MSGBOX = 0;
 const CHECKPOINT_RADIUS = 4;
 const LABEL_DRAW_DISTANCE = 40;
 const LABEL_OFFSET_Z = 2.35;
-/** Время автоматической загрузки на складе поставщика. */
+/** Automatic loading time at the supplier's warehouse. */
 const LOAD_SEC = 12;
 const LOAD_TICK_MS = 1000;
-/** Сколько медикаментов грузится за один рейс. */
+/** Amount of medication loaded per trip. */
 const LOAD_AMOUNT = 50;
-/** В одной коробке при разгрузке. */
+/** Amount in each box during unloading. */
 const BOX_AMOUNT = 10;
-/** Оплата за сдачу одной коробки на склад. */
+/** Payment for delivering one box to the warehouse. */
 const PAY_PER_BOX = 40;
 const PICK_RANGE = 6;
 const STOCK_RADIUS = 1.8;
@@ -50,7 +50,7 @@ const SPECIAL_ACTION_CARRY = 25;
 const SLOT_BOX = 1;
 const BOX_MODEL = 1580;
 
-const LABEL_TITLE = "{FFFFFF}Доставка {FF0000}лекарств";
+const LABEL_TITLE = "{FFFFFF}Medication {FF0000}delivery";
 
 const MED_VAN = {
   model: 428,
@@ -62,22 +62,22 @@ const MED_VAN = {
   color2: 3,
 } as const;
 
-/** Склад поставщика — сюда едем за грузом. */
+/** Supplier warehouse — collect the cargo here. */
 const LOAD_POINT = {
   x: 1351.3651,
   y: 355.8297,
   z: 20.1462,
 } as const;
 
-/** Парковка фургона у больницы — сюда возвращаемся после загрузки. */
+/** Hospital van parking — return here after loading. */
 const RETURN_POINT = {
   x: MED_VAN.x,
   y: MED_VAN.y,
   z: MED_VAN.z,
 } as const;
-/** Фургон считается на базе, если в этом радиусе от парковки. */
+/** The van is considered at base within this radius of the parking spot. */
 const PARK_RANGE = 18;
-/** Допуск к чекпоинту загрузки/возврата (не чужой CP). */
+/** Access range for loading/return checkpoints (not another player's checkpoint). */
 const CP_VERIFY_RANGE = 12;
 
 const HOSPITAL_VEHICLES: ReadonlyArray<{
@@ -109,11 +109,11 @@ type DeliveryJob = {
 
 let medVanId: number | null = null;
 let medVanLabel: TextLabel | null = null;
-/** Текущий груз фургона (ед. медикаментов). */
+/** Current van cargo (units of medication). */
 let vanMeds = 0;
 const offerPending = new Set<number>();
 const jobs = new Map<number, DeliveryJob>();
-/** Игрок несёт коробку: сколько ед. в руках. */
+/** Amount of medication in the box the player is carrying. */
 const carrying = new Map<number, number>();
 const atStock = new Set<number>();
 
@@ -172,7 +172,7 @@ function bindMedVan(vehicle: Vehicle): void {
 }
 
 function bindMedDelivery(): void {
-  registerCommand("pickmed", "Взять коробку медикаментов из фургона", (player) => {
+  registerCommand("pickmed", "Take a box of medication from the van", (player) => {
     onPickMed(player);
   });
 
@@ -184,7 +184,7 @@ function bindMedDelivery(): void {
       return;
     }
 
-    abortAllDeliveryJobs("Фургон доставки был зареспавнен. Рейс отменён.");
+    abortAllDeliveryJobs("The delivery van has respawned. The trip was cancelled.");
     vanMeds = 0;
     attachMedVanLabel(vehicle);
   });
@@ -195,7 +195,7 @@ function bindMedDelivery(): void {
       if (id !== null) {
         const job = jobs.get(id);
         if (job?.phase === "loading") {
-          cancelLoading(player, id, "Загрузка прервана: вы покинули фургон.");
+          cancelLoading(player, id, "Loading cancelled: you left the van.");
         }
       }
       return;
@@ -203,7 +203,7 @@ function bindMedDelivery(): void {
 
     const id = playerId(player);
     if (id !== null && carrying.has(id)) {
-      returnCarriedToVan(player, id, "Вы сели в транспорт — коробка возвращена в фургон.");
+      returnCarriedToVan(player, id, "You entered a vehicle — the box was returned to the van.");
     }
 
     tryOfferDelivery(player);
@@ -224,7 +224,7 @@ function bindMedDelivery(): void {
   omp.on("playerDeath", (player) => {
     const id = playerId(player);
     if (id !== null && carrying.has(id)) {
-      returnCarriedToVan(player, id, "Вы потеряли коробку — медикаменты возвращены в фургон.");
+      returnCarriedToVan(player, id, "You lost the box — the medication was returned to the van.");
     }
   });
 
@@ -263,7 +263,7 @@ function destroyMedVanLabel(): void {
   try {
     medVanLabel.destroy();
   } catch {
-    // Уже уничтожен.
+    // Already destroyed.
   }
 
   medVanLabel = null;
@@ -283,14 +283,14 @@ function updateMedVanLabel(text: string): void {
 
 function medsLabelText(meds: number, loading = false): string {
   if (loading) {
-    return `${LABEL_TITLE}\n{FFAA00}Загрузка: ${meds}/${LOAD_AMOUNT}`;
+    return `${LABEL_TITLE}\n{FFAA00}Loading: ${meds}/${LOAD_AMOUNT}`;
   }
 
   if (meds <= 0) {
-    return `${LABEL_TITLE}\n{FFAA00}Медикаменты: 0`;
+    return `${LABEL_TITLE}\n{FFAA00}Medication: 0`;
   }
 
-  return `${LABEL_TITLE}\n{33CC66}Медикаменты: ${meds}`;
+  return `${LABEL_TITLE}\n{33CC66}Medication: ${meds}`;
 }
 
 function loadedAmountForTick(loadLeft: number): number {
@@ -308,7 +308,7 @@ function tryOfferDelivery(player: Player): void {
     return;
   }
 
-  // Один рейс на фургон: иначе второй курьер залипает с чекпоинтом.
+  // One trip per van; otherwise the second courier gets stuck with a checkpoint.
   if (jobs.size > 0 || offerPending.size > 0) {
     return;
   }
@@ -331,11 +331,11 @@ function tryOfferDelivery(player: Player): void {
       player,
       HOSPITAL_MED_DELIVERY_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Доставка лекарств",
-      `Фургон пуст. Загрузить ${LOAD_AMOUNT} ед. медикаментов у поставщика?\n` +
-        `После возврата разгружайте коробками по ${BOX_AMOUNT} ед. (/pickmed).`,
-      "Принять",
-      "Отмена"
+      "Medication delivery",
+      `The van is empty. Load ${LOAD_AMOUNT} units of medication from the supplier?\n` +
+        `After returning, unload in boxes of ${BOX_AMOUNT} units (/pickmed).`,
+      "Accept",
+      "Cancel"
     );
   } catch {
     offerPending.delete(id);
@@ -356,20 +356,20 @@ function onOfferResponse(player: Player, accepted: boolean): void {
   }
 
   if (!isInMedVanAsDriver(player)) {
-    player.sendClientMessage(Color.error, "Вы должны быть за рулём фургона доставки.");
+    player.sendClientMessage(Color.error, "You must be driving the delivery van.");
     return;
   }
 
   if (vanMeds > 0) {
     player.sendClientMessage(
       Color.error,
-      `Фургон уже загружен (${vanMeds} ед.). Сначала разгрузите его.`
+      `The van is already loaded (${vanMeds} units). Unload it first.`
     );
     return;
   }
 
   if (jobs.size > 0) {
-    player.sendClientMessage(Color.error, "Фургон уже занят другим рейсом.");
+    player.sendClientMessage(Color.error, "The van is already assigned to another trip.");
     return;
   }
 
@@ -378,11 +378,11 @@ function onOfferResponse(player: Player, accepted: boolean): void {
     Checkpoint.set(player, LOAD_POINT.x, LOAD_POINT.y, LOAD_POINT.z, CHECKPOINT_RADIUS);
     player.sendClientMessage(
       Color.info,
-      `Доставка начата. Заберите ${LOAD_AMOUNT} ед. медикаментов у поставщика.`
+      `Delivery started. Collect ${LOAD_AMOUNT} units of medication from the supplier.`
     );
   } catch {
     jobs.delete(id);
-    player.sendClientMessage(Color.error, "Не удалось поставить чекпоинт.");
+    player.sendClientMessage(Color.error, "Failed to set the checkpoint.");
   }
 }
 
@@ -415,7 +415,7 @@ function onDeliveryCheckpoint(player: Player): void {
 
 function startLoading(player: Player, id: number, job: DeliveryJob): void {
   if (!isInMedVanAsDriver(player)) {
-    player.sendClientMessage(Color.error, "Загрузка только из фургона доставки.");
+    player.sendClientMessage(Color.error, "Loading is only available from the delivery van.");
     return;
   }
 
@@ -428,11 +428,11 @@ function startLoading(player: Player, id: number, job: DeliveryJob): void {
     try {
       Checkpoint.disable(player);
     } catch {
-      // Уже снят.
+      // Already removed.
     }
     player.sendClientMessage(
       Color.error,
-      "Фургон уже загружен. Ваш рейс к поставщику отменён."
+      "The van is already loaded. Your trip to the supplier was cancelled."
     );
     return;
   }
@@ -440,7 +440,7 @@ function startLoading(player: Player, id: number, job: DeliveryJob): void {
   try {
     Checkpoint.disable(player);
   } catch {
-    // Уже снят.
+    // Already removed.
   }
 
   vanMeds = 0;
@@ -451,13 +451,13 @@ function startLoading(player: Player, id: number, job: DeliveryJob): void {
   try {
     player.toggleControllable(false);
   } catch {
-    cancelLoading(player, id, "Не удалось начать загрузку.");
+    cancelLoading(player, id, "Failed to start loading.");
     return;
   }
 
   player.sendClientMessage(
     Color.info,
-    `Идёт загрузка ${LOAD_AMOUNT} ед. медикаментов. Оставайтесь в фургоне (${LOAD_SEC} сек.).`
+    `Loading ${LOAD_AMOUNT} units of medication. Stay in the van (${LOAD_SEC} sec).`
   );
 
   if (job.loadTimer) {
@@ -481,7 +481,7 @@ function tickLoading(player: Player, expectedId: number): void {
   }
 
   if (!isPlayerActive(player) || !isInMedVanAsDriver(player)) {
-    cancelLoading(player, id, "Загрузка прервана: вы покинули фургон.");
+    cancelLoading(player, id, "Loading cancelled: you left the van.");
     return;
   }
 
@@ -509,7 +509,7 @@ function finishLoading(player: Player, id: number, job: DeliveryJob): void {
   try {
     player.toggleControllable(true);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 
   if (!isPlayerActive(player)) {
@@ -527,10 +527,10 @@ function finishLoading(player: Player, id: number, job: DeliveryJob): void {
     );
     player.sendClientMessage(
       Color.info,
-      `Загружено ${vanMeds} ед. медикаментов. Вернитесь к парковке больницы.`
+      `Loaded ${vanMeds} units of medication. Return to the hospital parking area.`
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось поставить чекпоинт возврата.");
+    player.sendClientMessage(Color.error, "Failed to set the return checkpoint.");
   }
 }
 
@@ -545,17 +545,17 @@ function finishReturn(player: Player, id: number): void {
   try {
     Checkpoint.disable(player);
   } catch {
-    // Уже снят.
+    // Already removed.
   }
 
   const boxes = Math.ceil(vanMeds / BOX_AMOUNT);
   player.sendClientMessage(
     Color.info,
-    `Вы на парковке. В фургоне ${vanMeds} ед. — ${boxes} коробок по ${BOX_AMOUNT}.`
+    `You are at the parking area. The van has ${vanMeds} units — ${boxes} boxes of ${BOX_AMOUNT}.`
   );
   player.sendClientMessage(
     Color.info,
-    "Выйдите из машины, возьмите коробку: /pickmed и отнесите на склад в служебном блоке."
+    "Exit the vehicle, take a box with /pickmed, and carry it to the warehouse in the service block."
   );
 }
 
@@ -575,18 +575,18 @@ function onPickMed(player: Player): void {
   }
 
   if (carrying.has(id)) {
-    player.sendClientMessage(Color.error, "У вас уже есть коробка. Отнесите её на склад.");
+    player.sendClientMessage(Color.error, "You already have a box. Take it to the warehouse.");
     return;
   }
 
   if (vanMeds <= 0) {
-    player.sendClientMessage(Color.error, "В фургоне нет медикаментов.");
+    player.sendClientMessage(Color.error, "The van has no medication.");
     return;
   }
 
   try {
     if (player.getState() !== PLAYER_STATE_ONFOOT) {
-      player.sendClientMessage(Color.error, "Выйдите из транспорта, чтобы взять коробку.");
+      player.sendClientMessage(Color.error, "Exit the vehicle to take a box.");
       return;
     }
   } catch {
@@ -594,14 +594,14 @@ function onPickMed(player: Player): void {
   }
 
   if (!isNearMedVan(player)) {
-    player.sendClientMessage(Color.error, "Подойдите ближе к фургону доставки.");
+    player.sendClientMessage(Color.error, "Move closer to the delivery van.");
     return;
   }
 
   if (!isMedVanAtHospitalParking()) {
     player.sendClientMessage(
       Color.error,
-      "Разгрузка только на парковке больницы. Сначала верните фургон на базу."
+      "Unloading is only available at the hospital parking area. Return the van to base first."
     );
     return;
   }
@@ -615,19 +615,19 @@ function onPickMed(player: Player): void {
   } catch {
     vanMeds += take;
     updateMedVanLabel(medsLabelText(vanMeds));
-    player.sendClientMessage(Color.error, "Не удалось взять коробку.");
+    player.sendClientMessage(Color.error, "Failed to take the box.");
     return;
   }
 
   carrying.set(id, take);
   player.sendClientMessage(
     Color.info,
-    `Вы взяли коробку (${take} ед.). Отнесите её на склад медикаментов в служебном блоке.`
+    `You took a box (${take} units). Take it to the medication warehouse in the service block.`
   );
   if (vanMeds > 0) {
     player.sendClientMessage(
       Color.gray,
-      `В фургоне осталось ${vanMeds} ед. После сдачи возьмите следующую: /pickmed.`
+      `${vanMeds} units remain in the van. After delivery, take the next box with /pickmed.`
     );
   }
 }
@@ -675,7 +675,7 @@ function tickUnload(): void {
       atStock.add(id);
       depositBox(player, id);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   });
 }
@@ -708,18 +708,18 @@ function depositBox(player: Player, id: number): void {
 
   player.sendClientMessage(
     Color.info,
-    `Сдано ${amount} ед. медикаментов. +$${pay}. На складе больницы: ${total}.`
+    `Delivered ${amount} units of medication. +$${pay}. Hospital warehouse: ${total}.`
   );
 
   if (vanMeds > 0) {
     player.sendClientMessage(
       Color.info,
-      `В фургоне ещё ${vanMeds} ед. Вернитесь и возьмите коробку: /pickmed.`
+      `${vanMeds} units remain in the van. Return and take a box with /pickmed.`
     );
     return;
   }
 
-  player.sendClientMessage(Color.info, "Фургон пуст. Доставка медикаментов завершена.");
+  player.sendClientMessage(Color.info, "The van is empty. Medication delivery complete.");
 }
 
 function returnCarriedToVan(player: Player, id: number, message: string): void {
@@ -764,14 +764,14 @@ function clearBox(player: Player): void {
   try {
     player.removeAttachedObject(SLOT_BOX);
   } catch {
-    // Слота не было.
+    // Slot did not exist.
   }
 
   try {
     player.setSpecialAction(SPECIAL_ACTION_NONE);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -794,7 +794,7 @@ function cancelLoading(player: Player, id: number, message: string): void {
     player.toggleControllable(true);
     Checkpoint.disable(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 
   if (isPlayerActive(player)) {
@@ -820,7 +820,7 @@ function abortAllDeliveryJobs(message: string): void {
       Checkpoint.disable(player);
       player.sendClientMessage(Color.error, message);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   }
 }
@@ -864,7 +864,7 @@ function clearPlayerDelivery(player: Player): void {
     player.toggleControllable(true);
     Checkpoint.disable(player);
   } catch {
-    // Игрок уже вышел.
+      // Player has already disconnected.
   }
 }
 
@@ -946,9 +946,9 @@ function isInMedVanAsDriver(player: Player): boolean {
 function ejectFromVehicle(player: Player): void {
   try {
     player.removeFromVehicle();
-    player.sendClientMessage(Color.gray, "Вы отказались от доставки.");
+    player.sendClientMessage(Color.gray, "You declined the delivery.");
   } catch {
-    // Уже не в машине.
+    // No longer in the vehicle.
   }
 }
 

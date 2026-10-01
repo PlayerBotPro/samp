@@ -63,17 +63,17 @@ function notifyGive(
 ): void {
   const targetTag = playerChatName(target);
   const adminTag = playerChatName(admin);
-  const where = toBank ? "на банковский счёт" : "наличными";
+  const where = toBank ? "to the bank account" : "in cash";
 
   admin.sendClientMessage(
     Color.info,
-    `Вы выдали игроку ${targetTag} $${credited} ${where}.`
+    `You gave player ${targetTag} $${credited} ${where}.`
   );
 
   if (isPlayerActive(target)) {
     target.sendClientMessage(
       Color.info,
-      `Администратор ${adminTag} выдал вам $${credited} ${where}.`
+      `Administrator ${adminTag} gave you $${credited} ${where}.`
     );
   }
 }
@@ -81,7 +81,7 @@ function notifyGive(
 export function bindAdminGivemoney(): void {
   registerCommand(
     "givemoney",
-    "Выдать наличные или деньги на банк",
+    "Give cash or bank money",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -91,19 +91,19 @@ export function bindAdminGivemoney(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /givemoney [id] [0-1] [сумма] (0 - наличные, 1 - банк)"
+          "Usage: /givemoney [id] [0-1] [amount] (0 - cash, 1 - bank)"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (!getAccount(target)) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
@@ -125,7 +125,7 @@ async function applyGive(
   }
 
   if (pending.has(account.id)) {
-    admin.sendClientMessage(Color.error, "Деньги этому игроку уже выдают. Подождите.");
+    admin.sendClientMessage(Color.error, "Money is already being given to this player. Please wait.");
     return;
   }
 
@@ -136,7 +136,7 @@ async function applyGive(
   if (credited <= 0) {
     admin.sendClientMessage(
       Color.error,
-      toBank ? "Банковский счёт заполнен." : "Наличные заполнены."
+      toBank ? "Bank account is full." : "Cash balance is full."
     );
     return;
   }
@@ -164,7 +164,7 @@ async function applyGive(
     if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
       admin.sendClientMessage(
         Color.info,
-        `Вы выдали $${credited}. Игрок вышел, сумма сохранена.`
+        `You gave $${credited}. The player disconnected; the amount was saved.`
       );
       return;
     }
@@ -198,7 +198,7 @@ async function applyGive(
         applyWallet(target, fresh);
       }
     }
-    admin.sendClientMessage(Color.error, "Не удалось сохранить деньги.");
+    admin.sendClientMessage(Color.error, "Failed to save money.");
   } finally {
     pending.delete(account.id);
   }

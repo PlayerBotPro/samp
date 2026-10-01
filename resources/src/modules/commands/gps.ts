@@ -1,6 +1,6 @@
 import { showGpsMenu } from "../gps";
 import { registerCommand } from "./registry";
 
-registerCommand("gps", "Маршрут или отключить GPS", (player) => {
+registerCommand("gps", "Set route or disable GPS", (player) => {
   showGpsMenu(player);
 });

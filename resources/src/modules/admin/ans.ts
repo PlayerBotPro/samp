@@ -39,7 +39,7 @@ function sendAnswer(line: string, target: Player): void {
     try {
       player.sendClientMessage(Color.adminChat, line);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   };
 
@@ -62,7 +62,7 @@ function playAnswerSound(player: Player): void {
     try {
       player.playGameSound(ANSWER_SOUND_ID, 0, 0, 0);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   }
 }
@@ -70,7 +70,7 @@ function playAnswerSound(player: Player): void {
 export function bindAdminAns(): void {
   registerCommand(
     "ans",
-    "Ответить игроку",
+    "Reply to a player",
     (player, args) => {
       if (!hasAdminAccess(player, 1)) {
         return;
@@ -85,25 +85,25 @@ export function bindAdminAns(): void {
       );
 
       if (!idPart || !text) {
-        player.sendClientMessage(Color.error, "Использование: /ans [id] [текст]");
+        player.sendClientMessage(Color.error, "Usage: /ans [id] [text]");
         return;
       }
 
       const slot = Number(idPart);
       if (!Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Использование: /ans [id] [текст]");
+        player.sendClientMessage(Color.error, "Usage: /ans [id] [text]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
-      const verb = byGender(getGender(player), "ответил", "ответила");
+      const verb = byGender(getGender(player), "replied", "replied");
       const line = clipClientMessage(
-        `[A] Администратор ${playerChatName(player)} ${verb} игроку ${playerChatName(target)}: ${text}`
+        `[A] Administrator ${playerChatName(player)} ${verb} to player ${playerChatName(target)}: ${text}`
       );
       sendAnswer(line, target);
     },

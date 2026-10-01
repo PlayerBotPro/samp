@@ -39,7 +39,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: AUTOSCHOOL_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Автошкола\nВход",
+    label: "Driving School\nEntrance",
   },
   {
     pickup: {
@@ -57,7 +57,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Выход на улицу",
+    label: "Exit to Street",
   },
   {
     pickup: {
@@ -75,7 +75,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: AUTOSCHOOL_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Автошкола\nПарковка",
+    label: "Driving School\nParking",
   },
   {
     pickup: {
@@ -93,7 +93,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Парковка",
+    label: "Parking",
   },
 ];
 
@@ -157,7 +157,7 @@ function tickSchoolDoors(): void {
         }
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -165,7 +165,7 @@ function tickSchoolDoors(): void {
 function tryUse(player: Player, door: SchoolDoor): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+    deny(player, "You need treatment. Take a bed: /hospital.");
     return;
   }
 
@@ -188,7 +188,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -210,7 +210,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

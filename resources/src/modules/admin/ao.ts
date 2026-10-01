@@ -14,7 +14,7 @@ function broadcastAll(color: number, text: string): void {
     try {
       other.sendClientMessage(color, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -22,7 +22,7 @@ function broadcastAll(color: number, text: string): void {
 export function bindAdminAo(): void {
   registerCommand(
     "ao",
-    "Объявление всем игрокам",
+    "Announcement to all players",
     (player, args) => {
       if (!hasAdminAccess(player, 3)) {
         return;
@@ -30,13 +30,13 @@ export function bindAdminAo(): void {
 
       const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
       if (!text) {
-        player.sendClientMessage(Color.error, "Использование: /ao [текст]");
+        player.sendClientMessage(Color.error, "Usage: /ao [text]");
         return;
       }
 
       broadcastAll(
         Color.info,
-        `Администратор ${playerChatName(player)}: ${text}`
+        `Administrator ${playerChatName(player)}: ${text}`
       );
     },
     true

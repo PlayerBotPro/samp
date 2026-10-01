@@ -77,7 +77,7 @@ function moveGate(gate: LiveGate, open: boolean): void {
     }
     object.move(def.x, def.y, z, speed, def.rx, ry, def.rz);
   } catch {
-    // Объект ещё не готов.
+    // Object not ready yet.
   }
 }
 
@@ -146,7 +146,7 @@ function onGateKey(player: Player): void {
   const orgId = membership?.org.id;
   const byOrg =
     orgId !== undefined && allowedOrgIds(gate.def).includes(orgId);
-  // Маскировка: только ворота армии и только пока форма ещё валидна.
+  // Disguise: Army gates only, and only while the uniform remains valid.
   const byDisguise =
     gate.def.orgId === ORG_ARMY_ID &&
     isArmyDisguised(player) &&
@@ -179,7 +179,7 @@ export function bindOrgGates(): void {
       );
       gates.push({ def, object, closeTimer: null });
     } catch {
-      // Лимит объектов.
+      // Object limit.
     }
   }
 

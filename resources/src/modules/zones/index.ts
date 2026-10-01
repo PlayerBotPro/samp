@@ -6,7 +6,7 @@ import { startSafeZones } from "./safe";
 import { startCapture, refreshCaptureView } from "./capture";
 import { showGangTurf, startGangTurf } from "./turf";
 
-/** Чёрный, альфа FF — без прозрачности. */
+/** Black, FF alpha — opaque. */
 const ZONE_COLOR = 0x000000ff;
 
 type ClosedZone = {
@@ -63,7 +63,7 @@ function showClosedZones(player: Player): void {
     try {
       zone.showForPlayer(player, ZONE_COLOR);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   }
 }

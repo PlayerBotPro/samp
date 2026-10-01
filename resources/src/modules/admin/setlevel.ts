@@ -55,7 +55,7 @@ function findTarget(slot: number): Player | null {
 export function bindAdminSetlevel(): void {
   registerCommand(
     "setlevel",
-    "Установить игровой уровень",
+    "Set player level",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -65,19 +65,19 @@ export function bindAdminSetlevel(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          `Использование: /setlevel [id] [lvl] (${MIN_PLAYER_LEVEL}-${MAX_LEVEL})`
+          `Usage: /setlevel [id] [lvl] (${MIN_PLAYER_LEVEL}-${MAX_LEVEL})`
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (!getAccount(target)) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
@@ -94,7 +94,7 @@ async function applyLevel(admin: Player, target: Player, level: number): Promise
   }
 
   if (pending.has(account.id)) {
-    admin.sendClientMessage(Color.error, "Уровень этого игрока уже меняют. Подождите.");
+    admin.sendClientMessage(Color.error, "This player's level is already being changed. Please wait.");
     return;
   }
 
@@ -110,7 +110,7 @@ async function applyLevel(admin: Player, target: Player, level: number): Promise
     if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
       admin.sendClientMessage(
         Color.info,
-        `Вы установили уровень ${level}. Игрок вышел, уровень сохранён.`
+        `You set level ${level}. The player disconnected; the level was saved.`
       );
       return;
     }
@@ -129,17 +129,17 @@ async function applyLevel(admin: Player, target: Player, level: number): Promise
 
     admin.sendClientMessage(
       Color.info,
-      `Вы установили уровень игроку ${targetTag}: ${level}. Опыт: 0/${need}.`
+      `You set ${targetTag}'s level to ${level}. Experience: 0/${need}.`
     );
 
     if (isPlayerActive(target)) {
       target.sendClientMessage(
         Color.info,
-        `Администратор ${adminTag} установил вам уровень ${level}. Опыт: 0/${need}.`
+        `Administrator ${adminTag} set your level to ${level}. Experience: 0/${need}.`
       );
     }
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось сохранить уровень.");
+    admin.sendClientMessage(Color.error, "Failed to save the level.");
   } finally {
     pending.delete(account.id);
   }

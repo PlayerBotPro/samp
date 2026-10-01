@@ -4,10 +4,10 @@ import { playerChatName } from "../../shared/player";
 import { hasAdminAccess } from "../admin/session";
 import { registerCommand } from "./registry";
 
-registerCommand("b", "Внеигровой чат рядом (OOC)", (player, args) => {
+registerCommand("b", "Nearby out-of-character chat (OOC)", (player, args) => {
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Использование: /b [текст]");
+    player.sendClientMessage(Color.error, "Usage: /b [text]");
     return;
   }
 

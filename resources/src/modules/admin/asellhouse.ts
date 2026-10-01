@@ -27,7 +27,7 @@ function parseHouseId(args: string): number | null {
 export function bindAdminAsellhouse(): void {
   registerCommand(
     "asellhouse",
-    "Освободить дом (продажа государству без выплаты)",
+    "Release a house (sell to the state without payment)",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -35,12 +35,12 @@ export function bindAdminAsellhouse(): void {
 
       const houseId = parseHouseId(args);
       if (houseId === null) {
-        player.sendClientMessage(Color.error, "Использование: /asellhouse [id дома]");
+        player.sendClientMessage(Color.error, "Usage: /asellhouse [house id]");
         return;
       }
 
       if (!getHouse(houseId)) {
-        player.sendClientMessage(Color.error, "Дом с таким номером не найден.");
+        player.sendClientMessage(Color.error, "House with this ID was not found.");
         return;
       }
 
@@ -61,32 +61,32 @@ async function vacateHouse(admin: Player, houseId: number): Promise<void> {
     result = await adminVacateHouse(houseId);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] asellhouse ${account.name} дом ${houseId}: ${message}`);
-    admin.sendClientMessage(Color.error, "Не удалось освободить дом.");
+    omp.log(`[${SERVER_TAG}] asellhouse ${account.name} house ${houseId}: ${message}`);
+    admin.sendClientMessage(Color.error, "Failed to release the house.");
     return;
   }
 
   if (!result.ok) {
     if (result.reason === "not_found") {
-      admin.sendClientMessage(Color.error, "Дом с таким номером не найден.");
+      admin.sendClientMessage(Color.error, "House with this ID was not found.");
       return;
     }
-    admin.sendClientMessage(Color.error, "Не удалось освободить дом.");
+    admin.sendClientMessage(Color.error, "Failed to release the house.");
     return;
   }
 
   applyAdminVacatedHouse(houseId);
 
   const label = playerChatName(admin);
-  omp.log(`[${SERVER_TAG}] asellhouse ${label} освободил дом №${houseId}`);
+  omp.log(`[${SERVER_TAG}] asellhouse ${label} released house #${houseId}`);
 
   if (result.wasOccupied) {
     admin.sendClientMessage(
       Color.info,
-      `Дом №${houseId} освобождён. Бывший владелец: id ${result.previousOwnerId}.`
+      `House #${houseId} released. Previous owner: ID ${result.previousOwnerId}.`
     );
     return;
   }
 
-  admin.sendClientMessage(Color.info, `Дом №${houseId} уже был свободен. Состояние обновлено.`);
+  admin.sendClientMessage(Color.info, `House #${houseId} was already available. State updated.`);
 }

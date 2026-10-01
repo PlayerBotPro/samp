@@ -29,14 +29,14 @@ const DESK = {
 } as const;
 
 const AD_HINT = [
-  `Подача объявления. Стоимость: $${AD_FEE} наличными.`,
+  `Submit an advertisement. Cost: $${AD_FEE} cash.`,
   "",
-  "Запрещено:",
-  "- оскорбления, капслок, оффтоп",
-  "- реклама сторонних серверов и читов",
-  "- NRP, угрозы, обман от имени гос. органов",
+  "Prohibited:",
+  "- insults, excessive caps, off-topic messages",
+  "- advertising third-party servers and cheats",
+  "- NRP, threats, impersonating government agencies",
   "",
-  "Введите текст объявления:",
+  "Enter the advertisement text:",
 ].join("\n");
 
 type Ad = {
@@ -60,11 +60,11 @@ const submitting = new Set<number>();
 let lastPublishAt = 0;
 let started = false;
 
-registerCommand("ad", "Подать объявление", (player) => {
+registerCommand("ad", "Submit an advertisement", (player) => {
   openSubmitDialog(player);
 });
 
-registerCommand("edit", "Проверить объявление радиоцентра", (player) => {
+registerCommand("edit", "Review a radio center advertisement", (player) => {
   startEdit(player);
 });
 
@@ -110,12 +110,12 @@ function openSubmitDialog(player: Player, error?: string): void {
   }
 
   if (hasAdInFlight(account.id)) {
-    tell(player, Color.error, "У вас уже есть объявление в очереди.");
+    tell(player, Color.error, "You already have an advertisement in the queue.");
     return;
   }
 
   if (account.money < AD_FEE) {
-    tell(player, Color.error, `Объявление стоит $${AD_FEE}. Недостаточно наличных.`);
+    tell(player, Color.error, `An advertisement costs $${AD_FEE}. Not enough cash.`);
     return;
   }
 
@@ -125,13 +125,13 @@ function openSubmitDialog(player: Player, error?: string): void {
       player,
       AD_SUBMIT_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Объявление",
+      "Advertisement",
       `${prefix}${AD_HINT}`,
-      "Отправить",
-      "Отмена"
+      "Send",
+      "Cancel"
     );
   } catch {
-    tell(player, Color.error, "Не удалось открыть объявление.");
+    tell(player, Color.error, "Failed to open the advertisement dialog.");
   }
 }
 
@@ -142,18 +142,18 @@ async function submitAd(player: Player, raw: string): Promise<void> {
   }
 
   if (submitting.has(account.id) || hasAdInFlight(account.id)) {
-    tell(player, Color.error, "У вас уже есть объявление в очереди.");
+    tell(player, Color.error, "You already have an advertisement in the queue.");
     return;
   }
 
   const text = sanitizeAd(raw);
   if (!text) {
-    openSubmitDialog(player, "Введите текст объявления.");
+    openSubmitDialog(player, "Enter the advertisement text.");
     return;
   }
 
   if (account.money < AD_FEE) {
-    tell(player, Color.error, `Объявление стоит $${AD_FEE}. Недостаточно наличных.`);
+    tell(player, Color.error, `An advertisement costs $${AD_FEE}. Not enough cash.`);
     return;
   }
 
@@ -163,7 +163,7 @@ async function submitAd(player: Player, raw: string): Promise<void> {
     await saveUserMoney(account.id, nextCash, account.bank);
   } catch {
     submitting.delete(account.id);
-    tell(player, Color.error, "Не удалось списать оплату. Попробуйте ещё раз.");
+    tell(player, Color.error, "Failed to charge the fee. Try again.");
     return;
   }
 
@@ -191,11 +191,11 @@ async function submitAd(player: Player, raw: string): Promise<void> {
   submitting.delete(account.id);
 
   if (isPlayerActive(player) && live?.id === account.id) {
-    tell(player, Color.info, `Объявление отправлено на проверку. Списано $${AD_FEE}.`);
+    tell(player, Color.info, `Advertisement sent for review. $${AD_FEE} charged.`);
   }
   notifyRadioStaff(
     Color.info,
-    `Поступило новое объявление от ${authorTag}. Введите /edit.`
+    `New advertisement from ${authorTag}. Use /edit.`
   );
 }
 
@@ -203,7 +203,7 @@ function startEdit(player: Player): void {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || membership?.org.id !== ORG_RADIO_ID) {
-    tell(player, Color.error, "Вы не состоите в радиоцентре.");
+    tell(player, Color.error, "You are not a member of the radio center.");
     return;
   }
 
@@ -213,7 +213,7 @@ function startEdit(player: Player): void {
   }
 
   if (editing.has(slot) || rejecting.has(slot)) {
-    tell(player, Color.error, "Сначала завершите текущее объявление.");
+    tell(player, Color.error, "Finish the current advertisement first.");
     return;
   }
 
@@ -221,14 +221,14 @@ function startEdit(player: Player): void {
     tell(
       player,
       Color.error,
-      "Проверять объявления можно в офисе или в транспорте радиоцентра."
+      "Advertisements can only be reviewed at the office or in a radio center vehicle."
     );
     return;
   }
 
   const ad = pending.shift();
   if (!ad) {
-    tell(player, Color.error, "Очередь объявлений пуста.");
+    tell(player, Color.error, "The advertisement queue is empty.");
     return;
   }
 
@@ -242,14 +242,14 @@ function showEditDialog(player: Player, ad: Ad): void {
       player,
       AD_EDIT_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Проверка объявления",
-      `Текст игрока:\n${ad.text}\n\nИсправьте текст ниже или оставьте поле пустым и примите.`,
-      "Принять",
-      "Отклонить"
+      "Advertisement review",
+      `Player text:\n${ad.text}\n\nEdit the text below, or leave it empty to accept it as is.`,
+      "Accept",
+      "Reject"
     );
   } catch {
     returnAdFromStaff(player);
-    tell(player, Color.error, "Не удалось открыть проверку.");
+    tell(player, Color.error, "Failed to open the review dialog.");
   }
 }
 
@@ -266,7 +266,7 @@ function onEditResponse(player: Player, accepted: boolean, raw: string): void {
 
   if (!isRadioStaff(player)) {
     returnAdFromStaff(player);
-    tell(player, Color.error, "Вы не состоите в радиоцентре.");
+    tell(player, Color.error, "You are not a member of the radio center.");
     return;
   }
 
@@ -297,8 +297,8 @@ function onEditResponse(player: Player, accepted: boolean, raw: string): void {
   ad.publishAt = nextPublishAt();
   publishQueue.push(ad);
 
-  tell(player, Color.info, "Объявление принято и встанет в очередь эфира.");
-  notifyAuthor(ad.authorId, Color.info, "Ваше объявление проверено и отправлено.");
+  tell(player, Color.info, "Advertisement accepted and queued for broadcast.");
+  notifyAuthor(ad.authorId, Color.info, "Your advertisement was reviewed and sent.");
 }
 
 function showRejectDialog(player: Player, error?: string): void {
@@ -308,14 +308,14 @@ function showRejectDialog(player: Player, error?: string): void {
       player,
       AD_REJECT_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Отклонить объявление",
-      `${prefix}Укажите причину отклонения.`,
-      "Отклонить",
-      "Отмена"
+      "Reject advertisement",
+      `${prefix}Specify the reason for rejection.`,
+      "Reject",
+      "Cancel"
     );
   } catch {
     returnAdFromStaff(player);
-    tell(player, Color.error, "Не удалось открыть причину отклонения.");
+    tell(player, Color.error, "Failed to open the rejection reason dialog.");
   }
 }
 
@@ -332,29 +332,29 @@ function onRejectResponse(player: Player, confirmed: boolean, raw: string): void
 
   if (!isRadioStaff(player)) {
     returnAdFromStaff(player);
-    tell(player, Color.error, "Вы не состоите в радиоцентре.");
+    tell(player, Color.error, "You are not a member of the radio center.");
     return;
   }
 
   if (!confirmed) {
     rejecting.delete(slot);
     pending.unshift(ad);
-    tell(player, Color.gray, "Отклонение отменено. Объявление вернулось в очередь.");
+    tell(player, Color.gray, "Rejection cancelled. The advertisement returned to the queue.");
     return;
   }
 
   const reason = sanitizeAd(raw);
   if (!reason) {
-    showRejectDialog(player, "Укажите причину отклонения.");
+    showRejectDialog(player, "Specify the reason for rejection.");
     return;
   }
 
   rejecting.delete(slot);
   const staff = getAccount(player);
-  const verb = byGender(staff?.gender ?? null, "отклонил", "отклонила");
+  const verb = byGender(staff?.gender ?? null, "rejected", "rejected");
   const staffTag = playerChatName(player);
   const line = clipClientMessage(
-    `Сотрудник радиоцентра ${staffTag} ${verb} объявление. Причина: ${reason}`
+    `Radio center employee ${staffTag} ${verb} the advertisement. Reason: ${reason}`
   );
   notifyAuthor(ad.authorId, Color.error, line);
   notifyRadioStaff(Color.error, line);
@@ -369,14 +369,14 @@ function tickPublish(): void {
   publishQueue.shift();
   lastPublishAt = Date.now();
 
-  const sent = byGender(ad.authorGender, "Отправил", "Отправила");
-  const checked = byGender(ad.editorGender, "проверил", "проверила");
+  const sent = byGender(ad.authorGender, "Submitted by", "Submitted by");
+  const checked = byGender(ad.editorGender, "reviewed", "reviewed");
   const text = ad.text.endsWith(".") || ad.text.endsWith("!") || ad.text.endsWith("?")
     ? ad.text
     : `${ad.text}.`;
   const first = clipClientMessage(`LS | ${text} | ${sent} ${ad.authorTag}`);
   const second = clipClientMessage(
-    ` Объявление ${checked} сотрудник Радиоцентра ${ad.editorTag}`
+    ` Advertisement ${checked} by radio center employee ${ad.editorTag}`
   );
 
   broadcast(Color.ad, first);
@@ -523,6 +523,6 @@ function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, clipClientMessage(text));
   } catch {
-    // Слот пустой.
+    // Player slot is empty.
   }
 }

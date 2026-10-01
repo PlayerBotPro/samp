@@ -97,27 +97,27 @@ export function banDaysWord(days: number): string {
   const n = Math.abs(Math.floor(days)) % 100;
   const n1 = n % 10;
   if (n > 10 && n < 20) {
-    return "дней";
+    return "days";
   }
   if (n1 === 1) {
-    return "день";
+    return "day";
   }
   if (n1 >= 2 && n1 <= 4) {
-    return "дня";
+    return "days";
   }
-  return "дней";
+  return "days";
 }
 
 export function kickBannedPlayer(player: Player, untilUnix: number, reason: string): void {
   const days = remainingBanDays(untilUnix);
   const word = banDaysWord(days);
-  const reasonText = reason.trim() || "не указана";
-  const chat = `Вы забанены на ${days} ${word}. Причина: ${reasonText}.`;
+  const reasonText = reason.trim() || "not specified";
+  const chat = `You are banned for ${days} ${word}. Reason: ${reasonText}.`;
 
   try {
     player.sendClientMessage(Color.error, chat);
   } catch {
-    // Слот пустой.
+    // Slot is empty.
   }
 
   try {
@@ -125,13 +125,13 @@ export function kickBannedPlayer(player: Player, untilUnix: number, reason: stri
       player,
       BAN_NOTICE_DIALOG_ID,
       DialogStyle.msgbox,
-      "Бан",
-      `Вы забанены на этом сервере.\nСрок: ${days} ${word}.\nПричина: ${reasonText}`,
+      "Ban",
+      `You are banned on this server.\nDuration: ${days} ${word}.\nReason: ${reasonText}`,
       "OK",
       ""
     );
   } catch {
-    // Слот пустой.
+    // Slot is empty.
   }
 
   kickSamePlayer(player, BAN_KICK_DELAY_MS);

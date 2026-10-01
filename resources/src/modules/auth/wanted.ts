@@ -8,8 +8,8 @@ import {
 } from "./session";
 
 /**
- * Выставить розыск 0–6: кэш, звёзды SA, БД.
- * Пока без полицейских команд — для системы и будущего функционала.
+ * Set wanted level 0–6: cache, SA stars, database.
+ * No police commands yet — for the system and future functionality.
  */
 export function setPlayerWantedLevel(player: Player, level: number): void {
   const wanted = normalizeWantedLevel(level);
@@ -21,6 +21,6 @@ export function setPlayerWantedLevel(player: Player, level: number): void {
   patchAccount(player, { wantedLevel: wanted });
   applyWantedLevel(player, wanted);
   void saveUserWantedLevel(account.id, wanted).catch(() => {
-    // Кэш и клиент уже обновлены.
+    // Cache and client are already updated.
   });
 }

@@ -1,14 +1,14 @@
-# Сборка мода и выкладка на сервер.
+# Build the game mode and deploy it to the server.
 #
-# Секреты репозитория (Settings → Secrets and variables → Actions):
-#   DEPLOY_HOST      — IP или домен
-#   DEPLOY_USER      — SSH-пользователь
-#   DEPLOY_SSH_KEY   — приватный ключ (целиком, включая BEGIN/END)
-#   DEPLOY_PATH      — каталог сервера, например /opt/lsrp
-#   SSH-порт в пайплайне: 22
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   DEPLOY_HOST      — IP address or domain
+#   DEPLOY_USER      — SSH user
+#   DEPLOY_SSH_KEY   — private key (including BEGIN/END)
+#   DEPLOY_PATH      — server directory, for example /opt/lsrp
+#   SSH port in the pipeline: 22
 #
-# Запуск: Actions → Deploy → Run workflow
-# или git tag v1.0.0 && git push origin v1.0.0
+# Start: Actions → Deploy → Run workflow
+# or git tag v1.0.0 && git push origin v1.0.0
 
 # name: Deploy
 

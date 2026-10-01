@@ -22,7 +22,7 @@ export type OrganizationDef = {
   color: number;
   gov: boolean;
   illegal: boolean;
-  /** Семья: /f, без /r /d /gov и без капта. */
+  /** Family: /f, without /r /d /gov and without captures. */
   mafia?: boolean;
   spawn: SpawnPoint;
   ranks: readonly OrgRankDef[];
@@ -30,7 +30,7 @@ export type OrganizationDef = {
 
 export type OrgGateDef = {
   orgId: number;
-  /** Если задано — открыть может любой из этих органов. Иначе только `orgId`. */
+  /** If set, any of these agencies can open it. Otherwise only `orgId`. */
   orgIds?: readonly number[];
   model: number;
   x: number;
@@ -40,7 +40,7 @@ export type OrgGateDef = {
   rx: number;
   ry: number;
   rz: number;
-  /** Шлагбаум: закрыт `ry`, открыт `ryOpen` (тот же XYZ). */
+  /** Barrier: closed at `ry`, open at `ryOpen` (same XYZ). */
   ryOpen?: number;
   radius: number;
   denyMessage: string;

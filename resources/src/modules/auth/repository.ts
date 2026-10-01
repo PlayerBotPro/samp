@@ -598,7 +598,7 @@ export async function saveAdminAccess(
   );
 }
 
-/** Меняет уровень админки, пароль не трогает. */
+/** Changes the admin level without touching the password. */
 export async function saveAdminLevel(
   userId: number,
   adminLevel: number

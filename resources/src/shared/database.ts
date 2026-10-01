@@ -69,7 +69,7 @@ export function isDatabaseReady(): boolean {
 
 export function getPool(): Pool {
   if (!pool) {
-    throw new Error("База данных ещё не подключена");
+    throw new Error("Database is not connected yet");
   }
 
   return pool;

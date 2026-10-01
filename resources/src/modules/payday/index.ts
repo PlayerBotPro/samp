@@ -46,7 +46,7 @@ function runPayday(now: Date): void {
     try {
       payPlayer(player, clock);
     } catch {
-      // Один слот не должен рвать payday остальным.
+      // One slot must not interrupt payday for everyone else.
     }
   });
 }
@@ -64,13 +64,13 @@ function payPlayer(player: Player, clock: string): void {
   applyScore(player, next.level);
   void saveUserProgress(account.id, next.level, next.exp, lawfulness).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить payday ${account.name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] could not save payday for ${account.name}: ${message}`);
   });
 
   const need = expForNextLevel(next.level);
   playPaydaySound(player);
   tell(player, Color.info, clock);
-  tell(player, Color.white, `Очки опыта ${next.exp}/${need}`);
+  tell(player, Color.white, `Experience points ${next.exp}/${need}`);
 
   const salary = orgPaydayPay(account);
   if (salary) {
@@ -85,8 +85,8 @@ function payPlayer(player: Player, clock: string): void {
       player,
       Color.tryOk,
       credited > 0
-        ? `Зарплата ${salary.orgName} (${salary.rankTitle}): $${credited} на банковский счёт.`
-        : `Зарплата не начислена: банковский счёт заполнен.`
+        ? `${salary.orgName} salary (${salary.rankTitle}): $${credited} deposited to your bank account.`
+        : `Salary not credited: your bank account is full.`
     );
   }
 
@@ -94,7 +94,7 @@ function payPlayer(player: Player, clock: string): void {
     tell(
       player,
       Color.tryOk,
-      `Поздравляем, ваш игровой уровень был повышен до ${next.level}.`
+      `Congratulations, your game level has increased to ${next.level}.`
     );
   }
 }
@@ -103,7 +103,7 @@ function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, text);
   } catch {
-    // Слот пустой.
+    // Slot is empty.
   }
 }
 
@@ -115,7 +115,7 @@ function playPaydaySound(player: Player): void {
     try {
       player.playGameSound(PAYDAY_SOUND_ID, 0, 0, 0);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   }
 }

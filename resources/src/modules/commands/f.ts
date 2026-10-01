@@ -13,7 +13,7 @@ import { registerCommand } from "./registry";
 
 const BUBBLE_MS = 3000;
 
-registerCommand("f", "Чат банды или мафии", (player, args) => {
+registerCommand("f", "Gang or mafia chat", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership || !(membership.org.illegal || membership.org.mafia)) {
@@ -22,7 +22,7 @@ registerCommand("f", "Чат банды или мафии", (player, args) => {
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Использование: /f [текст]");
+    player.sendClientMessage(Color.error, "Usage: /f [text]");
     return;
   }
 
@@ -30,7 +30,7 @@ registerCommand("f", "Чат банды или мафии", (player, args) => {
     `[F] ${membership.rank.title} ${playerChatName(player)}: ${text}`
   );
   const orgId = membership.org.id;
-  const bubble = membership.org.mafia ? "Сообщение мафии." : "Сообщение банде.";
+  const bubble = membership.org.mafia ? "Mafia message." : "Gang message.";
 
   omp.players.forEach((other) => {
     if (!isPlayerActive(other)) {
@@ -54,13 +54,13 @@ registerCommand("f", "Чат банды или мафии", (player, args) => {
     try {
       other.sendClientMessage(Color.radio, line);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 
   try {
     player.setChatBubble(bubble, Color.radio, CHAT_RADIUS, BUBBLE_MS);
   } catch {
-    // Пузырь не обязателен.
+    // Bubble is optional.
   }
 });

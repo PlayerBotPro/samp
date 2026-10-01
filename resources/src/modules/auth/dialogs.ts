@@ -27,7 +27,7 @@ export function showAuthDialog(
   try {
     Dialog.show(player, AUTH_DIALOG_ID, style, title, body, button1, button2);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -50,7 +50,7 @@ export function refreshAuthViewSoon(player: Player): void {
       try {
         prepareAuthView(player);
       } catch {
-        // Слот ещё не готов.
+        // Slot is not ready yet.
       }
     }, delay);
   }
@@ -67,8 +67,8 @@ export function showRulesDialog(player: Player): void {
     DialogStyle.msgbox,
     RULES_TITLE,
     SERVER_RULES,
-    "Принимаю",
-    "Отказаться"
+    "Accept",
+    "Decline"
   );
 }
 
@@ -77,10 +77,10 @@ export function showLoginDialog(player: Player, name: string, error?: string): v
   showAuthDialog(
     player,
     DialogStyle.password,
-    "Авторизация",
-    `${prefix}Ник ${name} уже зарегистрирован.\nВведи пароль:`,
-    "Войти",
-    "Выход"
+    "Login",
+    `${prefix}Nickname ${name} is already registered.\nEnter your password:`,
+    "Log in",
+    "Exit"
   );
 }
 
@@ -89,10 +89,10 @@ export function showEmailDialog(player: Player, name: string, error?: string): v
   showAuthDialog(
     player,
     DialogStyle.input,
-    "Регистрация",
-    `${prefix}Ник ${name} свободен.\nВведи почту:`,
-    "Далее",
-    "Назад"
+    "Registration",
+    `${prefix}Nickname ${name} is available.\nEnter your email:`,
+    "Next",
+    "Back"
   );
 }
 
@@ -101,10 +101,10 @@ export function showPasswordDialog(player: Player, error?: string): void {
   showAuthDialog(
     player,
     DialogStyle.password,
-    "Регистрация",
-    `${prefix}Придумай пароль (от 6 символов):`,
-    "Далее",
-    "Назад"
+    "Registration",
+    `${prefix}Create a password (at least 6 characters):`,
+    "Next",
+    "Back"
   );
 }
 
@@ -113,10 +113,10 @@ export function showPasswordConfirmDialog(player: Player, error?: string): void 
   showAuthDialog(
     player,
     DialogStyle.password,
-    "Регистрация",
-    `${prefix}Повтори пароль:`,
-    "Далее",
-    "Назад"
+    "Registration",
+    `${prefix}Repeat your password:`,
+    "Next",
+    "Back"
   );
 }
 
@@ -125,10 +125,10 @@ export function showBirthDateDialog(player: Player, error?: string): void {
   showAuthDialog(
     player,
     DialogStyle.input,
-    "Регистрация",
-    `${prefix}Дата рождения (DD.MM.YYYY):\nНапример 15.04.1998`,
-    "Далее",
-    "Назад"
+    "Registration",
+    `${prefix}Date of birth (DD.MM.YYYY):\nFor example, 15.04.1998`,
+    "Next",
+    "Back"
   );
 }
 
@@ -136,10 +136,10 @@ export function showGenderDialog(player: Player): void {
   showAuthDialog(
     player,
     DialogStyle.list,
-    "Пол персонажа",
+    "Character gender",
     `${GENDER_LIST_MALE}\n${GENDER_LIST_FEMALE}`,
-    "Выбрать",
-    "Назад"
+    "Select",
+    "Back"
   );
 }
 
@@ -147,10 +147,10 @@ export function showSkinDialog(player: Player, gender: Gender): void {
   showAuthDialog(
     player,
     DialogStyle.list,
-    "Выбор скина",
+    "Skin selection",
     skinListBody(gender),
-    "Выбрать",
-    "Назад"
+    "Select",
+    "Back"
   );
 }
 
@@ -158,9 +158,9 @@ export function showRegisterConfirmDialog(player: Player, body: string): void {
   showAuthDialog(
     player,
     DialogStyle.msgbox,
-    "Подтверждение",
+    "Confirmation",
     body,
-    "Готово",
-    "Назад"
+    "Done",
+    "Back"
   );
 }

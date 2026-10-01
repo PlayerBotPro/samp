@@ -88,7 +88,7 @@ function spawnInFront(player: Player): { x: number; y: number; z: number; angle:
 export function bindAdminVeh(): void {
   registerCommand(
     "veh",
-    "Создать транспорт перед собой",
+    "Create a vehicle in front of you",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -98,19 +98,19 @@ export function bindAdminVeh(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /veh [id] [color1] [color2] (400-611, цвета 0-255)"
+          "Usage: /veh [id] [color1] [color2] (400-611, colors 0-255)"
         );
         return;
       }
 
       if (!canSpawn(player)) {
-        player.sendClientMessage(Color.error, "Сейчас нельзя создать машину.");
+        player.sendClientMessage(Color.error, "You cannot create a vehicle now.");
         return;
       }
 
       const spot = spawnInFront(player);
       if (!spot) {
-        player.sendClientMessage(Color.error, "Не удалось создать машину.");
+        player.sendClientMessage(Color.error, "Failed to create the vehicle.");
         return;
       }
 
@@ -127,19 +127,19 @@ export function bindAdminVeh(): void {
       });
 
       if (!vehicle) {
-        player.sendClientMessage(Color.error, "Не удалось создать машину.");
+        player.sendClientMessage(Color.error, "Failed to create the vehicle.");
         return;
       }
 
       try {
         vehicle.linkToInterior(spot.interior);
       } catch {
-        // Мир уже выставлен при спавне.
+        // The world is already set on spawn.
       }
 
       player.sendClientMessage(
         Color.info,
-        `Машина создана: ${parsed.model} (${parsed.color1}, ${parsed.color2}).`
+        `Vehicle created: ${parsed.model} (${parsed.color1}, ${parsed.color2}).`
       );
     },
     true
@@ -147,7 +147,7 @@ export function bindAdminVeh(): void {
 
   registerCommand(
     "delveh",
-    "Удалить машину, в которой сидишь",
+    "Delete the vehicle you are in",
     (player) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -156,18 +156,18 @@ export function bindAdminVeh(): void {
       let vehicle;
       try {
         if (!player.isInAnyVehicle()) {
-          player.sendClientMessage(Color.error, "Вы должны быть в машине.");
+          player.sendClientMessage(Color.error, "You must be in a vehicle.");
           return;
         }
 
         vehicle = omp.vehicles.at(player.getVehicleID());
       } catch {
-        player.sendClientMessage(Color.error, "Вы должны быть в машине.");
+        player.sendClientMessage(Color.error, "You must be in a vehicle.");
         return;
       }
 
       if (!vehicle) {
-        player.sendClientMessage(Color.error, "Вы должны быть в машине.");
+        player.sendClientMessage(Color.error, "You must be in a vehicle.");
         return;
       }
 
@@ -177,11 +177,11 @@ export function bindAdminVeh(): void {
       try {
         vehicle.destroy();
       } catch {
-        player.sendClientMessage(Color.error, "Не удалось удалить машину.");
+        player.sendClientMessage(Color.error, "Failed to delete the vehicle.");
         return;
       }
 
-      player.sendClientMessage(Color.info, "Машина удалена.");
+      player.sendClientMessage(Color.info, "Vehicle deleted.");
     },
     true
   );

@@ -20,7 +20,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Вы не состоите в FBI.";
+const DENY = "You are not a member of the FBI.";
 
 type DestKey = "interior" | "roof" | "ammunation" | "street";
 
@@ -79,7 +79,7 @@ const DOORS: readonly FbiDoor[] = [
       interior: FBI_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "FBI\nСлужебный вход",
+    label: "FBI\nStaff entrance",
     staffOnly: true,
   },
   {
@@ -99,7 +99,7 @@ const DOORS: readonly FbiDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Выход на улицу",
+    label: "Exit to street",
     staffOnly: true,
   },
   {
@@ -111,11 +111,11 @@ const DOORS: readonly FbiDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "FBI\nКрыша",
+    label: "FBI\nRoof",
     staffOnly: true,
     options: [
-      { key: "interior", label: "1. Офис" },
-      { key: "ammunation", label: "2. Аммунация" },
+      { key: "interior", label: "1. Office" },
+      { key: "ammunation", label: "2. Ammunation" },
     ],
   },
   {
@@ -127,11 +127,11 @@ const DOORS: readonly FbiDoor[] = [
       interior: FBI_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Крыша\nАммунация",
+    label: "Roof\nAmmunation",
     staffOnly: true,
     options: [
-      { key: "roof", label: "1. Крыша" },
-      { key: "ammunation", label: "2. Аммунация" },
+      { key: "roof", label: "1. Roof" },
+      { key: "ammunation", label: "2. Ammunation" },
     ],
   },
   {
@@ -143,12 +143,12 @@ const DOORS: readonly FbiDoor[] = [
       interior: AMMUNATION_INTERIOR,
       world: ORG_FBI_ID,
     },
-    label: "Выход",
-    dialogTitle: "Выход",
+    label: "Exit",
+    dialogTitle: "Exit",
     staffOnly: false,
     options: [
-      { key: "roof", label: "1. Крыша" },
-      { key: "interior", label: "2. Офис" },
+      { key: "roof", label: "1. Roof" },
+      { key: "interior", label: "2. Office" },
     ],
   },
 ];
@@ -213,7 +213,7 @@ export function bindFbiDoors(): void {
       return;
     }
 
-    // Выход из аммунации — без проверки органа (уже внутри).
+    // Exit from ammunation — no organization check (already inside).
     if (kind !== "ammoExit" && !canUseFbiDoor(player, true)) {
       return;
     }
@@ -267,7 +267,7 @@ function tickFbiDoors(): void {
 
       onPickup.delete(id);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -299,14 +299,14 @@ function openMenu(player: Player, door: FbiDoor): void {
       player,
       FBI_SERVICE_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      door.dialogTitle ?? "Служебный выход",
+      door.dialogTitle ?? "Staff exit",
       door.options.map((option) => option.label).join("\n"),
-      "Выбрать",
-      "Отмена"
+      "Select",
+      "Cancel"
     );
   } catch {
     pending.delete(id);
-    deny(player, "Не удалось открыть меню.");
+    deny(player, "Failed to open the menu.");
   }
 }
 
@@ -314,7 +314,7 @@ function canUseFbiDoor(player: Player, tellDeny: boolean): boolean {
   const account = getAccount(player);
   if (account?.hospitalized) {
     if (tellDeny) {
-      deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+      deny(player, "You need treatment. Take a bed: /hospital.");
     }
     return false;
   }
@@ -370,7 +370,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -392,7 +392,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

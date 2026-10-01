@@ -32,7 +32,7 @@ export function startSpawnHealthPickup(): void {
   try {
     new Pickup(HEART_PICKUP, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, STREET_WORLD);
     new TextLabel(
-      "Здоровье",
+      "Health",
       Color.info,
       POINT.x,
       POINT.y,
@@ -77,7 +77,7 @@ function tickHealthPickup(): void {
 
       tryHeal(player);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -89,12 +89,12 @@ function tryHeal(player: Player): void {
   }
 
   if (account.hospitalized) {
-    tell(player, Color.error, "Сначала пройдите лечение в больнице.");
+    tell(player, Color.error, "Complete hospital treatment first.");
     return;
   }
 
   if (account.level > MAX_FREE_LEVEL) {
-    tell(player, Color.error, "Этот пункт помощи доступен до 5 уровня.");
+    tell(player, Color.error, "This aid point is available through level 5.");
     return;
   }
 
@@ -105,7 +105,7 @@ function tryHeal(player: Player): void {
       current = live;
     }
   } catch {
-    // Берём HP из аккаунта.
+    // Get HP from the account.
   }
 
   if (current >= MAX_HEALTH) {
@@ -114,7 +114,7 @@ function tryHeal(player: Player): void {
 
   applyHealth(player, MAX_HEALTH);
   patchAccount(player, { health: MAX_HEALTH });
-  tell(player, Color.info, "Здоровье восстановлено.");
+  tell(player, Color.info, "Health restored.");
 }
 
 function tell(player: Player, color: number, text: string): void {
@@ -133,7 +133,7 @@ function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, text);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 

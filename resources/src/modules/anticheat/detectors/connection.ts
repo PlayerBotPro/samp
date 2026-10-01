@@ -102,7 +102,7 @@ export function onTakeDamage(
   }
 
   if (amount > 0) {
-    // Сначала броня, потом HP — упрощённая модель.
+    // Armor first, then HP — simplified model.
     let left = amount;
     if (state.armour > 0) {
       const soak = Math.min(state.armour, left);
@@ -128,7 +128,7 @@ export function onGiveDamage(player: Player): void {
   const cfg = getConfig();
   if (state.lastShotAt > 0) {
     const dt = now - state.lastShotAt;
-    // Одинаковый тик / дробовик (несколько пеллетов) не считаем читом.
+    // Same tick / shotgun (multiple pellets) is not considered cheating.
     if (dt > 0 && dt < cfg.rapidFireMinMs) {
       state.warnRapid += 1;
       if (

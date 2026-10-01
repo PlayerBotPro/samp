@@ -188,7 +188,7 @@ ON DUPLICATE KEY UPDATE
   max_x = VALUES(max_x),
   max_y = VALUES(max_y);
 
--- Склады: org_id органа или 0 = склад шахты (не орган игрока).
+-- Warehouses: an organization's org_id, or 0 for the mine warehouse (not a player's organization).
 CREATE TABLE IF NOT EXISTS warehouses (
   org_id SMALLINT UNSIGNED NOT NULL,
   ammo INT UNSIGNED NOT NULL DEFAULT 0,

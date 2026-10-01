@@ -35,11 +35,11 @@ function notifyAdmins(message: string): void {
       try {
         player.sendClientMessage(Color.adminChat, message);
       } catch {
-        // Слот пустой.
+        // Slot is empty.
       }
     });
   } catch {
-    // players недоступен.
+    // players is unavailable.
   }
 }
 
@@ -66,10 +66,10 @@ function kickPlayer(player: Player, label: string): void {
   try {
     player.sendClientMessage(
       Color.error,
-      `Античит: ${label}. Вы отключены от сервера.`
+      `Anticheat: ${label}. You have been disconnected from the server.`
     );
   } catch {
-    // Уже вышел.
+    // Already disconnected.
   }
 
   kickSamePlayer(
@@ -124,17 +124,17 @@ export function reportCheat(
     try {
       player.sendClientMessage(
         Color.error,
-        `Античит: подозрение (${label}). Предупреждение ${strike}/${need}.`
+        `Anticheat: suspicious activity (${label}). Warning ${strike}/${need}.`
       );
     } catch {
-      // Уже вышел.
+      // Already disconnected.
     }
     return;
   }
 
   if (!cfg.kickOnDetect) {
     try {
-      player.sendClientMessage(Color.error, `Античит: ${label} (кик выключен).`);
+      player.sendClientMessage(Color.error, `Anticheat: ${label} (kick disabled).`);
     } catch {
       // ignore
     }
@@ -175,7 +175,7 @@ export function reportWarning(
   return false;
 }
 
-/** Сброс устаревших soft-страйков (вызывать из тика). */
+/** Resets expired soft strikes (call from a tick). */
 export function decaySoftStrikes(): void {
   const cfg = getConfig();
   const now = Date.now();

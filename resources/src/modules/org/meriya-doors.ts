@@ -17,9 +17,9 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Проход только для сотрудников Мэрии и FBI.";
+const DENY = "Access is restricted to City Hall and FBI personnel.";
 
-/** Служебный вход / парковка / крыша. */
+/** Staff entrance / parking / roof. */
 const STAFF_ORGS: ReadonlySet<number> = new Set([ORG_MERIYA_ID, ORG_FBI_ID]);
 
 type StaffDoor = {
@@ -45,7 +45,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: MERIYA_CUSTOM_INTERIOR,
       world: MERIYA_WORLD,
     },
-    label: "Мэрия\nСлужебный вход",
+    label: "City Hall\nStaff entrance",
   },
   {
     pickup: {
@@ -63,7 +63,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Парковка\nСлужебный выход",
+    label: "Parking\nStaff exit",
   },
   {
     pickup: {
@@ -81,7 +81,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Мэрия\nКрыша",
+    label: "City Hall\nRoof",
   },
   {
     pickup: {
@@ -99,7 +99,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: MERIYA_CUSTOM_INTERIOR,
       world: MERIYA_WORLD,
     },
-    label: "Мэрия\nС крыши",
+    label: "City Hall\nFrom roof",
   },
 ];
 
@@ -163,7 +163,7 @@ function tickStaffDoors(): void {
         }
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -171,7 +171,7 @@ function tickStaffDoors(): void {
 function tryUse(player: Player, dest: SpawnPoint): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+    deny(player, "You need treatment. Take a bed: /hospital.");
     return;
   }
 
@@ -200,7 +200,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -222,7 +222,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

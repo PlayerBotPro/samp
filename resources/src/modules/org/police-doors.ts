@@ -22,8 +22,8 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Открыть могут сотрудники LSPD, областной полиции и FBI.";
-const DENY_AMMUNATION = "В аммунацию могут войти сотрудники областной полиции и FBI.";
+const DENY = "LSPD, county police, and FBI personnel can open this.";
+const DENY_AMMUNATION = "County police and FBI personnel can enter the ammunation.";
 const AMMUNATION_ALLOWED = [ORG_POLICE_ID, ORG_FBI_ID] as const;
 
 type DestKey = "office" | "parking" | "ammunation" | "roof";
@@ -102,7 +102,7 @@ const DOORS: readonly PoliceDoor[] = [
       interior: POLICE_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Областная полиция\nВход",
+    label: "County Police\nEntrance",
     staffOnly: false,
   },
   {
@@ -122,14 +122,14 @@ const DOORS: readonly PoliceDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Выход на улицу",
+    label: "Exit to street",
     staffOnly: false,
   },
   {
     kind: "parkingIn",
     pickup: { x: 611.0726, y: -583.5037, z: 18.2109, interior: 0, world: STREET_WORLD },
     dest: OFFICE_FROM_PARKING,
-    label: "Парковка\nСлужебный вход",
+    label: "Parking\nStaff entrance",
     staffOnly: true,
   },
   {
@@ -142,17 +142,17 @@ const DOORS: readonly PoliceDoor[] = [
       world: STREET_WORLD,
     },
     dest: PARKING_STREET,
-    label: "Парковка\nСлужебный выход",
+    label: "Parking\nStaff exit",
     staffOnly: true,
   },
   {
     kind: "roofMenu",
     pickup: { x: 621.258, y: -569.2031, z: 26.1432, interior: 0, world: STREET_WORLD },
-    label: "Полиция\nКрыша",
+    label: "Police\nRoof",
     staffOnly: true,
     options: [
-      { key: "office", label: "1. Офис" },
-      { key: "ammunation", label: "2. Аммунация" },
+      { key: "office", label: "1. Office" },
+      { key: "ammunation", label: "2. Ammunation" },
     ],
   },
   {
@@ -164,11 +164,11 @@ const DOORS: readonly PoliceDoor[] = [
       interior: POLICE_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Крыша\nАммунация",
+    label: "Roof\nAmmunation",
     staffOnly: true,
     options: [
-      { key: "roof", label: "1. Крыша" },
-      { key: "ammunation", label: "2. Аммунация" },
+      { key: "roof", label: "1. Roof" },
+      { key: "ammunation", label: "2. Ammunation" },
     ],
   },
   {
@@ -180,12 +180,12 @@ const DOORS: readonly PoliceDoor[] = [
       interior: AMMUNATION_INTERIOR,
       world: ORG_POLICE_ID,
     },
-    label: "Выход",
-    dialogTitle: "Выход",
+    label: "Exit",
+    dialogTitle: "Exit",
     staffOnly: false,
     options: [
-      { key: "roof", label: "1. Крыша" },
-      { key: "office", label: "2. Офис" },
+      { key: "roof", label: "1. Roof" },
+      { key: "office", label: "2. Office" },
     ],
   },
 ];
@@ -250,7 +250,7 @@ export function bindPoliceDoors(): void {
       return;
     }
 
-    // Выход из аммунации — без проверки органа (уже внутри).
+    // Exit from ammunation — no organization check (already inside).
     if (kind !== "ammoExit" && !canUseStaffDoor(player, true)) {
       return;
     }
@@ -308,7 +308,7 @@ function tickPoliceDoors(): void {
 
       onPickup.delete(id);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -340,14 +340,14 @@ function openMenu(player: Player, door: PoliceDoor): void {
       player,
       POLICE_SERVICE_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      door.dialogTitle ?? "Служебный выход",
+      door.dialogTitle ?? "Staff exit",
       door.options.map((option) => option.label).join("\n"),
-      "Выбрать",
-      "Отмена"
+      "Select",
+      "Cancel"
     );
   } catch {
     pending.delete(id);
-    deny(player, "Не удалось открыть меню.");
+    deny(player, "Failed to open the menu.");
   }
 }
 
@@ -355,7 +355,7 @@ function canUseStaffDoor(player: Player, tellDeny: boolean): boolean {
   const account = getAccount(player);
   if (account?.hospitalized) {
     if (tellDeny) {
-      deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+      deny(player, "You need treatment. Take a bed: /hospital.");
     }
     return false;
   }
@@ -426,7 +426,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -448,7 +448,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

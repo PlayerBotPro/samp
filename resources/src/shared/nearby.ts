@@ -77,7 +77,7 @@ export function sendNearby(
 
       other.sendClientMessage(color, text);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // The slot is empty or the player has already disconnected.
     }
   });
 }

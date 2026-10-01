@@ -17,7 +17,7 @@ const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
 const TELEPORT_COOLDOWN_MS = 1500;
 const TICK_MS = 200;
-/** Левый ALT — медленная ходьба (KEY_WALK). */
+/** Left ALT — slow walk (KEY_WALK). */
 const KEY_WALK = 1024;
 
 const nearExit = new Map<number, number>();
@@ -35,7 +35,7 @@ export function startHouseExits(): void {
       world
     );
     new TextLabel(
-      "Выход",
+      "Exit",
       Color.info,
       house.interiorX,
       house.interiorY,
@@ -161,7 +161,7 @@ function tryExitHouse(player: Player): void {
     placeAt(player, exit);
     refreshStreamForPlayer(player);
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось выйти из дома.");
+    player.sendClientMessage(Color.error, "Failed to leave the house.");
   }
 }
 

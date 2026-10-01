@@ -12,8 +12,8 @@ export const TPINT_DIALOG_ID = 41;
 const MIN_LEVEL = 4;
 const DIALOG_STYLE_LIST = 2;
 const PAGE_SIZE = 16;
-const BACK_LABEL = "<<< Назад";
-const NEXT_LABEL = ">>> Далее";
+const BACK_LABEL = "<<< Back";
+const NEXT_LABEL = ">>> Next";
 const PLAYER_STATE_WASTED = 7;
 const PLAYER_STATE_SPECTATING = 9;
 
@@ -79,14 +79,14 @@ function showList(player: Player, page: number): void {
       player,
       TPINT_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      `Интерьеры (${safePage + 1}/${pageCount()})`,
+      `Interiors (${safePage + 1}/${pageCount()})`,
       lines.join("\n"),
-      "Выбрать",
-      "Закрыть"
+      "Select",
+      "Close"
     );
   } catch {
     pageByPlayer.delete(id);
-    player.sendClientMessage(Color.error, "Не удалось открыть список интерьеров.");
+    player.sendClientMessage(Color.error, "Failed to open the interior list.");
   }
 }
 
@@ -127,7 +127,7 @@ function teleportToInterior(player: Player, spot: AdminInterior): boolean {
       player.removeFromVehicle();
     }
   } catch {
-    // Уже пешком.
+    // Already on foot.
   }
 
   try {
@@ -148,18 +148,18 @@ function teleportToInterior(player: Player, spot: AdminInterior): boolean {
 
 function goToSpot(player: Player, spot: AdminInterior): void {
   if (!canTeleport(player)) {
-    player.sendClientMessage(Color.error, "Сейчас нельзя телепортироваться.");
+    player.sendClientMessage(Color.error, "You cannot teleport now.");
     return;
   }
 
   if (!teleportToInterior(player, spot)) {
-    player.sendClientMessage(Color.error, "Не удалось телепортироваться.");
+    player.sendClientMessage(Color.error, "Failed to teleport.");
     return;
   }
 
   player.sendClientMessage(
     Color.info,
-    `Телепорт: ${spot.name} (interior ${spot.interior}).`
+    `Teleported to: ${spot.name} (interior ${spot.interior}).`
   );
 }
 
@@ -173,7 +173,7 @@ function clearPage(player: Player): void {
 export function bindAdminTpint(): void {
   registerCommand(
     "tpint",
-    "Телепорт в интерьер",
+    "Teleport to an interior",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -189,7 +189,7 @@ export function bindAdminTpint(): void {
       if (!Number.isInteger(index) || index < 1 || index > ADMIN_INTERIORS.length) {
         player.sendClientMessage(
           Color.error,
-          `Использование: /tpint [1-${ADMIN_INTERIORS.length}]`
+          `Usage: /tpint [1-${ADMIN_INTERIORS.length}]`
         );
         return;
       }
@@ -198,7 +198,7 @@ export function bindAdminTpint(): void {
       if (!spot) {
         player.sendClientMessage(
           Color.error,
-          `Использование: /tpint [1-${ADMIN_INTERIORS.length}]`
+          `Usage: /tpint [1-${ADMIN_INTERIORS.length}]`
         );
         return;
       }

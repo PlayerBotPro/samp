@@ -6,13 +6,13 @@ import { getAccount } from "../auth/session";
 import { MAX_ORG_RANK, getMembership } from "../org";
 import { registerCommand } from "./registry";
 
-registerCommand("gov", "Гос. новости", (player, args) => {
+registerCommand("gov", "Government news", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership || !membership.org.gov) {
     player.sendClientMessage(
       Color.error,
-      "Вы не состоите в государственной организации."
+      "You are not a member of a government organization."
     );
     return;
   }
@@ -20,18 +20,18 @@ registerCommand("gov", "Гос. новости", (player, args) => {
   if (membership.rank.id !== MAX_ORG_RANK) {
     player.sendClientMessage(
       Color.error,
-      "Гос. новости доступны только лидеру организации."
+      "Government news are only available to the organization leader."
     );
     return;
   }
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Использование: /gov [текст]");
+    player.sendClientMessage(Color.error, "Usage: /gov [text]");
     return;
   }
 
-  const line = clipClientMessage(`Гос. новости ${playerChatName(player)}: ${text}`);
+  const line = clipClientMessage(`Government news ${playerChatName(player)}: ${text}`);
 
   omp.players.forEach((other) => {
     if (!isPlayerActive(other)) {
@@ -41,7 +41,7 @@ registerCommand("gov", "Гос. новости", (player, args) => {
     try {
       other.sendClientMessage(Color.govNews, line);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 });

@@ -18,20 +18,20 @@ type WatchLabel = {
 
 const labels = new Map<number, WatchLabel>();
 
-registerCommand("time", "Посмотреть время, мут и срок", (player) => {
+registerCommand("time", "View time, mute and sentence", (player) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Сначала войди в аккаунт.");
+    player.sendClientMessage(Color.error, "Log into your account first.");
     return;
   }
 
-  player.sendClientMessage(Color.info, `Время: ${formatClock()}.`);
+  player.sendClientMessage(Color.info, `Time: ${formatClock()}.`);
 
   const muteLeft = remainingMuteMs(player);
   if (muteLeft !== null) {
     player.sendClientMessage(
       Color.error,
-      `У вас мут. Осталось: ${formatMuteLeft(muteLeft)}.`
+      `You are muted. Remaining: ${formatMuteLeft(muteLeft)}.`
     );
   }
 
@@ -39,12 +39,12 @@ registerCommand("time", "Посмотреть время, мут и срок", (
     const left = getAccount(player)?.jailSeconds ?? 0;
     player.sendClientMessage(
       Color.error,
-      `Вы в тюрьме. Осталось: ${formatMuteLeft(left * 1000)}.`
+      `You are in prison. Remaining: ${formatMuteLeft(left * 1000)}.`
     );
   }
 
-  const verb = byGender(account.gender, "Посмотрел", "Посмотрела");
-  showWatchLabel(player, `${verb} на часы.`);
+  const verb = byGender(account.gender, "Looked", "Looked");
+  showWatchLabel(player, `${verb} at their watch.`);
 });
 
 export function bindTimeLabels(): void {
@@ -88,7 +88,7 @@ function showWatchLabel(player: Player, text: string): void {
 
     labels.set(id, { label, timer });
   } catch {
-    // Слот уже невалиден.
+    // Slot is no longer valid.
   }
 }
 
@@ -112,6 +112,6 @@ function hideWatchLabelById(id: number): void {
   try {
     current.label.destroy();
   } catch {
-    // Уже снята.
+    // Already removed.
   }
 }

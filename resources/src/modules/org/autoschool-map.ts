@@ -40,7 +40,7 @@ function tickSchoolIcon(): void {
       const interior = player.getInterior();
       updateIcon(player, pos.x, pos.y, world, interior);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -79,7 +79,7 @@ function updateIcon(
       );
       iconShown.add(id);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
     return;
   }
@@ -91,7 +91,7 @@ function updateIcon(
   try {
     player.removeMapIcon(MAP_ICON_SLOT);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
   iconShown.delete(id);
 }

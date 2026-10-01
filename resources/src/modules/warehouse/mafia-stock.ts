@@ -47,12 +47,12 @@ function stockLabelText(orgId: number): string {
   const ammo = wh?.ammo ?? 0;
   const metal = wh?.metal ?? 0;
   const drugs = wh?.drugs ?? 0;
-  const status = wh && !wh.isLocked ? "Склад открыт" : "Склад закрыт";
+  const status = wh && !wh.isLocked ? "Warehouse open" : "Warehouse locked";
 
   return (
-    `Патроны: ${ammo}\n` +
-    `Металл: ${metal}\n` +
-    `Наркотики: ${drugs}\n\n` +
+    `Ammunition: ${ammo}\n` +
+    `Metal: ${metal}\n` +
+    `Drugs: ${drugs}\n\n` +
     status
   );
 }
@@ -87,12 +87,12 @@ export function refreshMafiaWarehouseLabels(): void {
     try {
       stock.label.updateText(Color.info, stockLabelText(stock.orgId));
     } catch {
-      // Лейбл уже уничтожен.
+      // The label has already been destroyed.
     }
   }
 }
 
-/** Точка склада мафии, если игрок в радиусе чекпоинта. */
+/** Mafia warehouse point when the player is within the checkpoint radius. */
 export function findMafiaStockAtPlayer(player: Player): {
   orgId: number;
   x: number;
@@ -167,13 +167,13 @@ function updateCheckpointForPlayer(player: Player): void {
         checkpointShown.add(id);
       }
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
     notifyOrgStockStanding(player, onCheckpoint);
     return;
   }
 
-  // Не наш склад — не трогаем pending/visit.
+  // Not our warehouse — do not touch pending/visit.
   if (!checkpointShown.has(id)) {
     return;
   }
@@ -184,6 +184,6 @@ function updateCheckpointForPlayer(player: Player): void {
   try {
     Checkpoint.disable(player);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }

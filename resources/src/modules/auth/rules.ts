@@ -1,25 +1,25 @@
 import { SERVER_NAME } from "../../shared/brand";
 
-export const RULES_TITLE = `Правила ${SERVER_NAME}`;
+export const RULES_TITLE = `${SERVER_NAME} Rules`;
 
-/** Текст одного диалога регистрации. Limit SA-MP ~4096 символов. */
-export const SERVER_RULES = `Добро пожаловать на ${SERVER_NAME}.
+/** Text for a single registration dialog. SA-MP limit is ~4096 characters. */
+export const SERVER_RULES = `Welcome to ${SERVER_NAME}.
 
-Это roleplay-сервер. Ты играешь персонажа, а не «себя в GTA».
+This is a roleplay server. You play a character, not “yourself in GTA.”
 
-МОЖНО
-• Общаться IC в чате, /me /do /try /todo
-• Конфликты и драки только с игровой причиной
-• OOC — команда /b, коротко и по делу
+ALLOWED
+• IC chat, /me, /do, /try, /todo
+• Conflicts and fights only with an in-game reason
+• OOC via /b, briefly and to the point
 
-НЕЛЬЗЯ
-• DM — убивать без RP и причины
-• PG — делать то, чего персонаж не смог бы
-• MG — тащить в игру знания с форума, Discord, /b
-• RK / SK — месть и убийства после смерти / в спавне
-• Читы, баги, флуд, оскорбления игроков и администрации
-• Ник не в формате Name_Surname
+FORBIDDEN
+• DM — killing without RP or a reason
+• PG — doing what your character could not do
+• MG — bringing knowledge from the forum, Discord, or /b into the game
+• RK / SK — revenge or killing after death / at spawn
+• Cheats, bugs, flooding, insulting players or administration
+• Nicknames not in Name_Surname format
 
-Администрация может наказать за обход правил по смыслу, не только по букве.
+Administration may punish rule evasion based on intent, not just wording.
 
-Нажимая «Принимаю», ты соглашаешься играть по этим правилам.`;
+By clicking “Accept,” you agree to play by these rules.`;

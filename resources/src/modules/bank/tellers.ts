@@ -39,11 +39,11 @@ const DIALOG_STYLE_LIST = 2;
 const MAX_MONEY = 2_147_483_647;
 
 const MENU_ITEMS = [
-  "Посмотреть баланс",
-  "Пополнить счёт",
-  "Снять со счёта",
-  "Перевести на счёт",
-  "Оплатить дом",
+  "View balance",
+  "Deposit",
+  "Withdraw",
+  "Transfer to account",
+  "Pay for house",
 ] as const;
 
 type PendingSend = {
@@ -74,7 +74,7 @@ export function startTellers(world: number): void {
   for (const point of TELLERS) {
     new Pickup(PICKUP_MODEL, PICKUP_TYPE, point.x, point.y, point.z, world);
     new TextLabel(
-      "Банковский счёт",
+      "Bank account",
       Color.info,
       point.x,
       point.y,
@@ -166,7 +166,7 @@ function handleDialog(
 
   if (!isAuthenticated(player) || !isAtTeller(player)) {
     if (isAuthenticated(player)) {
-      player.sendClientMessage(Color.gray, "Операцию нужно делать у кассы.");
+      player.sendClientMessage(Color.gray, "This transaction must be made at the teller.");
     }
     return;
   }
@@ -284,13 +284,13 @@ function showMenu(player: Player): void {
       player,
       BANK_MENU_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Банк",
+      "Bank",
       MENU_ITEMS.join("\n"),
-      "Выбрать",
-      "Закрыть"
+      "Select",
+      "Close"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть банк.");
+    player.sendClientMessage(Color.error, "Could not open bank.");
   }
 }
 
@@ -301,8 +301,8 @@ function showBalance(player: Player): void {
   }
 
   const body = [
-    `Наличные: $${account.money}`,
-    `Банковский счёт: $${account.bank}`,
+    `Cash: $${account.money}`,
+    `Bank account: $${account.bank}`,
   ].join("\n");
 
   try {
@@ -310,13 +310,13 @@ function showBalance(player: Player): void {
       player,
       BANK_BALANCE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Баланс",
+      "Balance",
       body,
-      "Назад",
+      "Back",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть баланс.");
+    player.sendClientMessage(Color.error, "Could not open balance.");
   }
 }
 
@@ -326,12 +326,12 @@ function showAmountDialog(player: Player, mode: "deposit" | "withdraw"): void {
     return;
   }
 
-  const title = mode === "deposit" ? "Пополнение" : "Снятие";
+  const title = mode === "deposit" ? "Deposit" : "Withdrawal";
   const available = mode === "deposit" ? account.money : account.bank;
   const body =
     mode === "deposit"
-      ? `Наличные: $${available}\nВведите сумму пополнения:`
-      : `Банковский счёт: $${available}\nВведите сумму снятия:`;
+      ? `Cash: $${available}\nEnter deposit amount:`
+      : `Bank account: $${available}\nEnter withdrawal amount:`;
 
   try {
     Dialog.show(
@@ -341,10 +341,10 @@ function showAmountDialog(player: Player, mode: "deposit" | "withdraw"): void {
       title,
       body,
       "OK",
-      "Назад"
+      "Back"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть банк.");
+    player.sendClientMessage(Color.error, "Could not open bank.");
   }
 }
 
@@ -355,13 +355,13 @@ function showSendIdDialog(player: Player): void {
       player,
       BANK_SEND_ID_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Перевод",
-      "Введите ID игрока:",
-      "Далее",
-      "Назад"
+      "Transfer",
+      "Enter player ID:",
+      "Next",
+      "Back"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть банк.");
+    player.sendClientMessage(Color.error, "Could not open bank.");
   }
 }
 
@@ -369,13 +369,13 @@ function showSendConfirm(player: Player, inputText: string): void {
   const senderId = playerId(player);
   const slot = parsePlayerSlot(inputText);
   if (senderId === null || slot === null) {
-    player.sendClientMessage(Color.error, "Введите ID игрока.");
+    player.sendClientMessage(Color.error, "Enter player ID.");
     showSendIdDialog(player);
     return;
   }
 
   if (slot === senderId) {
-    player.sendClientMessage(Color.error, "Нельзя перевести себе.");
+    player.sendClientMessage(Color.error, "You cannot transfer to yourself.");
     showSendIdDialog(player);
     return;
   }
@@ -383,7 +383,7 @@ function showSendConfirm(player: Player, inputText: string): void {
   const target = findOnlinePlayer(slot);
   const targetAccount = target ? getAccount(target) : null;
   if (!target || !targetAccount) {
-    player.sendClientMessage(Color.error, "Игрок не в игре.");
+    player.sendClientMessage(Color.error, "Player is not in game.");
     showSendIdDialog(player);
     return;
   }
@@ -400,14 +400,14 @@ function showSendConfirm(player: Player, inputText: string): void {
       player,
       BANK_SEND_CONFIRM_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Подтверждение",
-      `Перевести на счёт ${label}?`,
-      "Да",
-      "Нет"
+      "Confirmation",
+      `Transfer to ${label}'s account?`,
+      "Yes",
+      "No"
     );
   } catch {
     clearPending(player);
-    player.sendClientMessage(Color.error, "Не удалось открыть банк.");
+    player.sendClientMessage(Color.error, "Could not open bank.");
   }
 }
 
@@ -421,7 +421,7 @@ function showSendAmountDialog(player: Player): void {
   }
 
   if (!resolvePendingTarget(player, pending)) {
-    player.sendClientMessage(Color.error, "Игрок не в игре.");
+    player.sendClientMessage(Color.error, "Player is not in game.");
     clearPending(player);
     showMenu(player);
     return;
@@ -432,13 +432,13 @@ function showSendAmountDialog(player: Player): void {
       player,
       BANK_SEND_AMOUNT_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Перевод",
-      `${pending.label}\nВаш счёт: $${account.bank}\nВведите сумму перевода:`,
+      "Transfer",
+      `${pending.label}\nYour account: $${account.bank}\nEnter transfer amount:`,
       "OK",
-      "Назад"
+      "Back"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть банк.");
+    player.sendClientMessage(Color.error, "Could not open bank.");
   }
 }
 
@@ -455,13 +455,13 @@ async function sendToPlayer(player: Player, inputText: string): Promise<void> {
   }
 
   if (!isAtTeller(player)) {
-    player.sendClientMessage(Color.error, "Подойдите к кассе.");
+    player.sendClientMessage(Color.error, "Go to the teller.");
     return;
   }
 
   const amount = parseAmount(inputText);
   if (amount === null) {
-    player.sendClientMessage(Color.error, "Введите целую сумму больше 0.");
+    player.sendClientMessage(Color.error, "Enter a whole amount greater than 0.");
     showSendAmountDialog(player);
     return;
   }
@@ -473,7 +473,7 @@ async function sendToPlayer(player: Player, inputText: string): Promise<void> {
 
   const senderBank = Math.max(0, Math.floor(senderAccount.bank));
   if (amount > senderBank) {
-    player.sendClientMessage(Color.error, "Недостаточно денег на счёте.");
+    player.sendClientMessage(Color.error, "Insufficient funds in account.");
     showSendAmountDialog(player);
     return;
   }
@@ -481,7 +481,7 @@ async function sendToPlayer(player: Player, inputText: string): Promise<void> {
   const target = resolvePendingTarget(player, pending);
   const targetAccount = target ? getAccount(target) : null;
   if (!target || !targetAccount) {
-    player.sendClientMessage(Color.error, "Игрок не в игре.");
+    player.sendClientMessage(Color.error, "Player is not in game.");
     clearPending(player);
     if (isAtTeller(player)) {
       showMenu(player);
@@ -491,14 +491,14 @@ async function sendToPlayer(player: Player, inputText: string): Promise<void> {
 
   const targetSlot = playerId(target);
   if (targetSlot === null || busy.has(targetSlot)) {
-    player.sendClientMessage(Color.error, "Игрок сейчас занят. Подождите.");
+    player.sendClientMessage(Color.error, "Player is busy. Please wait.");
     showSendAmountDialog(player);
     return;
   }
 
   const targetBank = Math.max(0, Math.floor(targetAccount.bank));
   if (targetBank > MAX_MONEY - amount) {
-    player.sendClientMessage(Color.error, "Счёт получателя не может принять эту сумму.");
+    player.sendClientMessage(Color.error, "Recipient account cannot accept this amount.");
     showSendAmountDialog(player);
     return;
   }
@@ -519,8 +519,8 @@ async function sendToPlayer(player: Player, inputText: string): Promise<void> {
     busy.delete(senderId);
     busy.delete(targetSlot);
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] банк перевод ${senderAccount.name}: ${message}`);
-    player.sendClientMessage(Color.error, "Операция не прошла. Попробуйте ещё раз.");
+    omp.log(`[${SERVER_TAG}] bank transfer ${senderAccount.name}: ${message}`);
+    player.sendClientMessage(Color.error, "Transaction failed. Try again.");
     if (isAtTeller(player)) {
       showMenu(player);
     }
@@ -535,7 +535,7 @@ async function sendToPlayer(player: Player, inputText: string): Promise<void> {
     const next = keepBankExtra(player, senderBank, nextSenderBank);
     player.sendClientMessage(
       Color.tryOk,
-      `Вы перевели $${amount} игроку ${pending.label}. Баланс: $${next}.`
+      `You transferred $${amount} to ${pending.label}. Balance: $${next}.`
     );
   }
 
@@ -543,7 +543,7 @@ async function sendToPlayer(player: Player, inputText: string): Promise<void> {
     keepBankExtra(target, targetBank, nextTargetBank);
     target.sendClientMessage(
       Color.info,
-      `Игрок ${senderAccount.name}[${senderId}] перевёл вам $${amount}.`
+      `Player ${senderAccount.name}[${senderId}] transferred $${amount} to you.`
     );
   }
 
@@ -625,7 +625,7 @@ async function transfer(
   }
 
   if (!isAtTeller(player)) {
-    player.sendClientMessage(Color.error, "Подойдите к кассе.");
+    player.sendClientMessage(Color.error, "Go to the teller.");
     return;
   }
 
@@ -636,7 +636,7 @@ async function transfer(
 
   const amount = parseAmount(inputText);
   if (amount === null) {
-    player.sendClientMessage(Color.error, "Введите целую сумму больше 0.");
+    player.sendClientMessage(Color.error, "Enter a whole amount greater than 0.");
     showAmountDialog(player, mode);
     return;
   }
@@ -648,12 +648,12 @@ async function transfer(
   let nextBank = bank;
   if (mode === "deposit") {
     if (amount > cash) {
-      player.sendClientMessage(Color.error, "Недостаточно наличных.");
+      player.sendClientMessage(Color.error, "Insufficient cash.");
       showAmountDialog(player, mode);
       return;
     }
     if (bank > MAX_MONEY - amount) {
-      player.sendClientMessage(Color.error, "Счёт не может принять эту сумму.");
+      player.sendClientMessage(Color.error, "Account cannot accept this amount.");
       showAmountDialog(player, mode);
       return;
     }
@@ -661,12 +661,12 @@ async function transfer(
     nextBank = bank + amount;
   } else {
     if (amount > bank) {
-      player.sendClientMessage(Color.error, "Недостаточно денег на счёте.");
+      player.sendClientMessage(Color.error, "Insufficient funds in account.");
       showAmountDialog(player, mode);
       return;
     }
     if (cash > MAX_MONEY - amount) {
-      player.sendClientMessage(Color.error, "Нельзя нести столько наличных.");
+      player.sendClientMessage(Color.error, "You cannot carry that much cash.");
       showAmountDialog(player, mode);
       return;
     }
@@ -681,7 +681,7 @@ async function transfer(
     busy.delete(id);
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] bank ${account.name}: ${message}`);
-    player.sendClientMessage(Color.error, "Операция не прошла. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Transaction failed. Try again.");
     if (isAtTeller(player)) {
       showMenu(player);
     }
@@ -709,12 +709,12 @@ async function transfer(
   if (mode === "deposit") {
     player.sendClientMessage(
       Color.tryOk,
-      `Счёт пополнен на $${amount}. Баланс: $${bankNow}.`
+      `Account credited by $${amount}. Balance: $${bankNow}.`
     );
   } else {
     player.sendClientMessage(
       Color.tryOk,
-      `Вы сняли $${amount}. Наличные: $${cashNow}.`
+      `You withdrew $${amount}. Cash: $${cashNow}.`
     );
   }
 

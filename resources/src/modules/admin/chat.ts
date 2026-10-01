@@ -14,7 +14,7 @@ function sendAdminChat(text: string): void {
     try {
       other.sendClientMessage(Color.adminChat, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -22,7 +22,7 @@ function sendAdminChat(text: string): void {
 export function bindAdminChat(): void {
   registerCommand(
     "a",
-    "Чат администрации",
+    "Admin chat",
     (player, args) => {
       if (!hasAdminAccess(player, 1)) {
         return;
@@ -30,7 +30,7 @@ export function bindAdminChat(): void {
 
       const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
       if (!text) {
-        player.sendClientMessage(Color.error, "Использование: /a [текст]");
+        player.sendClientMessage(Color.error, "Usage: /a [text]");
         return;
       }
 
