@@ -1,83 +1,83 @@
 # Los Santos Role Play (LSRP)
 
-open.mp сервер. Игровой код — TypeScript в `resources/src`. Папку `resources/dist` не трогай: она собирается сама.
+open.mp server. Game logic is written in TypeScript under `resources/src`. Do not touch the `resources/dist` folder: it is generated automatically.
 
-Полная документация: [docs/docs.md](docs/docs.md).
+Full documentation: [docs/docs.md](docs/docs.md).
 
-Выкладка на VPS: [docs/deploy.md](docs/deploy.md). Пайплайн: [deploy.yml](deploy.yml).
+VPS deployment: [docs/deploy.md](docs/deploy.md). Pipeline: [deploy.yml](deploy.yml).
 
-## Где писать
+## Where to write code
 
 ```
 resources/src/
-  index.ts                 подключает модули
-  shared/                  название сервера, цвета, MySQL, хелперы
+  index.ts                 loads modules
+  shared/                  server name, colors, MySQL, helpers
   modules/
-    database/              подключение MySQL
-    auth/                  регистрация и авторизация (диалоги)
-    persist/               сохранение HP и денег, медленное падение здоровья
-    spawn/                 класс, обычный спавн, больница после смерти
-    hospital/              интерьер больницы, койки
-    cityhall/              паспорт, инвайт
-    miner/                 шахта
+    database/              MySQL connection
+    auth/                  registration and login (dialogs)
+    persist/               saving HP and money, gradual health drain
+    spawn/                 class, regular spawn, hospital respawn after death
+    hospital/              hospital interior, beds
+    cityhall/              passport, invite
+    miner/                 mine
     gps/ afk/ payday/ worldtime/ zones/
-    hud/                   логотип textdraw «Los Santos RP»
-    session/               лог входа / выхода
-    chat/                  локальный чат
+    hud/                   Los Santos RP textdraw logo
+    session/               login / logout logs
+    chat/                  local chat
     commands/              /help /mn /me /do /try /todo /b /s /w /stats /pass /hospital /gps /leaders /r
-    admin/                 /alogin и админ-команды
-    org/                   организации (армия), ворота
+    admin/                 /alogin and admin commands
+    org/                   organizations (army), gates
     mapping/               maps/*.txt
 ```
 
-Новая система = новая папка в `modules`, затем импорт в `src/index.ts`.
+A new system = a new folder in `modules`, then import it in `src/index.ts`.
 
-Новая команда = файл в `modules/commands` по образцу `me.ts` (`registerCommand`), затем `import "./имя"` в `modules/commands/index.ts`.
+A new command = a file in `modules/commands` following the pattern of `me.ts` (`registerCommand`), then add `import "./name"` in `modules/commands/index.ts`.
 
-Маппинг: клади `.txt` с `CreateDynamicObject` / `CreateObject` в папку `maps` в корне сервера и перезапусти. Сейчас: `jail.txt`, `hospital.txt`, `mine.txt`, `army.txt`. Ворота армии в коде (`org/gates.ts`), в `army.txt` их не дублировать.
+Mapping: place `.txt` files with `CreateDynamicObject` / `CreateObject` in the `maps` folder at the server root and restart. Currently: `jail.txt`, `hospital.txt`, `mine.txt`, `army.txt`. Army gates are handled in code (`org/gates.ts`), so do not duplicate them in `army.txt`.
 
-Обычный чат — 20 м, `/w` шёпот — 5 м, `/s` крик — 60 м. В чате и пузырём над головой. Дальние игроки не видят. Лимит 128 символов.
+Regular chat range is 20 meters, `/w` whisper is 5 meters, `/s` shout is 60 meters. Chat messages and speech bubbles appear above the head. Distant players do not see them. Character limit is 128.
 
-После смерти игрок оживает в одной больнице, случайно на одной из нескольких точек. Первый вход и без организации — `DEFAULT_SPAWN` в `modules/spawn/point.ts`. Интерьер пока `0`.
+After death, the player respawns in a hospital at a random location from several available points. First login and without an organization uses `DEFAULT_SPAWN` in `modules/spawn/point.ts`. The interior is currently `0`.
 
-При входе в правом верхнем углу — логотип **Los Santos RP** (`modules/hud/index.ts`).
+At login, the logo **Los Santos RP** appears in the upper-right corner (`modules/hud/index.ts`).
 
-`gamemodes/lsrp.amx` — заглушка Pawn, логика в TS.
+`gamemodes/lsrp.amx` is a Pawn stub; the actual logic is in TypeScript.
 
-Название в `shared/brand.ts` должно совпадать с `config.json` (`name` и `game.mode`).
+The name in `shared/brand.ts` must match `config.json` (`name` and `game.mode`).
 
-## Аккаунт
+## Account
 
-Ник берётся из SA-MP имени: формат `Name_Surname` (например `John_Doe`).
+The nickname is taken from the SA-MP name: format `Name_Surname` (for example `John_Doe`).
 
-- Нет аккаунта: правила (принять / отказаться) → почта → пароль → повтор пароля → дата рождения (`ДД.ММ.ГГГГ`, от 16 лет) → пол (мужской / женский) → скин → подтверждение. Отказ от правил — кик. Текст правил: `resources/src/modules/auth/rules.ts`.
-- Есть аккаунт: только пароль. Три ошибки — кик.
+- No account: rules (accept / decline) → email → password → repeat password → date of birth (`DD.MM.YYYY`, minimum age 16) → gender (male / female) → skin → confirmation. Declining the rules kicks the player. Rules text: `resources/src/modules/auth/rules.ts`.
+- Existing account: password only. Three errors = kick.
 
-Пароль в базе хранится как scrypt-хэш, не открытым текстом. Пол — `users.gender` (`male` / `female`). Деньги — `users.money`, донат-счёт — `users.donate`, здоровье — `users.health` (колонки добавляются сами, если их ещё нет). Новому персонажу — 100 HP. При входе полоска восстанавливается из БД. Раз в 15 минут −1 HP, не ниже 20. После смерти в больнице снова 100. Сохранение: выход, раз в 3 минуты, больница. До входа игрок в спеке, чат и команды закрыты.
+The password is stored in the database as an scrypt hash, not in plain text. Gender is `users.gender` (`male` / `female`). Money is `users.money`, donation balance is `users.donate`, health is `users.health` (columns are added automatically if they do not exist). New characters start with 100 HP. On login, the health bar is restored from the database. Every 15 minutes, health decreases by 1 HP, but not below 20. After death in the hospital, health resets to 100. Saving: on exit, every 3 minutes, and at the hospital. Before login, the player is locked from spectating, chat, and commands.
 
-Таблица `users` создаётся сама при старте. Схема также лежит в `sql/schema.sql`.
+The `users` table is created automatically on startup. The schema is also in `sql/schema.sql`.
 
 ## MySQL
 
-Скопируй `.env.example` в `.env` и пропиши доступ к базе. На старте сервер делает `SELECT 1`.
+Copy `.env.example` to `.env` and add the database connection details. On startup the server runs `SELECT 1`.
 
 ```powershell
 copy .env.example .env
 ```
 
-Драйвер — `mysql2` (чистый JS, без Prisma). Запросы не ставь в игровой тик: логин, сохранение персонажа, инвентарь — по событию.
+Driver: `mysql2` (pure JS, no Prisma). Do not run queries inside the game tick: login, character saving, inventory — use events instead.
 
-## Команды
+## Commands
 
-Из корня `D:\OSPanel\home\samp\public`:
+From the root folder `D:\OSPanel\home\samp\public`:
 
 ```powershell
-npm run build      # собрать JS
-npm run dev        # сборка при каждом сохранении
-npm run typecheck  # проверка типов
-npm start          # запустить omp-server.exe
+npm run build      # build JS
+npm run dev        # rebuild on every save
+npm run typecheck  # type checking
+npm start          # run omp-server.exe
 ```
 
-После `build` **перезапусти сервер**. Hot-reload пока нет: окно сервера закрыл → `npm start` → зашёл на `127.0.0.1:7777`.
+After `build`, **restart the server**. There is no hot reload yet: close the server window → run `npm start` → connect to `127.0.0.1:7777`.
 
-Удобный цикл: в одном терминале `npm run dev`, сервер перезапускаешь вручную после правок.
+A convenient workflow: run `npm run dev` in one terminal and restart the server manually after edits.
