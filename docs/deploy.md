@@ -244,7 +244,7 @@ The file is in the root: [deploy.yml](../deploy.yml).
 
 The workflow neither installs MySQL nor copies `.env` / `config.json`: configure these manually once. It builds the game mode, uploads `resources/dist` and `maps/`, then restarts the `lsrp` service when present.
 
-Repository secrets: **Settings → Secrets and variables → Actions**:
+Repository secrets: **Settings -> Secrets and variables -> Actions**:
 
 | Secret | Example |
 |---|---|
@@ -255,7 +255,7 @@ Repository secrets: **Settings → Secrets and variables → Actions**:
 
 The SSH port in `deploy.yml` is currently **22**. For another port, edit `port:` in the file.
 
-Start it with **Actions → Deploy → Run workflow**, or tag a release:
+Start it with **Actions -> Deploy -> Run workflow**, or tag a release:
 
 ```bash
 git tag v1.0.0
@@ -270,13 +270,13 @@ Without `DEPLOY_HOST`, the deployment job is skipped while the build still runs.
 
 - [ ] MySQL database, user, and password
 - [ ] `.env` on the server, not from the local PC
-- [ ] `npm run build` → `resources/dist/index.js` exists
+- [ ] `npm run build` -> `resources/dist/index.js` exists
 - [ ] Server `resources/node_modules` created by `npm ci --omit=dev` (do not copy from Windows to Linux)
 - [ ] `gamemodes/lsrp.amx` and `components/` are present
 - [ ] `config.json`: RCON, announce, public_addr
 - [ ] Firewall allows UDP 7777
 - [ ] Start from the **project root**
-- [ ] Log contains MySQL and “LSRP ready”
+- [ ] Log contains MySQL and "LSRP ready"
 - [ ] Connect using `Name_Surname`
 
 ---
@@ -285,7 +285,7 @@ Without `DEPLOY_HOST`, the deployment job is skipped while the build still runs.
 
 | Symptom | Check |
 |---|---|
-| “Database unavailable” | `.env`, MySQL host, user, and that the server started from the root |
+| "Database unavailable" | `.env`, MySQL host, user, and that the server started from the root |
 | Modules do not load / old code | Forgot `npm run build` or did not restart the process |
 | `Cannot find package mysql2` | `resources/node_modules` is missing; run `npm ci --omit=dev` |
 | Does not start on Linux | Windows `.exe` / `.dll` was uploaded; Linux open.mp binaries are required |

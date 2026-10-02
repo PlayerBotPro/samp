@@ -6,7 +6,7 @@ import { startSafeZones } from "./safe";
 import { startCapture, refreshCaptureView } from "./capture";
 import { showGangTurf, startGangTurf } from "./turf";
 
-/** Black, FF alpha — opaque. */
+/** Black, FF alpha - opaque. */
 const ZONE_COLOR = 0x000000ff;
 
 type ClosedZone = {

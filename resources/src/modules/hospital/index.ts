@@ -75,7 +75,7 @@ const FROM_INTERIOR: SpawnPoint = {
   world: STREET_WORLD,
 };
 
-/** Reception hall → service block (personnel, operating unit, management…). */
+/** Reception hall -> service block (personnel, operating unit, management...). */
 const HALL_TO_SERVICE_PICKUP = {
   x: 1165.1902,
   y: -1322.7876,
@@ -91,7 +91,7 @@ const TO_SERVICE_BLOCK: SpawnPoint = {
   world: HOSPITAL_WORLD,
 };
 
-/** Service block → reception hall. */
+/** Service block -> reception hall. */
 const SERVICE_TO_HALL_PICKUP = {
   x: 1151.0732,
   y: -1366.5275,

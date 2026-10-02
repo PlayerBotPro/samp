@@ -96,7 +96,7 @@ export function bindOrgWarehouseInteract(): void {
 }
 
 /**
- * Warehouse tick: player left the marker radius — reset the visit.
+ * Warehouse tick: player left the marker radius - reset the visit.
  * (To reopen the menu, step away and return to the marker.)
  */
 export function notifyOrgStockStanding(player: Player, inside: boolean): void {
@@ -151,7 +151,7 @@ function tryOpenStockMenu(player: Player): void {
 
 function showMenu(player: Player, orgId: number): void {
   const wh = getWarehouse(orgId);
-  // Locked → "Open warehouse", open → "Lock warehouse".
+  // Locked -> "Open warehouse", open -> "Lock warehouse".
   const lockLabel =
     wh && !wh.isLocked ? "Lock warehouse" : "Open warehouse";
   const body = [
@@ -488,7 +488,7 @@ function toggleLock(player: Player, orgId: number): void {
 
   const wh = getWarehouse(orgId);
   const currentlyOpen = Boolean(wh && !wh.isLocked);
-  // Open → lock; locked → open.
+  // Open -> lock; locked -> open.
   const nextLocked = currentlyOpen;
   setWarehouseLocked(orgId, nextLocked);
   refreshStockLabels(orgId);

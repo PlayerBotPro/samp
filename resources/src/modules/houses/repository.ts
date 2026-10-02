@@ -529,7 +529,7 @@ async function migrateHousesTable(): Promise<void> {
         "ALTER TABLE houses ADD UNIQUE KEY uq_houses_owner_id (owner_id)"
       );
     } catch {
-      // Duplicate owner_id values already exist — an admin will add the index manually.
+      // Duplicate owner_id values already exist - an admin will add the index manually.
     }
   }
 }

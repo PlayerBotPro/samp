@@ -213,7 +213,7 @@ export function bindFbiDoors(): void {
       return;
     }
 
-    // Exit from ammunation — no organization check (already inside).
+    // Exit from ammunation - no organization check (already inside).
     if (kind !== "ammoExit" && !canUseFbiDoor(player, true)) {
       return;
     }

@@ -1,13 +1,13 @@
 # Build the game mode and deploy it to the server.
 #
-# Repository secrets (Settings → Secrets and variables → Actions):
-#   DEPLOY_HOST      — IP address or domain
-#   DEPLOY_USER      — SSH user
-#   DEPLOY_SSH_KEY   — private key (including BEGIN/END)
-#   DEPLOY_PATH      — server directory, for example /opt/lsrp
+# Repository secrets (Settings -> Secrets and variables -> Actions):
+#   DEPLOY_HOST      - IP address or domain
+#   DEPLOY_USER      - SSH user
+#   DEPLOY_SSH_KEY   - private key (including BEGIN/END)
+#   DEPLOY_PATH      - server directory, for example /opt/lsrp
 #   SSH port in the pipeline: 22
 #
-# Start: Actions → Deploy → Run workflow
+# Start: Actions -> Deploy -> Run workflow
 # or git tag v1.0.0 && git push origin v1.0.0
 
 # name: Deploy

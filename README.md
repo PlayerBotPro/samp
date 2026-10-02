@@ -50,7 +50,7 @@ The name in `shared/brand.ts` must match `config.json` (`name` and `game.mode`).
 
 The nickname comes from the SA-MP name and must use `Name_Surname` format (for example, `John_Doe`).
 
-- No account: rules (accept / decline) → email → password → repeat password → date of birth (`DD.MM.YYYY`, at least 16 years old) → gender (male / female) → skin → confirmation. Declining the rules results in a kick. Rules text: `resources/src/modules/auth/rules.ts`.
+- No account: rules (accept / decline) -> email -> password -> repeat password -> date of birth (`DD.MM.YYYY`, at least 16 years old) -> gender (male / female) -> skin -> confirmation. Declining the rules results in a kick. Rules text: `resources/src/modules/auth/rules.ts`.
 - Existing account: password only. Three failed attempts result in a kick.
 
 Passwords are stored in the database as scrypt hashes, not plaintext. Gender is `users.gender` (`male` / `female`). Money is `users.money`, donation balance is `users.donate`, and health is `users.health` (the columns are added automatically if absent). A new character starts with 100 HP. Health is restored from the database on login. Every 15 minutes, HP decreases by 1 but never below 20. After death, it returns to 100 in hospital. Saving occurs on logout, every 3 minutes, and on entering hospital. Before login, the player is spectating and chat and commands are unavailable.
@@ -78,6 +78,6 @@ npm run typecheck  # check types
 npm start          # start omp-server.exe
 ```
 
-After `build`, **restart the server**. There is no hot reload yet: close the server window → `npm start` → connect to `127.0.0.1:7777`.
+After `build`, **restart the server**. There is no hot reload yet: close the server window -> `npm start` -> connect to `127.0.0.1:7777`.
 
 Convenient workflow: run `npm run dev` in one terminal and restart the server manually after changes.

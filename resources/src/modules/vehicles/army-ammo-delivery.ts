@@ -186,12 +186,12 @@ export function bindArmyAmmoDelivery(): void {
       newState === PLAYER_STATE_DRIVER ||
       newState === PLAYER_STATE_PASSENGER
     ) {
-      returnCarried(player, "You entered a vehicle — the ammunition was returned to storage.");
+      returnCarried(player, "You entered a vehicle - the ammunition was returned to storage.");
     }
   });
 
   omp.on("playerDeath", (player) => {
-    returnCarried(player, "You lost the crate — the ammunition was returned to storage.");
+    returnCarried(player, "You lost the crate - the ammunition was returned to storage.");
   });
 
   omp.on("playerDisconnect", (player) => {
@@ -200,7 +200,7 @@ export function bindArmyAmmoDelivery(): void {
   });
 
   omp.on("playerConnect", (player) => {
-    // The slot may remain dirty after a crash without disconnect — return to storage first.
+    // The slot may remain dirty after a crash without disconnect - return to storage first.
     returnCarried(player, null);
     clearPlayer(player);
   });

@@ -1,4 +1,4 @@
-# LSRP — Version 3
+# LSRP - Version 3
 
 This document records the v3 additions after [docs_v2.md](docs_v2.md). It covers property, jobs, warehouses, organization production and delivery, the gang dealer, wanted level, identity documents, and the Army-base raid.
 
@@ -20,7 +20,7 @@ Warehouses contain organization resources. The actual field used by gameplay dep
 
 ### Gang and mafia warehouses
 
-Mafia warehouses use interior 5 and worlds 14, 15, and 16. Gang warehouses use their respective headquarters and worlds 9–13. Entry to the red checkpoint on foot opens dialog **65**; dialog **66** asks for quantity.
+Mafia warehouses use interior 5 and worlds 14, 15, and 16. Gang warehouses use their respective headquarters and worlds 9-13. Entry to the red checkpoint on foot opens dialog **65**; dialog **66** asks for quantity.
 
 Members of the owning organization can:
 
@@ -71,14 +71,14 @@ One trip holds five boxes. Refresh the stock label with `refreshHospitalMedsStoc
 
 ## Ghetto dealer and Army disguise
 
-Smokey is a street dealer for Grove, Ballas, Vagos, Rifa, and Aztecas (organizations **9–13**). The `ghetto/` module starts after `warehouse`.
+Smokey is a street dealer for Grove, Ballas, Vagos, Rifa, and Aztecas (organizations **9-13**). The `ghetto/` module starts after `warehouse`.
 
 | Property | Value |
 |---|---|
 | Name / skin | Smokey, skin 28 |
 | Location | `2515.93, -1474.61, 24.00`, angle `2.69`, street world 0 |
 | Interaction | Left Alt (`KEY_WALK`) within ~2.2 m on foot |
-| Purchase | `$50` per drug unit; 1–500 units |
+| Purchase | `$50` per drug unit; 1-500 units |
 | Dialogs | 63 menu, 64 quantity |
 
 Purchases increase `users.drugs` and debit cash using `saveUserMoney` and `saveUserInventory`. The actor loops `DEALER`/`DEALER_IDLE`; pre-load the animation library for the client and replay it on `actorStreamIn`.
@@ -102,7 +102,7 @@ Wanted stars are applied with `player.setWantedLevel`, synchronized on login/spa
 | `/givevbilet [id]` | Army rank 8+ | issue military ID to an online player without one |
 | `/vbilet` | holder | view own military ID |
 | `/vbilet [id]` | holder | show it to a nearby player (`WHISPER_RADIUS`) |
-| `/givemedcard [id] [amount]` | Hospital rank 6+ | offer medical card for $2000–5000; target uses Y/N |
+| `/givemedcard [id] [amount]` | Hospital rank 6+ | offer medical card for $2000-5000; target uses Y/N |
 | `/medcard` | holder | view own medical card |
 | `/medcard [id]` | holder | show it to a nearby player |
 
@@ -117,7 +117,7 @@ Military ID uses dialog **67** and `commands/vbilet.ts`. Medical-card issuance i
 | 1 | `2792.68, -2393.04, 13.96` |
 | 2 | `2743.31, -2454.36, 13.86` |
 
-Only ghetto gangs (organizations 9–13) may use them. While standing on a crate on foot, every ~2.5 seconds remove **20** ammunition from Army warehouse `org_id` 1 and add it to `users.ammo`; an empty warehouse displays a cooldown message. Refresh the Army depot label. Death in base rectangle `2664.8,-2589.1` … `2864.8,-2306.1` in street world removes **30%** of current ammunition, at least one if any was held.
+Only ghetto gangs (organizations 9-13) may use them. While standing on a crate on foot, every ~2.5 seconds remove **20** ammunition from Army warehouse `org_id` 1 and add it to `users.ammo`; an empty warehouse displays a cooldown message. Refresh the Army depot label. Death in base rectangle `2664.8,-2589.1` ... `2864.8,-2306.1` in street world removes **30%** of current ammunition, at least one if any was held.
 
 ## Army ammunition delivery
 

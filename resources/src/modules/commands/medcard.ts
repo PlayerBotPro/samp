@@ -43,7 +43,7 @@ type MedcardOffer = {
   expiresAt: number;
 };
 
-/** Medcard offers: target slot → offer. */
+/** Medcard offers: target slot -> offer. */
 const pendingOffers = new Map<number, MedcardOffer>();
 
 registerCommand("medcard", "Medcard: view or show it by ID", (player, args) => {

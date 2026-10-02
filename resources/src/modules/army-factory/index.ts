@@ -373,7 +373,7 @@ function onBenchPickup(
     player.sendClientMessage(
       Color.error,
       job.phase === "product"
-        ? "The ammunition is assembled — take it to the warehouse."
+        ? "The ammunition is assembled - take it to the warehouse."
         : "Take a casing blank from a yellow pickup."
     );
     return;

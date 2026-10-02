@@ -351,6 +351,6 @@ function tryGivePassport(player: Player): void {
   player.sendClientMessage(Color.info, "You received a Los Santos passport.");
   player.sendClientMessage(
     Color.gray,
-    "/pass — view, /pass [id] — show another player."
+    "/pass - view, /pass [id] - show another player."
   );
 }

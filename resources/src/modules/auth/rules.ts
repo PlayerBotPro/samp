@@ -13,10 +13,10 @@ ALLOWED
 - OOC via /b, briefly and to the point
 
 FORBIDDEN
-- DM — killing without RP or a reason
-- PG — doing what your character could not do
-- MG — bringing knowledge from the forum, Discord, or /b into the game
-- RK / SK — revenge or killing after death / at spawn
+- DM - killing without RP or a reason
+- PG - doing what your character could not do
+- MG - bringing knowledge from the forum, Discord, or /b into the game
+- RK / SK - revenge or killing after death / at spawn
 - Cheats, bugs, flooding, insulting players or administration
 - Nicknames not in Name_Surname format
 

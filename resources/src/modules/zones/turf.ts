@@ -13,7 +13,7 @@ import {
 
 const EMPTY_COLOR = 0x808080aa;
 
-/** Spawn-zone IDs from the old dump — they cannot be captured. */
+/** Spawn-zone IDs from the old dump - they cannot be captured. */
 const LEGACY_SPAWN_ZONE_IDS: ReadonlySet<number> = new Set([7, 25, 67, 74, 90]);
 
 export type LiveTurf = {

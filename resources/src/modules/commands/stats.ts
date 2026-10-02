@@ -32,7 +32,7 @@ export function showStatsDialog(player: Player): void {
       health = Math.round(live);
     }
   } catch {
-    // World stats are unavailable — show account data.
+    // World stats are unavailable - show account data.
   }
 
   const membership = getMembership(account);

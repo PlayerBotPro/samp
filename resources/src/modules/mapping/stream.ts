@@ -58,7 +58,7 @@ function applyBuildingRemovals(player: Player): void {
     }
     removalsApplied.add(id);
   } catch {
-    // The slot is not ready yet — the second timer will retry.
+    // The slot is not ready yet - the second timer will retry.
   }
 }
 

@@ -1,6 +1,6 @@
-# LSRP — Version 2
+# LSRP - Version 2
 
-This document describes additions after [docs.md](docs.md): the baseline covers login, hospital, city hall, mine, the Army, and admin levels 1–7 with `/alogin`. Player-facing text is Russian (UTF-8).
+This document describes additions after [docs.md](docs.md): the baseline covers login, hospital, city hall, mine, the Army, and admin levels 1-7 with `/alogin`. Player-facing text is Russian (UTF-8).
 
 ## Startup
 
@@ -24,7 +24,7 @@ GPS adds LS Railway Station, Jail, Bank, County Police, LSPD, FBI, Driving Schoo
 | Column | Meaning |
 |---|---|
 | `bank` | INT bank account, default 0 |
-| `lawfulness` | SMALLINT −100…100, new characters start at 100 |
+| `lawfulness` | SMALLINT -100...100, new characters start at 100 |
 | `muted_until` | INT UNSIGNED NULL Unix seconds; NULL means no mute |
 | `jail_seconds` | INT UNSIGNED remaining sentence; counts down only while online |
 | `license_car`, `license_moto`, `license_fly`, `license_boat`, `license_gun` | TINYINT license flags |
@@ -48,7 +48,7 @@ Drivers require `license_car` for cars, `license_moto` for motorcycles except Fa
 | Command | Effect |
 |---|---|
 | `/limit` | show current limit or hint |
-| `/limit [10–200]` | set this vehicle’s km/h limit |
+| `/limit [10-200]` | set this vehicle's km/h limit |
 | `/limit 0` | remove it |
 
 Velocity is capped every 100 ms only for limited vehicles. The limiter resets on `vehicleDeath` and `vehicleSpawn`, including `/respcar`; occupied vehicles are not respawned.
@@ -57,21 +57,21 @@ Only the driver sees the lower-right speedometer: live km/h and body HP, static 
 
 ## Bank, payday, safe zones, and jail
 
-The bank uses world 2 and dialogs for balance, cash ↔ bank deposit/withdrawal, and P2P transfer by player ID. The money cap is `2147483647`; teller operations are serialized, including payday and `/givemoney` bank deposits. `/stats` displays balance.
+The bank uses world 2 and dialogs for balance, cash <-> bank deposit/withdrawal, and P2P transfer by player ID. The money cap is `2147483647`; teller operations are serialized, including payday and `/givemoney` bank deposits. `/stats` displays balance.
 
 At `:00`, authenticated non-AFK players receive one experience point, organization salary to the bank, +1 lawfulness below 100, and sound 6400. A full account cannot receive salary. Lawfulness starts at 100 and appears in `/stats` and passports.
 
 Safe zones are invisible and cover the station, city hall, hospital, mine, and driving school. In street world/interior 0, on-foot players cannot deal damage and health/armor are restored.
 
-The Jail icon is near `1810.86, -1576.44, 13.52`. Its service entrance and vehicles are restricted to LSPD, County Police, and FBI. `prison/` defines interior rooms, yard, locker, and controls. `/pult` opens/closes the yard; dialogs are 26–27. `/jail [id] [minutes] [reason]` is admin level 3+, accepts 1–10080 minutes, cannot jail admins, and persists `jail_seconds`. Death, killing, and reconnecting do not clear a sentence. `/unjail [id]` releases online jailed players; see `prison/sentence.ts` and `admin/jail.ts`.
+The Jail icon is near `1810.86, -1576.44, 13.52`. Its service entrance and vehicles are restricted to LSPD, County Police, and FBI. `prison/` defines interior rooms, yard, locker, and controls. `/pult` opens/closes the yard; dialogs are 26-27. `/jail [id] [minutes] [reason]` is admin level 3+, accepts 1-10080 minutes, cannot jail admins, and persists `jail_seconds`. Death, killing, and reconnecting do not clear a sentence. `/unjail [id]` releases online jailed players; see `prison/sentence.ts` and `admin/jail.ts`.
 
 ## Reports, mute, and admin commands
 
 `/report` and `/mn` use dialog 20. Its `account.id` cooldown is 30 seconds and survives reconnects; blank submission does not consume it, and mute does not block it. `/ans [id] [text]` is admin 1+, sends the answer to the target and `/alogin` admins, and plays sound 1085 for the target only.
 
-`/mute [id] [minutes] [reason]` is level 2, accepts 1–10080 minutes, cannot mute admins, and writes `muted_until`. It blocks normal chat and `/me /do /try /todo /b /s /w /r /d /gov /f`, not `/report`.
+`/mute [id] [minutes] [reason]` is level 2, accepts 1-10080 minutes, cannot mute admins, and writes `muted_until`. It blocks normal chat and `/me /do /try /todo /b /s /w /r /d /gov /f`, not `/report`.
 
-Additional admin commands: `/slap` (1); `/veh`, `/delveh`, `/jail`, `/unjail`, `/tpcor` (3); `/respcar`, `/setskin`, `/ban`, `/unban`, `/tpint` (4); `/makeleader`, `/gzcolor` (5); `/givemoney`, `/setlevel` (6). `/ban` accepts 1–3650 days and blocks login through `banned_until`; `/givemoney` uses 0 cash and 1 bank.
+Additional admin commands: `/slap` (1); `/veh`, `/delveh`, `/jail`, `/unjail`, `/tpcor` (3); `/respcar`, `/setskin`, `/ban`, `/unban`, `/tpint` (4); `/makeleader`, `/gzcolor` (5); `/givemoney`, `/setlevel` (6). `/ban` accepts 1-3650 days and blocks login through `banned_until`; `/givemoney` uses 0 cash and 1 bank.
 
 ## Organizations
 
@@ -85,7 +85,7 @@ Army (`org_id = 1`) has 25 base vehicles, 100-second respawn, and member-only ac
 | 7 | Driving School | `org/autoschool.ts` |
 | 8 | Radio Center | `org/radio.ts` |
 
-Organizations 4–8 are `gov: true`, `illegal: false`, use `/r`, `/d`, rank-10 `/gov`, and ranks 9–10 staff management. Their vehicle, door, map, and locker modules define access. FBI, LSPD, and County Police share designated service routes and LSPD gates. Locker dialogs: 22 County Police, 23 LSPD, 24 FBI.
+Organizations 4-8 are `gov: true`, `illegal: false`, use `/r`, `/d`, rank-10 `/gov`, and ranks 9-10 staff management. Their vehicle, door, map, and locker modules define access. FBI, LSPD, and County Police share designated service routes and LSPD gates. Locker dialogs: 22 County Police, 23 LSPD, 24 FBI.
 
 Radio Center uses `maps/radio.txt`, world 8, dialog 36 for office/street/roof, camera pickup 367, and member-only News Chopper/Newsvan vehicles. `/ad` costs $500 and queues an announcement; `/edit` lets employees accept or reject it. Accepted broadcasts wait at least 3 minutes and have a 3-minute interval.
 
@@ -101,7 +101,7 @@ Driving School sells missing licenses through `/selllic [id]` and runs $500 five
 | 12 | The Rifa | `0x6666ffaa` |
 | 13 | Varios Los Aztecas | `0x00b4e1aa` |
 
-Gangs spawn in their headquarters, have 10 ranks, organization-colored names/zones, and use `/f`. Ranks 9–10 use `/invite`, `/uninvite`, `/rang`; invitations require a passport, expire after 60 seconds, and require proximity in the same interior/world. Gang vehicles are members-only. See `org/gangs.ts`, `vehicles/gangs.ts`, and `org/gang-doors.ts`.
+Gangs spawn in their headquarters, have 10 ranks, organization-colored names/zones, and use `/f`. Ranks 9-10 use `/invite`, `/uninvite`, `/rang`; invitations require a passport, expire after 60 seconds, and require proximity in the same interior/world. Gang vehicles are members-only. See `org/gangs.ts`, `vehicles/gangs.ts`, and `org/gang-doors.ts`.
 
 Mafias are LCN (14), Yakuza (15), and Russian Mafia (16): `gov: false`, `illegal: false`, `mafia: true`. They use `/f`, have no turf captures, and share gang staff controls. See `org/mafias.ts`, `vehicles/mafias.ts`, and `org/mafia-doors.ts`.
 
@@ -111,7 +111,7 @@ There are 104 east-LS gang cells. Spawn/HQ cells cannot be captured. `/capture` 
 
 v2 adds `/report`, `/limit`, staff commands, `/r /f /d /gov`, `/capture`, `/time`, `/lic`, `/selllic`, `/ad`, and `/edit`. `/stats` and `/pass` include bank, lawfulness, and organization.
 
-Do not reuse dialog IDs: 1–12 v1; 13–19 bank; 20 report; 21 invite; 22–25 lockers; 26–27 jail control; 28–31 licenses; 32–35 exams; 36–39 Radio Center; 40 ban notice; 41 `/tpint`.
+Do not reuse dialog IDs: 1-12 v1; 13-19 bank; 20 report; 21 invite; 22-25 lockers; 26-27 jail control; 28-31 licenses; 32-35 exams; 36-39 Radio Center; 40 ban notice; 41 `/tpint`.
 
 `playGameSound` is Pawn `PlayerPlaySound` and targets one player. IDs: 1083 skin-selection arrows, 1085 `/ans`, 4604 lights, 6400 payday.
 

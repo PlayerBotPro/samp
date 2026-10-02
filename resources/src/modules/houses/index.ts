@@ -33,7 +33,7 @@ export const housesModule: GameModule = {
       omp.log(`[${SERVER_TAG}] houses: loaded ${listHouses().length}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] houses: load error — ${message}`);
+      omp.log(`[${SERVER_TAG}] houses: load error - ${message}`);
     }
 
     omp.on("playerSpawn", (player) => {

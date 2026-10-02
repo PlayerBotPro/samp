@@ -173,7 +173,7 @@ function updateCheckpointForPlayer(player: Player): void {
     return;
   }
 
-  // Not our warehouse — do not touch pending/visit.
+  // Not our warehouse - do not touch pending/visit.
   if (!checkpointShown.has(id)) {
     return;
   }

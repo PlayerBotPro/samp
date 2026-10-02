@@ -600,7 +600,7 @@ async function finishRegister(
   applyScore(player, account.level);
   applyWantedLevel(player, account.wantedLevel);
   welcome(player, account.name);
-  player.sendClientMessage(Color.gray, "Character created. /help — command list.");
+  player.sendClientMessage(Color.gray, "Character created. /help - command list.");
   omp.log(`[${SERVER_TAG}] ${account.name} registered`);
 }
 

@@ -3,7 +3,7 @@ import { playerId } from "../../shared/player";
 
 /** Menu already shown during this entry into the marker. */
 const stockVisitByPlayer = new Set<number>();
-/** A warehouse dialog is currently open — do not interrupt it. */
+/** A warehouse dialog is currently open - do not interrupt it. */
 const stockDialogBusy = new Set<number>();
 
 export function isOrgStockDialogBusy(player: Player): boolean {
@@ -24,7 +24,7 @@ export function setOrgStockDialogBusy(player: Player, busy: boolean): void {
   }
 }
 
-/** @returns false — the menu was already shown during this entry. */
+/** @returns false - the menu was already shown during this entry. */
 export function markOrgStockVisit(player: Player): boolean {
   const id = playerId(player);
   if (id === null) {
@@ -39,7 +39,7 @@ export function markOrgStockVisit(player: Player): boolean {
   return true;
 }
 
-/** Left the marker — it can be opened again on the next entry. */
+/** Left the marker - it can be opened again on the next entry. */
 export function clearOrgStockVisit(player: Player): void {
   const id = playerId(player);
   if (id !== null) {

@@ -14,7 +14,7 @@ export type SpawnPoint = {
 export type PlaceAtOptions = {
   /**
    * milliseconds to freeze after teleportation (for collision/texture loading).
-   * `false` — do not freeze. Default: interior>0 or not outdoors → 2500 ms.
+   * `false` - do not freeze. Default: interior>0 or not outdoors -> 2500 ms.
    */
   settleMs?: number | false;
 };
@@ -38,10 +38,10 @@ export const PRISON_WORLD = 3;
 /** Prison yard at station coordinates: players do not overlap with the street. */
 export const PRISON_YARD_WORLD = 4;
 
-/** Mafias (interior 5): LCN VW 14, Yakuza 15, Russian 16 — `org/mafias.ts`. */
-/** Gangs (houses): Grove VW 9, Ballas 10, Vagos 11, Rifa 12, Aztecas 13 — `org/gangs.ts`. */
-/** Radio center (custom interior): VW 8 — `org/radio.ts`. */
-/** City Hall (custom interior): VW 3 (= org id) — `org/meriya.ts`. Matches PRISON_WORLD; coordinates are far apart. */
+/** Mafias (interior 5): LCN VW 14, Yakuza 15, Russian 16 - `org/mafias.ts`. */
+/** Gangs (houses): Grove VW 9, Ballas 10, Vagos 11, Rifa 12, Aztecas 13 - `org/gangs.ts`. */
+/** Radio center (custom interior): VW 8 - `org/radio.ts`. */
+/** City Hall (custom interior): VW 3 (= org id) - `org/meriya.ts`. Matches PRISON_WORLD; coordinates are far apart. */
 
 /** Normal spawn while the player is not in an organization. */
 export const DEFAULT_SPAWN: SpawnPoint = {
@@ -216,7 +216,7 @@ function resolveSettleMs(point: SpawnPoint, options?: PlaceAtOptions): number {
     return Math.max(0, options.settleMs);
   }
 
-  // Interior or custom VW (hospital, prison, factory, HQ…) — wait for collision loading.
+  // Interior or custom VW (hospital, prison, factory, HQ...) - wait for collision loading.
   if (point.interior > 0 || point.world !== STREET_WORLD) {
     return INTERIOR_SETTLE_MS;
   }

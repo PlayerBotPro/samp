@@ -49,7 +49,7 @@ export const warehouseModule: GameModule = {
       omp.log(`[${SERVER_TAG}] warehouses: loaded ${listWarehouses().length}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] warehouses: load error — ${message}`);
+      omp.log(`[${SERVER_TAG}] warehouses: load error - ${message}`);
     }
   },
 };

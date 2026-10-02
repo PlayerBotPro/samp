@@ -11,7 +11,7 @@ const MIN_ADMIN_LEVEL = 5;
 function usageLines(): string[] {
   return [
     "Usage: /gzcolor [id]",
-    ...GANGS.map((gang) => `${gang.id} — ${gang.name}`),
+    ...GANGS.map((gang) => `${gang.id} - ${gang.name}`),
   ];
 }
 
@@ -85,5 +85,5 @@ async function applyOwner(
 
   const nextName = getOrganization(orgId)?.name ?? "the gang";
   const prevName = getOrganization(previousOrgId)?.name ?? "nobody";
-  admin.sendClientMessage(Color.info, `Zone #${zoneId}: ${prevName} → ${nextName}.`);
+  admin.sendClientMessage(Color.info, `Zone #${zoneId}: ${prevName} -> ${nextName}.`);
 }

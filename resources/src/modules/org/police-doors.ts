@@ -250,7 +250,7 @@ export function bindPoliceDoors(): void {
       return;
     }
 
-    // Exit from ammunation — no organization check (already inside).
+    // Exit from ammunation - no organization check (already inside).
     if (kind !== "ammoExit" && !canUseStaffDoor(player, true)) {
       return;
     }

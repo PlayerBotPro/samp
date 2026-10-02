@@ -78,7 +78,7 @@ export function createServerVehicle(def: ServerVehicleDef): Vehicle | null {
     vehicle.setVirtualWorld(def.world ?? STREET_WORLD);
     setEngine(vehicle, false, false);
   } catch {
-    // Vehicle is already in the world — vehicleSpawn will apply the parameters.
+    // Vehicle is already in the world - vehicleSpawn will apply the parameters.
   }
 
   if (def.lightBar) {

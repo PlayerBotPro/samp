@@ -130,7 +130,7 @@ function expireMute(player: Player, notify: boolean): void {
   clearMuteWatch(player);
   patchAccount(player, { mutedUntil: null });
   void saveUserMutedUntil(account.id, null).catch(() => {
-    // Time expired — the next check will try clearing it again.
+    // Time expired - the next check will try clearing it again.
   });
 
   if (notify && isPlayerActive(player)) {

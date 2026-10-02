@@ -36,7 +36,7 @@ export function rentAmountForDays(price: number, days: number): number {
   return dailyHouseRent(price) * days;
 }
 
-/** Calendar days remaining until the paid period ends (0 — today is the final day). */
+/** Calendar days remaining until the paid period ends (0 - today is the final day). */
 export function rentDaysRemaining(paidUntil: string | null): number | null {
   if (!paidUntil) {
     return null;

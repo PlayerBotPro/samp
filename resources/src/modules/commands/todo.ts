@@ -25,6 +25,6 @@ registerCommand("todo", "Line and action separated by *", (player, args) => {
     player,
     CHAT_RADIUS,
     Color.chat,
-    `«${speech}», — ${said} ${playerName(player)}, ${action}.`
+    `"${speech}", - ${said} ${playerName(player)}, ${action}.`
   );
 });

@@ -16,7 +16,7 @@ export const HIRE_POINT = {
   z: 1044.125,
 } as const;
 
-/** Yellow pickups — casing blanks. */
+/** Yellow pickups - casing blanks. */
 export const BLANK_POINTS: readonly { x: number; y: number; z: number }[] = [
   { x: 2559.323, y: -1287.3453, z: 1044.125 },
   { x: 2551.165, y: -1287.2174, z: 1044.125 },

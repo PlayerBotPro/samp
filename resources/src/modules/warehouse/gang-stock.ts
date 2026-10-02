@@ -223,7 +223,7 @@ function updateCheckpointForPlayer(player: Player): void {
     return;
   }
 
-  // Not our warehouse — do not touch pending/visit (otherwise the mafia tick resets the gang, and vice versa).
+  // Not our warehouse - do not touch pending/visit (otherwise the mafia tick resets the gang, and vice versa).
   if (!checkpointShown.has(id)) {
     return;
   }

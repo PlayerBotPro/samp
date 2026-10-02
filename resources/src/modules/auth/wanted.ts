@@ -8,8 +8,8 @@ import {
 } from "./session";
 
 /**
- * Set wanted level 0–6: cache, SA stars, database.
- * No police commands yet — for the system and future functionality.
+ * Set wanted level 0-6: cache, SA stars, database.
+ * No police commands yet - for the system and future functionality.
  */
 export function setPlayerWantedLevel(player: Player, level: number): void {
   const wanted = normalizeWantedLevel(level);

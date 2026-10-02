@@ -42,7 +42,7 @@ const CRATES: readonly { x: number; y: number; z: number }[] = [
   { x: 2743.3081, y: -2454.3604, z: 13.8623 },
 ];
 
-/** Military-base zone (death → ammunition percentage loss). */
+/** Military-base zone (death -> ammunition percentage loss). */
 const ARMY_BASE_ZONE = {
   minX: 2664.8,
   minY: -2589.1,

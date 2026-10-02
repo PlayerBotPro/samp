@@ -8,7 +8,7 @@ export const ORG_VAGOS_ID = 11;
 export const ORG_RIFA_ID = 12;
 export const ORG_AZTECAS_ID = 13;
 
-/** Gang houses — vanilla interiors, each with its own VW (= org id). */
+/** Gang houses - vanilla interiors, each with its own VW (= org id). */
 export const GROVE_WORLD = 9;
 export const BALLAS_WORLD = 10;
 export const VAGOS_WORLD = 11;

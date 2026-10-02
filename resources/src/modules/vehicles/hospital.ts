@@ -62,14 +62,14 @@ const MED_VAN = {
   color2: 3,
 } as const;
 
-/** Supplier warehouse — collect the cargo here. */
+/** Supplier warehouse - collect the cargo here. */
 const LOAD_POINT = {
   x: 1351.3651,
   y: 355.8297,
   z: 20.1462,
 } as const;
 
-/** Hospital van parking — return here after loading. */
+/** Hospital van parking - return here after loading. */
 const RETURN_POINT = {
   x: MED_VAN.x,
   y: MED_VAN.y,
@@ -203,7 +203,7 @@ function bindMedDelivery(): void {
 
     const id = playerId(player);
     if (id !== null && carrying.has(id)) {
-      returnCarriedToVan(player, id, "You entered a vehicle — the box was returned to the van.");
+      returnCarriedToVan(player, id, "You entered a vehicle - the box was returned to the van.");
     }
 
     tryOfferDelivery(player);
@@ -224,7 +224,7 @@ function bindMedDelivery(): void {
   omp.on("playerDeath", (player) => {
     const id = playerId(player);
     if (id !== null && carrying.has(id)) {
-      returnCarriedToVan(player, id, "You lost the box — the medication was returned to the van.");
+      returnCarriedToVan(player, id, "You lost the box - the medication was returned to the van.");
     }
   });
 
@@ -551,7 +551,7 @@ function finishReturn(player: Player, id: number): void {
   const boxes = Math.ceil(vanMeds / BOX_AMOUNT);
   player.sendClientMessage(
     Color.info,
-    `You are at the parking area. The van has ${vanMeds} units — ${boxes} boxes of ${BOX_AMOUNT}.`
+    `You are at the parking area. The van has ${vanMeds} units - ${boxes} boxes of ${BOX_AMOUNT}.`
   );
   player.sendClientMessage(
     Color.info,

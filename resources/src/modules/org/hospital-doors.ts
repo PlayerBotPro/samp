@@ -33,7 +33,7 @@ type LiveDoor = {
   closeTimer: ReturnType<typeof setTimeout> | null;
 };
 
-/** Service-block doors (closed → open = rz rotation). */
+/** Service-block doors (closed -> open = rz rotation). */
 const DOORS: readonly DoorDef[] = [
   {
     x: 1147.775024,

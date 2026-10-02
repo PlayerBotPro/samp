@@ -73,7 +73,7 @@ function spawnDealer(): void {
   actor.setInvulnerable(true);
   dealerActor = actor;
   applyDealerAnimation(actor);
-  // The first call often only loads the library — retry on the next tick.
+  // The first call often only loads the library - retry on the next tick.
   setTimeout(() => applyDealerAnimation(actor), 250);
 
   new TextLabel(
@@ -261,7 +261,7 @@ function buyArmyForm(player: Player): void {
     return;
   }
 
-  // Give the uniform first — otherwise money would already be deducted if it fails.
+  // Give the uniform first - otherwise money would already be deducted if it fails.
   if (!startArmyDisguise(player)) {
     player.sendClientMessage(Color.error, "Failed to issue the uniform.");
     return;

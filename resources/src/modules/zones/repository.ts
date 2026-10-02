@@ -29,7 +29,7 @@ const COLUMN_MIGRATIONS = [
   { name: "max_y", sql: "max_y FLOAT NOT NULL DEFAULT 0 AFTER max_x" },
 ] as const;
 
-/** Old org_id values from the dump (1–5) → current gangs 9–13. */
+/** Old org_id values from the dump (1-5) -> current gangs 9-13. */
 const LEGACY_ORG_REMAP: ReadonlyArray<readonly [number, number]> = [
   [1, ORG_AZTECAS_ID],
   [2, ORG_BALLAS_ID],

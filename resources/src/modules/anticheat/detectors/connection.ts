@@ -102,7 +102,7 @@ export function onTakeDamage(
   }
 
   if (amount > 0) {
-    // Armor first, then HP — simplified model.
+    // Armor first, then HP - simplified model.
     let left = amount;
     if (state.armour > 0) {
       const soak = Math.min(state.armour, left);

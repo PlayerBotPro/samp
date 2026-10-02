@@ -120,7 +120,7 @@ export function listWarehouses(): readonly WarehouseRecord[] {
   return [...cache.values()];
 }
 
-/** Add metal to a warehouse (ore → metal 1:1). Updates cache and database. */
+/** Add metal to a warehouse (ore -> metal 1:1). Updates cache and database. */
 export function addWarehouseMetal(orgId: number, amount: number): number {
   const add = Math.max(0, Math.floor(amount));
   if (add <= 0) {
@@ -176,7 +176,7 @@ export function addWarehouseDrugs(orgId: number, amount: number): number {
   return record.drugs;
 }
 
-/** Remove ammunition from a warehouse. false — insufficient stock. */
+/** Remove ammunition from a warehouse. false - insufficient stock. */
 export function takeWarehouseAmmo(orgId: number, amount: number): boolean {
   const take = Math.max(0, Math.floor(amount));
   if (take <= 0) {
@@ -193,7 +193,7 @@ export function takeWarehouseAmmo(orgId: number, amount: number): boolean {
   return true;
 }
 
-/** Remove metal from a warehouse. false — insufficient stock. */
+/** Remove metal from a warehouse. false - insufficient stock. */
 export function takeWarehouseMetal(orgId: number, amount: number): boolean {
   const take = Math.max(0, Math.floor(amount));
   if (take <= 0) {
@@ -210,7 +210,7 @@ export function takeWarehouseMetal(orgId: number, amount: number): boolean {
   return true;
 }
 
-/** Remove drugs from a warehouse. false — insufficient stock. */
+/** Remove drugs from a warehouse. false - insufficient stock. */
 export function takeWarehouseDrugs(orgId: number, amount: number): boolean {
   const take = Math.max(0, Math.floor(amount));
   if (take <= 0) {
@@ -460,7 +460,7 @@ async function seedWarehouses(): Promise<void> {
   );
 }
 
-/** Government/mine: locks are not used — always open (0). */
+/** Government/mine: locks are not used - always open (0). */
 async function unlockNonLockableWarehouses(): Promise<void> {
   const openIds = WAREHOUSE_IDS.filter((id) => !warehouseUsesLock(id));
   if (openIds.length === 0) {

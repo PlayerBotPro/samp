@@ -49,7 +49,7 @@ function readLiveHealth(player: Player, fallback: number): number {
       return Math.min(MAX_HEALTH, health);
     }
   } catch {
-    // Spectating, death, or disconnect — use the latest account state.
+    // Spectating, death, or disconnect - use the latest account state.
   }
 
   return fallback;

@@ -6,7 +6,7 @@ export const ORG_LCN_ID = 14;
 export const ORG_YAKUZA_ID = 15;
 export const ORG_RUSSIAN_MAFIA_ID = 16;
 
-/** Madd Dogg's Mansion — shared family interior, different VWs. */
+/** Madd Dogg's Mansion - shared family interior, different VWs. */
 export const MAFIA_INTERIOR = 5;
 export const LCN_WORLD = 14;
 export const YAKUZA_WORLD = 15;

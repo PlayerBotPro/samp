@@ -15,13 +15,13 @@ Player-facing chat and dialog text uses **Russian UTF-8**. The DLL/component han
 | Layer | Loads | Role |
 |---|---|---|
 | Pawn | `gamemodes/lsrp.amx` (`pawn.main_scripts`: `lsrp 1`) | Empty stub required by `Pawn.dll`; contains no logic. |
-| Node | `resources/` → `resources/omp-node.json` → `dist/index.js` | The complete game mode. |
+| Node | `resources/` -> `resources/omp-node.json` -> `dist/index.js` | The complete game mode. |
 
 ```
 omp-server.exe
-  ├─ Pawn.dll      → gamemodes/lsrp.amx          (stub)
-  └─ omp-node      → resources/omp-node.json
-                       └─ dist/index.js         (compiled TypeScript)
+  |- Pawn.dll      -> gamemodes/lsrp.amx          (stub)
+  +- omp-node      -> resources/omp-node.json
+                       +- dist/index.js         (compiled TypeScript)
 ```
 
 **AMX neither sees nor compiles TypeScript.** Build the game mode separately:
@@ -84,7 +84,7 @@ resources/src/
     session/                   connect log (not auth/session)
     chat/                      IC chat and animation
     commands/                  game commands
-    admin/                     /alogin and levels 1–7
+    admin/                     /alogin and levels 1-7
     org/                       catalog, army, gates, appearance
 ```
 
@@ -106,19 +106,19 @@ Save immediately on exit, every 3 minutes for authorized players, and reduce HP 
 
 ### Authentication
 
-The nickname comes only from the client: `Name_Surname`, 5–24 characters, `^[A-Z][a-z]+_[A-Z][a-z]+$`.
+The nickname comes only from the client: `Name_Surname`, 5-24 characters, `^[A-Z][a-z]+_[A-Z][a-z]+$`.
 
-New accounts follow: rules → email → password (6–32) → repeat → birth date (16–80 years old) → gender → skin → confirmation. Existing accounts require a password; three failures or dialog cancellation kick the player. Before login, the player spectates and cannot use chat or commands.
+New accounts follow: rules -> email -> password (6-32) -> repeat -> birth date (16-80 years old) -> gender -> skin -> confirmation. Existing accounts require a password; three failures or dialog cancellation kick the player. Before login, the player spectates and cannot use chat or commands.
 
 Passwords use `scrypt:salt:key`. The session is `Map<slot, Account>` and resets on **connect and disconnect** so a slot never inherits another account. After `await`, call `isSamePlayer`.
 
-Dialog IDs are auth **1**, stats **2**, pass **3**, menu **4**, rules **5**, invite **6**, GPS **7**, mine **8–10**, alogin **11**, and makeleader **12**. Do not reuse them for new windows without checking.
+Dialog IDs are auth **1**, stats **2**, pass **3**, menu **4**, rules **5**, invite **6**, GPS **7**, mine **8-10**, alogin **11**, and makeleader **12**. Do not reuse them for new windows without checking.
 
 ### Spawn, HUD, and chat
 
 There is one `Class`, team `255`. Death sends the player to a random hospital point, marks them `hospitalized`, and sets HP to 20. The first session spawn for organization members teleports to HQ; later spawns do not. F4 does not heal.
 
-There is one global textdraw: `Los_Santos_RP` (shown as “Los Santos RP”), at 545, 4 with color `0x0099FFFF`, in `modules/hud/index.ts`.
+There is one global textdraw: `Los_Santos_RP` (shown as "Los Santos RP"), at 545, 4 with color `0x0099FFFF`, in `modules/hud/index.ts`.
 
 IC chat range is **20 m**, restricted by VW and interior. Format: `Name_Surname[ID]: text`. Organization members receive the nametag color. `{` is removed from text; the limit is 128 characters. `game.use_chat_radius: false`.
 
@@ -146,7 +146,7 @@ Driver: `mysql2`, placeholders: `?`. Reference schema: `sql/schema.sql`. The tab
 | `hospitalized` | Player must use a bed |
 | `invited_by` | Nickname of inviter |
 | `admin_password_hash` | scrypt; NULL means set it through `/alogin` or after `/makeadmin` |
-| `org_id` / `org_rank` | 0 = civilian; ranks 1–10 |
+| `org_id` / `org_rank` | 0 = civilian; ranks 1-10 |
 
 Create the `lsrp` database in advance. On a VPS, use a dedicated user rather than passwordless `root`.
 
@@ -154,15 +154,15 @@ Create the `lsrp` database in advance. On a VPS, use a dedicated user rather tha
 
 ```
 playerConnect
-  → reset auth/admin/spawn/hospital slot
-  → HUD after 250 ms
-  → beginAuth after 500 ms
+  -> reset auth/admin/spawn/hospital slot
+  -> HUD after 250 ms
+  -> beginAuth after 500 ms
 playerSpawn (first)
-  → wallet/HP from account; organization HQ when applicable
+  -> wallet/HP from account; organization HQ when applicable
 playerDeath
-  → next playerSpawn at hospital; message about /hospital
+  -> next playerSpawn at hospital; message about /hospital
 playerDisconnect
-  → save, then clear state
+  -> save, then clear state
 ```
 
 ## Player commands
@@ -195,17 +195,17 @@ Clicking the map teleports any `/alogin` administrator, including their driven v
 | 1 | `/a`, `/ahelp`, `/admins`, `/slap [id]`, map teleport |
 | 2 | `/kick [id] [reason]`; everyone sees the kick; self-kick is allowed |
 | 3 | `/ao [text]` to all as `Administrator Name[ID]:` |
-| 4 | `/sethp [id] [0–100]`; cannot target another active `/alogin` admin; `/ban [id] [days] [reason]`; `/unban [Nick_Name]`; `/tpint [id]` |
+| 4 | `/sethp [id] [0-100]`; cannot target another active `/alogin` admin; `/ban [id] [days] [reason]`; `/unban [Nick_Name]`; `/tpint [id]` |
 | 5 | `/makeleader [id]`; organization list or remove; passport required; rank 10; no teleport |
-| 7 | `/makeadmin [id] [0–7]`; resets the admin password, which the target sets in a dialog; **not self** |
+| 7 | `/makeadmin [id] [0-7]`; resets the admin password, which the target sets in a dialog; **not self** |
 
 `/makeadmin 0` removes administration. Granting it again resets the password again.
 
 ## Organizations
 
-Catalog: `modules/org/catalog.ts`. Currently **army id 1** (`army.ts`): color `0x9c7a4bff`, HQ spawn, 10 ranks/skins/salaries (1500…9000).
+Catalog: `modules/org/catalog.ts`. Currently **army id 1** (`army.ts`): color `0x9c7a4bff`, HQ spawn, 10 ranks/skins/salaries (1500...9000).
 
-Two gate objects (19912) open with C on foot or the vehicle horn for **Army, State Police, LSPD, and FBI**; they auto-close after about 5 seconds. Ranks 1–9 can only be set by editing the database; the game has no command other than leader management.
+Two gate objects (19912) open with C on foot or the vehicle horn for **Army, State Police, LSPD, and FBI**; they auto-close after about 5 seconds. Ranks 1-9 can only be set by editing the database; the game has no command other than leader management.
 
 ## open.mp configuration
 
@@ -279,7 +279,7 @@ Reviewed: `resources/src`, `config.json`, `sql/schema.sql`, `.gitignore`, and de
 - Maps have no VW/interior; `setSpawnInfo` does not set them (hospital uses `placeAt`).
 - `/stats` shows the user's own email; money uses account memory, which is correct after the save fix.
 - Multiple leaders for one organization are possible because `/makeleader` does not remove the previous leader.
-- Organization ranks 1–9 cannot be granted in game.
+- Organization ranks 1-9 cannot be granted in game.
 - Payday treats no update for about 8 seconds from a minimized client as AFK.
 - A `users` migration error is logged but the server still starts.
 - MySQL intervals and pool are not cleared on `resourceStop`.
@@ -289,7 +289,7 @@ Reviewed: `resources/src`, `config.json`, `sql/schema.sql`, `.gitignore`, and de
 
 ### Not implemented
 
-Vehicles as a system, houses, inventory, `/pm`, `/report`, removal/promotion of ranks 1–9, and hot reload.
+Vehicles as a system, houses, inventory, `/pm`, `/report`, removal/promotion of ranks 1-9, and hot reload.
 
 ### Conclusion
 

@@ -350,7 +350,7 @@ function hire(player: Player): void {
   setPickupCheckpoint(player);
   player.sendClientMessage(
     Color.info,
-    "Workday started. Carry bags from the loading area to the warehouse — marker on the radar."
+    "Workday started. Carry bags from the loading area to the warehouse - marker on the radar."
   );
 }
 

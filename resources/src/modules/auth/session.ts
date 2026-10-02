@@ -51,7 +51,7 @@ export type Account = {
   metal: number;
   passport: boolean;
   hospitalized: boolean;
-  /** Wanted level 0–6 (SA stars). */
+  /** Wanted level 0-6 (SA stars). */
   wantedLevel: number;
   /** Military ID. */
   militaryId: boolean;
@@ -134,7 +134,7 @@ export function applyScore(player: Player, level: number): void {
   }
 }
 
-/** GTA SA wanted stars (0–6). */
+/** GTA SA wanted stars (0-6). */
 export function applyWantedLevel(player: Player, level: number): void {
   const wanted = normalizeWantedLevel(level);
   try {

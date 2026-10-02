@@ -214,7 +214,7 @@ export const spawnModule: GameModule = {
         applyWallet(player, account);
         player.sendClientMessage(
           Color.gray,
-          "You spawned. /help — command list."
+          "You spawned. /help - command list."
         );
       }
 

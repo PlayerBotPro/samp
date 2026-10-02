@@ -209,7 +209,7 @@ export function handleHouseRentDialog(
         "Confirmation",
         [
           `House #${house.id}`,
-          `Payment: ${days} ${dayLabel(days)} — $${amount}`,
+          `Payment: ${days} ${dayLabel(days)} - $${amount}`,
           `New payment date: ${formatRentDate(paidUntil)}`,
           "",
           "Charged to your bank account.",
