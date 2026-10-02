@@ -1,54 +1,54 @@
-# LSRP — версия 3
+# LSRP - Version 3
 
-**Дата выхода: 22.09.2026**
+**Release date: 22 September 2026**
 
-Что появилось **после** [docs_v2.md](docs_v2.md). Главное в v3 — **система домов** и **серверный античит** (`anticheat`). Далее по хронологии: **работа грузчика**, сейф-зона склада, нумерация в `/gps` и `/mn`, админ-команды `/goto` `/gethere` `/arang`, таблица **складов организаций**, цех патронов Армии, **доставка медикаментов** больницы, **барыга Смоки** в гетто, **склады банд/мафий**, **розыск / военный билет / медкарта**.
+Changes made **after** [docs_v2.md](docs_v2.md). The main additions in v3 are the **housing system** and **server-side anti-cheat** (`anticheat`). In chronological order, this also includes: **the loader job**, the warehouse safe zone, numbering in `/gps` and `/mn`, the `/goto`, `/gethere`, and `/arang` admin commands, the **organization warehouses** table, the Army ammunition workshop, hospital **medication delivery**, **Smokey's dealer** in the ghetto, **gang/mafia warehouses**, and **wanted status / military ID / medical card**.
 
-Тексты игроку — **русский (UTF-8)**.
+Player-facing text is **Russian (UTF-8)**.
 
-> **На чём остановились (30.09.2026):** **доставка патронов Армии** (`/putammo` `/takeammo`, Barracks 433 → полиция/LSPD/FBI). Следующее — полицейский розыск / доработки.
-
----
-
-## Оглавление
-
-1. [Новый модуль и порядок старта](#новый-модуль-и-порядок-старта)
-2. [База данных](#база-данных)
-3. [Дома на карте](#дома-на-карте)
-4. [Покупка и вход](#покупка-и-вход)
-5. [Интерьер и выход](#интерьер-и-выход)
-6. [Аренда (ежедневная оплата)](#аренда-ежедневная-оплата)
-7. [Банк: оплата жилья](#банк-оплата-жилья)
-8. [Команды игрока](#команды-игрока)
-9. [Меню дома /hmenu](#меню-дома-hmenu)
-10. [Паспорт и статистика](#паспорт-и-статистика)
-11. [Диалоги](#диалоги)
-12. [Ограничения и известные нюансы](#ограничения-и-известные-нюансы)
-13. [Куда править (дома)](#куда-править-дома)
-14. [Античит](#античит)
-15. [Античит: включённые проверки](#античит-включённые-проверки)
-16. [Античит: trust API](#античит-trust-api)
-17. [Античит: наказание и конфиг](#античит-наказание-и-конфиг)
-18. [Куда править (античит)](#куда-править-античит)
-19. [Работа грузчика](#работа-грузчика)
-20. [Сейф-зона склада](#сейф-зона-склада)
-21. [/gps и /mn: нумерация](#gps-и-mn-нумерация)
-22. [Админка: /goto и /gethere](#админка-goto-и-gethere)
-23. [Админка: /arang](#админка-arang)
-24. [Склады организаций (БД)](#склады-организаций-бд)
-25. [Цех патронов Армии](#цех-патронов-армии)
-26. [Доставка медикаментов (больница)](#доставка-медикаментов-больница)
-27. [Гетто: барыга Смоки](#гетто-барыга-смоки)
-28. [Розыск, военный билет, медкарта](#розыск-военный-билет-медкарта)
-29. [Ящики патронов на базе Армии (рейд банд)](#ящики-патронов-на-базе-армии-рейд-банд)
-30. [На чём остановились](#на-чём-остановились)
-31. [Куда править (после античита)](#куда-править-после-античита)
+> **Current stopping point (30 September 2026):** **Army ammunition delivery** (`/putammo` `/takeammo`, Barracks 433 -> police/LSPD/FBI). Next: police wanted status and follow-up work.
 
 ---
 
-## Новый модуль и порядок старта
+## Table of Contents
 
-Добавлен модуль **`houses`**. Подключается в `src/index.ts` **после** `bank`, **до** `miner`:
+1. [New Module and Startup Order](#new-module-and-startup-order)
+2. [Database](#database)
+3. [Houses on the Map](#houses-on-the-map)
+4. [Purchase and Entry](#purchase-and-entry)
+5. [Interior and Exit](#interior-and-exit)
+6. [Rent (Daily Payment)](#rent-daily-payment)
+7. [Bank: Housing Payment](#bank-housing-payment)
+8. [Player Commands](#player-commands)
+9. [House Menu: /hmenu](#house-menu-hmenu)
+10. [Passport and Statistics](#passport-and-statistics)
+11. [Dialogs](#dialogs)
+12. [Restrictions and Known Details](#restrictions-and-known-details)
+13. [Where to Edit (Houses)](#where-to-edit-houses)
+14. [Anti-cheat](#anti-cheat)
+15. [Anti-cheat: Enabled Checks](#anti-cheat-enabled-checks)
+16. [Anti-cheat: Trust API](#anti-cheat-trust-api)
+17. [Anti-cheat: Punishment and Configuration](#anti-cheat-punishment-and-configuration)
+18. [Where to Edit (Anti-cheat)](#where-to-edit-anti-cheat)
+19. [Loader Job](#loader-job)
+20. [Warehouse Safe Zone](#warehouse-safe-zone)
+21. [/gps and /mn: Numbering](#gps-and-mn-numbering)
+22. [Admin: /goto and /gethere](#admin-goto-and-gethere)
+23. [Admin: /arang](#admin-arang)
+24. [Organization Warehouses (Database)](#organization-warehouses-database)
+25. [Army Ammunition Workshop](#army-ammunition-workshop)
+26. [Medication Delivery (Hospital)](#medication-delivery-hospital)
+27. [Ghetto: Smokey's Dealer](#ghetto-smokeys-dealer)
+28. [Wanted Status, Military ID, Medical Card](#wanted-status-military-id-medical-card)
+29. [Ammunition Crates at the Army Base (Gang Raid)](#ammunition-crates-at-the-army-base-gang-raid)
+30. [Current Stopping Point](#current-stopping-point)
+31. [Where to Edit (After Anti-cheat)](#where-to-edit-after-anti-cheat)
+
+---
+
+## New Module and Startup Order
+
+The **`houses`** module has been added. It is initialized in `src/index.ts` **after** `bank` and **before** `miner`:
 
 ```
 database → persist → auth → spawn → mapping → hospital → cityhall → bank
@@ -57,218 +57,218 @@ database → persist → auth → spawn → mapping → hospital → cityhall �
 
 ```
 resources/src/modules/houses/
-  repository.ts    БД, кэш домов, покупка/продажа/аренда
-  entrances.ts     пикапы на улице, диалоги купить/войти
-  exits.ts         выход из интерьера (Левый ALT у пикапа)
-  enter.ts         логика входа, телепорт в интерьер
-  purchase.ts      покупка за наличные
-  sell.ts          /sellhouse — продажа государству
-  menu.ts          /hmenu — замок, аптечка, информация
-  heal.ts          /heal — лечение при аптечке
-  map-icons.ts     иконки на карте рядом с домами
-  interior.ts      проверка «внутри своего дома» (радиус 20 м)
-  access.ts        радиусы пикапа и «рядом с домом»
-  session.ts       слот → id дома внутри интерьера
-  residence.ts     подпись «Бездомный» / «Дом (№N)»
-  classes.ts       названия классов домов
-  rent-math.ts     расчёт ставки и дат аренды
-  rent.ts          изъятие в 00:00, напоминание при входе
-  bank-rent.ts     диалоги оплаты в банке
-  index.ts         старт модуля
+  repository.ts    database, house cache, purchase/sale/rent
+  entrances.ts     street pickups, purchase/entry dialogs
+  exits.ts         exit from the interior (Left ALT at the pickup)
+  enter.ts         entry logic, teleport into the interior
+  purchase.ts      cash purchase
+  sell.ts          /sellhouse - sale to the state
+  menu.ts          /hmenu - lock, medkit, information
+  heal.ts          /heal - treatment with a medkit
+  map-icons.ts     map icons near houses
+  interior.ts      "inside your own house" check (20 m radius)
+  access.ts        pickup and "near house" radii
+  session.ts       player slot -> house id inside the interior
+  residence.ts     "Homeless" / "House (No. N)" label
+  classes.ts       house class names
+  rent-math.ts     rent rate and date calculation
+  rent.ts          repossession at 00:00, reminder on entry
+  bank-rent.ts     bank payment dialogs
+  index.ts         module startup
 ```
 
-Seed: `sql/houses_seed.sql` (382 дома, id 1–382).
+Seed: `sql/houses_seed.sql` (382 houses, IDs 1-382).
 
 ---
 
-## База данных
+## Database
 
-Таблица **`houses`** (`sql/schema.sql` + `houses/repository.ts`):
+The **`houses`** table (`sql/schema.sql` + `houses/repository.ts`):
 
-| Колонка | Смысл |
+| Column | Meaning |
 |---|---|
-| `id` | SMALLINT UNSIGNED, PK, номер дома |
-| `owner_id` | INT UNSIGNED NULL → `users.id`; NULL = свободен |
-| `entrance_x/y/z` | пикап на улице |
-| `interior_x/y/z` | точка внутри интерьера |
-| `vehicle_x/y/z`, `vehicle_angle` | точка для машины (зарезервировано) |
-| `price` | гос. стоимость (INT UNSIGNED) |
-| `interior_id` | id интерьера GTA |
-| `has_medkit` | TINYINT, аптечка куплена |
-| `is_locked` | TINYINT, дверь (1 = закрыт по умолчанию) |
-| `class_id` | TINYINT 0–5, класс дома |
-| VW интерьера | `1000 + id` дома (колонки `world` в БД нет) |
-| `rent_paid_until` | **DATE NULL** — последний **оплаченный** календарный день |
+| `id` | SMALLINT UNSIGNED, PK, house number |
+| `owner_id` | INT UNSIGNED NULL -> `users.id`; NULL = unoccupied |
+| `entrance_x/y/z` | street pickup |
+| `interior_x/y/z` | point inside the interior |
+| `vehicle_x/y/z`, `vehicle_angle` | vehicle point (reserved) |
+| `price` | state price (INT UNSIGNED) |
+| `interior_id` | GTA interior ID |
+| `has_medkit` | TINYINT, medkit purchased |
+| `is_locked` | TINYINT, door (1 = locked by default) |
+| `class_id` | TINYINT 0-5, house class |
+| Interior VW | house `1000 + id` (there is no `world` column in the database) |
+| `rent_paid_until` | **DATE NULL** - last **paid** calendar day |
 
-Миграция `rent_paid_until` при старте: если колонки нет — `ALTER TABLE`. У уже занятых домов без даты выставляется `CURDATE()`, чтобы не изъять сразу после обновления.
+`rent_paid_until` is migrated on startup: if the column is missing, run `ALTER TABLE`. Occupied houses without a date receive `CURDATE()` so they are not repossessed immediately after the update.
 
-**Классы** (`houses/classes.ts`):
+**Classes** (`houses/classes.ts`):
 
-| `class_id` | Название |
+| `class_id` | Name |
 |---|---|
-| 0 | Эконом |
-| 1 | Средний |
-| 2 | Стандарт |
-| 3 | Комфорт |
-| 4 | Премиум |
-| 5 | Элитный |
+| 0 | Economy |
+| 1 | Mid-range |
+| 2 | Standard |
+| 3 | Comfort |
+| 4 | Premium |
+| 5 | Elite |
 
 ---
 
-## Дома на карте
+## Houses on the Map
 
-- **Пикап у входа:** модель `1273` — свободен, `19522` — занят. Радиус взаимодействия **1.5 м**.
-- **Иконки карты** (`map-icons.ts`): слоты **11–99**, тип `31` (продажа) / `32` (занят), LOCAL, радиус **300 м** — показываются ближайшие дома.
-- Один игрок — **максимум один дом**.
-
----
-
-## Покупка и вход
-
-### Покупка
-
-Условия (`purchase.ts`):
-
-- уровень **≥ 3**;
-- есть **паспорт**;
-- нет другого дома;
-- достаточно **наличных** (`account.money`);
-- игрок у пикапа (**1.5 м**).
-
-При покупке:
-
-- списание наличных, `owner_id` = игрок;
-- `rent_paid_until = CURDATE()` — дом оплачен **на сегодня**;
-- телепорт в интерьер;
-- пикап и иконка обновляются.
-
-В диалоге и в чате — подсказка: **продление аренды в банке**, ставка **$X/день** (0.1% от цены, мин. $1).
-
-### Вход в занятый дом
-
-- **Владелец** — всегда.
-- **Гости** — только если дом **открыт** (`is_locked = 0`).
-- Диалог: владелец, тип, номер, цена, статус (Открыт/Закрыт).
+- **Entrance pickup:** model `1273` for an unoccupied house, `19522` for an occupied house. Interaction radius: **1.5 m**.
+- **Map icons** (`map-icons.ts`): slots **11-99**, type `31` (for sale) / `32` (occupied), LOCAL, **300 m** radius - the nearest houses are shown.
+- One player may own **at most one house**.
 
 ---
 
-## Интерьер и выход
+## Purchase and Entry
 
-- Выход: пикап `19132` в интерьере, клавиша **Левый ALT** (`KEY_WALK = 1024`), не автотелепорт.
-- `insideHouse` (session) — привязка слота к id дома для корректного выхода при пересечении интерьеров.
-- `/hmenu`, `/heal` — только внутри **своего** дома, радиус **20 м** от `interior_*` (`HOUSE_INTERIOR_RADIUS`).
+### Purchase
+
+Requirements (`purchase.ts`):
+
+- level **>= 3**;
+- has a **passport**;
+- does not own another house;
+- has sufficient **cash** (`account.money`);
+- is at the pickup (**1.5 m**).
+
+On purchase:
+
+- cash is deducted and `owner_id` is set to the player;
+- `rent_paid_until = CURDATE()` - the house is paid **through today**;
+- the player is teleported into the interior;
+- the pickup and icon are updated.
+
+The dialog and chat include a hint about **extending rent at the bank**, at **$X/day** (0.1% of the price, minimum $1).
+
+### Entry to an Occupied House
+
+- The **owner** may always enter.
+- **Guests** may enter only when the house is **unlocked** (`is_locked = 0`).
+- Dialog: owner, type, number, price, and status (Unlocked/Locked).
 
 ---
 
-## Аренда (ежедневная оплата)
+## Interior and Exit
 
-| Параметр | Значение |
+- Exit: pickup `19132` in the interior, **Left ALT** key (`KEY_WALK = 1024`); it is not an automatic teleport.
+- `insideHouse` (session) maps a player slot to a house ID for correct exits when interiors overlap.
+- `/hmenu` and `/heal` work only inside **your own** house, within **20 m** of `interior_*` (`HOUSE_INTERIOR_RADIUS`).
+
+---
+
+## Rent (Daily Payment)
+
+| Parameter | Value |
 |---|---|
-| Ставка | **0.1%** от `price` в день (`HOUSE_RENT_RATE = 0.001`), минимум **$1** |
-| При покупке | оплачен **текущий день** |
-| Продление | только в **банке**, с **банковского счёта** |
-| Ввод дней | любое число от **1** до **999** в банке |
-| Просрочка | **нет** — в **00:00** следующего дня дом изымается государством |
-| Компенсация | **нет** |
-| Изъятие | cron раз в минуту проверяет смену даты + при старте сервера; `rent_paid_until < CURDATE()` |
-| При изъятии | `owner_id = NULL`, сброс аптечки и замка, пикап → свободен; игроков внутри — на улицу |
+| Rate | **0.1%** of `price` per day (`HOUSE_RENT_RATE = 0.001`), minimum **$1** |
+| On purchase | the **current day** is paid |
+| Extension | only at the **bank**, from the **bank account** |
+| Day input | any number from **1** to **999** at the bank |
+| Overdue period | **none** - at **00:00** the next day, the house is repossessed by the state |
+| Compensation | **none** |
+| Repossession | a cron job checks for a date change every minute and on server startup; `rent_paid_until < CURDATE()` |
+| On repossession | `owner_id = NULL`, reset medkit and lock, pickup -> unoccupied; players inside are moved outside |
 
-Формула новой даты при оплате:
+New paid-until date formula:
 
 ```
-база = max(rent_paid_until, сегодня)
-rent_paid_until = база + N дней
+base = max(rent_paid_until, today)
+rent_paid_until = base + N days
 ```
 
-### Напоминание при входе
+### Reminder on Entry
 
-При **первом спавне** за сессию (`houses/index.ts`):
+On the **first spawn** of a session (`houses/index.ts`):
 
-- если до конца оплаты **≤ 5 дней** — сообщение с количеством дней;
-- если **сегодня последний день** — предупреждение, что завтра в 00:00 дом заберёт государство.
-
----
-
-## Банк: оплата жилья
-
-В меню кассы (`bank/tellers.ts`) добавлен пункт **«Оплатить дом»**:
-
-- нет дома → окно **«У вас нет дома»**;
-- есть дом → информация о доме → ввод количества дней (1–999) → подтверждение → списание с `bank`;
-- если сегодня последний оплаченный день — предупреждение в диалоге.
-
-Логика диалогов: `houses/bank-rent.ts`.
+- if **<= 5 days** remain on the payment, show a message with the number of days;
+- if **today is the last day**, warn that the state will take the house tomorrow at 00:00.
 
 ---
 
-## Команды игрока
+## Bank: Housing Payment
 
-| Команда | Описание |
+The teller menu (`bank/tellers.ts`) includes an **"Pay for house"** option:
+
+- no house -> **"You do not own a house"** window;
+- house owned -> house information -> day count input (1-999) -> confirmation -> charge from `bank`;
+- show a dialog warning if today is the last paid day.
+
+Dialog logic: `houses/bank-rent.ts`.
+
+---
+
+## Player Commands
+
+| Command | Description |
 |---|---|
-| `/hmenu` | Меню дома внутри своего интерьера |
-| `/heal` | Полное HP, если куплена аптечка ($7500), только в своём доме |
-| `/sellhouse` | Продажа государству за полную `price` на наличные; нужно стоять **в 4 м** от входа своего дома на улице |
+| `/hmenu` | House menu inside your own interior |
+| `/heal` | Full HP if a medkit is purchased ($7500), only in your own house |
+| `/sellhouse` | Sell to the state for the full `price` in cash; you must stand **within 4 m** of your house's street entrance |
 
 ---
 
-## Меню дома /hmenu
+## House Menu: /hmenu
 
-Пункты:
+Options:
 
-1. **Статус** — переключить замок (открыт/закрыт).
-2. **Аптечка** — купить за **$7500** наличными (один раз).
-3. **Информация** — номер дома, класс, гос. стоимость, оплачено до, сколько дней осталось (или «сегодня последний день»).
-
----
-
-## Паспорт и статистика
-
-- `/pass` и `/stats` — строка **«Проживание»**: `Бездомный` или `Дом (№N)` (`houses/residence.ts`).
-- `/stats` — инвентарь: **Наркотики / Патроны / Металл** (`users.drugs`, `ammo`, `metal`, по умолчанию 0).
+1. **Status** - toggle the lock (unlocked/locked).
+2. **Medkit** - buy for **$7500** cash (once).
+3. **Information** - house number, class, state price, paid-through date, and remaining days (or "today is the last day").
 
 ---
 
-## Диалоги
+## Passport and Statistics
 
-| ID | Модуль | Назначение |
+- `/pass` and `/stats` show a **"Residence"** line: `Бездомный` or `Дом (№N)` (`houses/residence.ts`).
+- `/stats` shows inventory: **Drugs / Ammunition / Metal** (`users.drugs`, `ammo`, `metal`; default 0).
+
+---
+
+## Dialogs
+
+| ID | Module | Purpose |
 |---|---|---|
-| 42 | `houses/entrances` | Покупка дома |
-| 43 | `houses/entrances` | Вход в занятый дом |
-| 44 | `houses/menu` | Меню /hmenu |
-| 45 | `houses/menu` | Покупка аптечки |
-| 46 | `houses/sell` | Подтверждение /sellhouse |
-| 47 | `houses/bank-rent` | Информация об оплате дома |
-| 48 | `houses/bank-rent` | Подтверждение оплаты |
-| 49 | `houses/bank-rent` | «У вас нет дома» |
-| 50 | `houses/menu` | Информация о доме |
-| 51 | `houses/bank-rent` | Ввод количества дней |
-| 52 | `loader` | Найм грузчика |
-| 53 | `loader` | Конец смены грузчика |
-| 54 | `army-locker` | Оружейка Армии (аммунация) |
-| 55 | `police-doors` | Служебный выход областной полиции |
-| 56 | `fbi-doors` | Крыша / служебный выход FBI |
-| 57 | `admin/warehouse` | Админ: список складов |
-| 58 | `admin/warehouse` | Админ: состояние склада |
-| 59 | `miner` | Шахта: покупка металла |
-| 60 | `army-factory` | Найм в цех патронов |
-| 61 | `army-factory` | Конец смены в цехе |
-| 62 | `vehicles/hospital` | Доставка медикаментов (старт рейса) |
-| 63 | `ghetto` | Меню барыги Смоки |
-| 64 | `ghetto` | Покупка наркотиков (ввод кол-ва) |
-| 65 | `warehouse/stock-interact` | Меню склада банды/мафии |
-| 66 | `warehouse/stock-interact` | Кол-во положить/взять |
-| 67 | `commands/vbilet` | Военный билет |
-| 68 | `commands/medcard` | Медицинская карта |
+| 42 | `houses/entrances` | House purchase |
+| 43 | `houses/entrances` | Entry to an occupied house |
+| 44 | `houses/menu` | /hmenu menu |
+| 45 | `houses/menu` | Medkit purchase |
+| 46 | `houses/sell` | /sellhouse confirmation |
+| 47 | `houses/bank-rent` | House-payment information |
+| 48 | `houses/bank-rent` | Payment confirmation |
+| 49 | `houses/bank-rent` | "You do not own a house" |
+| 50 | `houses/menu` | House information |
+| 51 | `houses/bank-rent` | Day count input |
+| 52 | `loader` | Loader hiring |
+| 53 | `loader` | End of loader shift |
+| 54 | `army-locker` | Army armory (ammunition) |
+| 55 | `police-doors` | Regional police service exit |
+| 56 | `fbi-doors` | FBI roof / service exit |
+| 57 | `admin/warehouse` | Admin: warehouse list |
+| 58 | `admin/warehouse` | Admin: warehouse status |
+| 59 | `miner` | Mine: metal purchase |
+| 60 | `army-factory` | Ammunition workshop hiring |
+| 61 | `army-factory` | End of workshop shift |
+| 62 | `vehicles/hospital` | Medication delivery (route start) |
+| 63 | `ghetto` | Smokey's dealer menu |
+| 64 | `ghetto` | Drug purchase (quantity input) |
+| 65 | `warehouse/stock-interact` | Gang/mafia warehouse menu |
+| 66 | `warehouse/stock-interact` | Deposit/withdraw quantity |
+| 67 | `commands/vbilet` | Military ID |
+| 68 | `commands/medcard` | Medical card |
 
 ---
 
-## Ограничения и известные нюансы
+## Restrictions and Known Details
 
-- Интерьер каждого дома в отдельном VW (`1000 + id`); улица — VW `0`.
-- Иконок на карте ~89 слотов (11–99); при большом числе домов в радиусе 300 м показываются ближайшие.
-- Нет продажи игроку игроку, нет кулдауна на `/heal`.
-- **`/asellhouse [id]`** (админ **5+**, после `/alogin`) — освободить дом без выплаты владельцу.
-- Продажа государству (`/sellhouse`) и изъятие за неуплату — разные сценарии: при продаже игрок получает деньги, при изъятии — нет.
+- Each house interior has its own VW (`1000 + id`); the street is VW `0`.
+- Map icons have about 89 slots (11-99); when many houses are within 300 m, the closest ones are shown.
+- There is no player-to-player sale and no cooldown on `/heal`.
+- **`/asellhouse [id]`** (admin **5+**, after `/alogin`) releases a house without paying the owner.
+- Sale to the state (`/sellhouse`) and repossession for non-payment are separate scenarios: the player receives money on sale, but not on repossession.
 
 ---
 
