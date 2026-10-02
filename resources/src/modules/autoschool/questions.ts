@@ -9,7 +9,7 @@ export type ExamQuestion = {
 export const EXAM_RULES =
   "Brief traffic rules:\n" +
   "1. Come to a full stop at a red light.\n" +
-  "2. In the city — no more than 60 km/h.\n" +
+  "2. In the city - no more than 60 km/h.\n" +
   "3. At an uncontrolled intersection, yield to traffic on the right.\n" +
   "4. Overtaking across a solid line is prohibited.\n" +
   "5. Seat belt / helmet required.\n\n" +

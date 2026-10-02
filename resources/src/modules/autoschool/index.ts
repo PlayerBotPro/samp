@@ -277,7 +277,7 @@ function openKindMenu(player: Player): void {
     player,
     AUTOSCHOOL_EXAM_KIND_DIALOG_ID,
     DIALOG_STYLE_LIST,
-    `Traffic Rules Exam — $${THEORY_FEE}`,
+    `Traffic Rules Exam - $${THEORY_FEE}`,
     kinds.map(kindLabel).join("\n"),
     "Next",
     "Cancel"
