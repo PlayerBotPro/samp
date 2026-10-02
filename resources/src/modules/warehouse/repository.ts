@@ -16,10 +16,10 @@ import {
   ORG_YAKUZA_ID,
 } from "../org";
 
-/** Склад шахты: не орган, зарезервированный org_id = 0. */
+/** Mine warehouse: not an organization; reserved org_id = 0. */
 export const WAREHOUSE_MINE_ID = 0;
 
-/** Все склады: шахта (0) + органы. */
+/** All warehouses: mine (0) + organizations. */
 export const WAREHOUSE_IDS: readonly number[] = [
   WAREHOUSE_MINE_ID,
   ORG_ARMY_ID,
@@ -37,7 +37,7 @@ export const WAREHOUSE_IDS: readonly number[] = [
   ORG_RUSSIAN_MAFIA_ID,
 ];
 
-/** Замок склада только у банд и мафий. */
+/** Only gangs and mafias have warehouse locks. */
 export const WAREHOUSE_LOCKABLE_IDS: ReadonlySet<number> = new Set([
   ORG_GROVE_ID,
   ORG_BALLAS_ID,
@@ -120,7 +120,7 @@ export function listWarehouses(): readonly WarehouseRecord[] {
   return [...cache.values()];
 }
 
-/** Добавить металл на склад (руда → металл 1:1). Обновляет кэш и БД. */
+/** Add metal to a warehouse (ore → metal 1:1). Updates cache and database. */
 export function addWarehouseMetal(orgId: number, amount: number): number {
   const add = Math.max(0, Math.floor(amount));
   if (add <= 0) {
@@ -137,7 +137,7 @@ export function addMineMetal(amount: number): number {
   return addWarehouseMetal(WAREHOUSE_MINE_ID, amount);
 }
 
-/** Добавить патроны на склад. Обновляет кэш и БД. */
+/** Add ammunition to a warehouse. Updates cache and database. */
 export function addWarehouseAmmo(orgId: number, amount: number): number {
   const add = Math.max(0, Math.floor(amount));
   if (add <= 0) {
@@ -150,7 +150,7 @@ export function addWarehouseAmmo(orgId: number, amount: number): number {
   return record.ammo;
 }
 
-/** Добавить медикаменты на склад. Обновляет кэш и БД. */
+/** Add medical supplies to a warehouse. Updates cache and database. */
 export function addWarehouseMeds(orgId: number, amount: number): number {
   const add = Math.max(0, Math.floor(amount));
   if (add <= 0) {
@@ -163,7 +163,7 @@ export function addWarehouseMeds(orgId: number, amount: number): number {
   return record.meds;
 }
 
-/** Добавить наркотики на склад. Обновляет кэш и БД. */
+/** Add drugs to a warehouse. Updates cache and database. */
 export function addWarehouseDrugs(orgId: number, amount: number): number {
   const add = Math.max(0, Math.floor(amount));
   if (add <= 0) {
@@ -176,7 +176,7 @@ export function addWarehouseDrugs(orgId: number, amount: number): number {
   return record.drugs;
 }
 
-/** Списать патроны со склада. false — недостаточно на складе. */
+/** Remove ammunition from a warehouse. false — insufficient stock. */
 export function takeWarehouseAmmo(orgId: number, amount: number): boolean {
   const take = Math.max(0, Math.floor(amount));
   if (take <= 0) {
@@ -193,7 +193,7 @@ export function takeWarehouseAmmo(orgId: number, amount: number): boolean {
   return true;
 }
 
-/** Списать металл со склада. false — недостаточно на складе. */
+/** Remove metal from a warehouse. false — insufficient stock. */
 export function takeWarehouseMetal(orgId: number, amount: number): boolean {
   const take = Math.max(0, Math.floor(amount));
   if (take <= 0) {
@@ -210,7 +210,7 @@ export function takeWarehouseMetal(orgId: number, amount: number): boolean {
   return true;
 }
 
-/** Списать наркотики со склада. false — недостаточно на складе. */
+/** Remove drugs from a warehouse. false — insufficient stock. */
 export function takeWarehouseDrugs(orgId: number, amount: number): boolean {
   const take = Math.max(0, Math.floor(amount));
   if (take <= 0) {
@@ -227,7 +227,7 @@ export function takeWarehouseDrugs(orgId: number, amount: number): boolean {
   return true;
 }
 
-/** Открыть/закрыть склад банды или мафии. */
+/** Open/lock a gang or mafia warehouse. */
 export function setWarehouseLocked(orgId: number, locked: boolean): boolean {
   if (!warehouseUsesLock(orgId)) {
     return false;
@@ -280,7 +280,7 @@ async function persistMetalAdd(orgId: number, amount: number): Promise<void> {
       [orgId, amount, warehouseUsesLock(orgId) ? 1 : 0]
     );
   } catch {
-    // Кэш уже обновлён; при следующем старте можно сверить.
+    // The cache has already been updated; it can be checked on next startup.
   }
 }
 
@@ -295,7 +295,7 @@ async function persistMetalTake(orgId: number, amount: number): Promise<void> {
       [amount, orgId]
     );
   } catch {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   }
 }
 
@@ -320,7 +320,7 @@ async function persistAmmoAdd(orgId: number, amount: number): Promise<void> {
       [orgId, amount, warehouseUsesLock(orgId) ? 1 : 0]
     );
   } catch {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   }
 }
 
@@ -345,7 +345,7 @@ async function persistMedsAdd(orgId: number, amount: number): Promise<void> {
       [orgId, amount, warehouseUsesLock(orgId) ? 1 : 0]
     );
   } catch {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   }
 }
 
@@ -360,7 +360,7 @@ async function persistAmmoTake(orgId: number, amount: number): Promise<void> {
       [amount, orgId]
     );
   } catch {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   }
 }
 
@@ -385,7 +385,7 @@ async function persistDrugsAdd(orgId: number, amount: number): Promise<void> {
       [orgId, amount, warehouseUsesLock(orgId) ? 1 : 0]
     );
   } catch {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   }
 }
 
@@ -400,7 +400,7 @@ async function persistDrugsTake(orgId: number, amount: number): Promise<void> {
       [amount, orgId]
     );
   } catch {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   }
 }
 
@@ -425,7 +425,7 @@ async function persistLock(orgId: number, locked: boolean): Promise<void> {
       [orgId, locked ? 1 : 0]
     );
   } catch {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   }
 }
 
@@ -460,7 +460,7 @@ async function seedWarehouses(): Promise<void> {
   );
 }
 
-/** Гос/шахта: замок не используется — всегда открыт (0). */
+/** Government/mine: locks are not used — always open (0). */
 async function unlockNonLockableWarehouses(): Promise<void> {
   const openIds = WAREHOUSE_IDS.filter((id) => !warehouseUsesLock(id));
   if (openIds.length === 0) {

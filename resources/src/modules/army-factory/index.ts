@@ -76,7 +76,7 @@ export function isArmyFactoryOnShift(player: Player): boolean {
   return id !== null && jobs.has(id);
 }
 
-/** Завершить смену с выплатой (выход с завода / раздевалка). */
+/** Finish a shift with payment (leave factory / locker room). */
 export function endArmyFactoryShift(player: Player): void {
   finishShift(player, { requireHirePoint: false, notifyExit: true });
 }
@@ -129,7 +129,7 @@ function spawnPickups(): void {
     ARMY_FACTORY_WORLD
   );
   new TextLabel(
-    "Цех патронов\nРаздевалка",
+    "Ammunition Workshop\nLocker Room",
     Color.info,
     HIRE_POINT.x,
     HIRE_POINT.y,
@@ -149,7 +149,7 @@ function spawnPickups(): void {
       ARMY_FACTORY_WORLD
     );
     new TextLabel(
-      "Заготовки\nГильзы",
+      "Blanks\nCasings",
       Color.info,
       point.x,
       point.y,
@@ -170,7 +170,7 @@ function spawnPickups(): void {
       ARMY_FACTORY_WORLD
     );
     new TextLabel(
-      "Станок\nСборка патронов",
+      "Machine\nAmmunition Assembly",
       Color.info,
       bench.pickup.x,
       bench.pickup.y,
@@ -191,7 +191,7 @@ function spawnPickups(): void {
       ARMY_FACTORY_WORLD
     );
     new TextLabel(
-      "Склад\nГотовые патроны",
+      "Warehouse\nFinished Ammunition",
       Color.info,
       point.x,
       point.y,
@@ -221,7 +221,7 @@ function tickFactory(): void {
       const inFactory =
         world === ARMY_FACTORY_WORLD && interior === ARMY_FACTORY_INTERIOR;
 
-      // /goto, /tpint и т.п.: смена не должна «висеть» вне цеха.
+      // /goto, /tpint, etc.: the shift must not remain active outside the workshop.
       if (job && !inFactory) {
         endArmyFactoryShift(player);
         standing.delete(id);
@@ -270,7 +270,7 @@ function tickFactory(): void {
           break;
       }
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -319,7 +319,7 @@ function onHirePickup(player: Player, job: Job | undefined): void {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (membership?.org.id !== ORG_ARMY_ID) {
-    player.sendClientMessage(Color.error, "Работа в цехе только для сотрудников Армии.");
+    player.sendClientMessage(Color.error, "Workshop work is only available to Army personnel.");
     return;
   }
 
@@ -328,12 +328,12 @@ function onHirePickup(player: Player, job: Job | undefined): void {
 
 function onBlankPickup(player: Player, job: Job | undefined): void {
   if (!job) {
-    player.sendClientMessage(Color.error, "Сначала начните смену у раздевалки.");
+    player.sendClientMessage(Color.error, "Start your shift at the locker room first.");
     return;
   }
 
   if (job.phase === "blank") {
-    player.sendClientMessage(Color.error, "У вас уже есть заготовка гильз.");
+    player.sendClientMessage(Color.error, "You already have a casing blank.");
     return;
   }
 
@@ -341,8 +341,8 @@ function onBlankPickup(player: Player, job: Job | undefined): void {
     player.sendClientMessage(
       Color.error,
       job.phase === "product"
-        ? "Сначала сдайте готовые патроны на склад."
-        : "Дождитесь окончания сборки."
+        ? "Deliver the finished ammunition to the warehouse first."
+        : "Wait for the assembly to finish."
     );
     return;
   }
@@ -351,7 +351,7 @@ function onBlankPickup(player: Player, job: Job | undefined): void {
   giveCarry(player, BLANK_ATTACH_MODEL);
   player.sendClientMessage(
     Color.info,
-    "Вы взяли заготовку гильз. Отнесите её на станок сборки."
+    "You took a casing blank. Take it to an assembly machine."
   );
 }
 
@@ -361,7 +361,7 @@ function onBenchPickup(
   benchIndex: number
 ): void {
   if (!job) {
-    player.sendClientMessage(Color.error, "Сначала начните смену у раздевалки.");
+    player.sendClientMessage(Color.error, "Start your shift at the locker room first.");
     return;
   }
 
@@ -373,8 +373,8 @@ function onBenchPickup(
     player.sendClientMessage(
       Color.error,
       job.phase === "product"
-        ? "Патроны уже собраны — отнесите их на склад."
-        : "Возьмите заготовку гильз на жёлтом пикапе."
+        ? "The ammunition is assembled — take it to the warehouse."
+        : "Take a casing blank from a yellow pickup."
     );
     return;
   }
@@ -389,7 +389,7 @@ function onBenchPickup(
 
 function onStockPickup(player: Player, job: Job | undefined): void {
   if (!job) {
-    player.sendClientMessage(Color.error, "Сначала начните смену у раздевалки.");
+    player.sendClientMessage(Color.error, "Start your shift at the locker room first.");
     return;
   }
 
@@ -397,8 +397,8 @@ function onStockPickup(player: Player, job: Job | undefined): void {
     player.sendClientMessage(
       Color.error,
       job.phase === "blank"
-        ? "Сначала соберите патроны на станке."
-        : "У вас нет готовых патронов."
+        ? "Assemble the ammunition on a machine first."
+        : "You do not have finished ammunition."
     );
     return;
   }
@@ -413,7 +413,7 @@ function onStockPickup(player: Player, job: Job | undefined): void {
 
   player.sendClientMessage(
     Color.info,
-    `Партия сдана на склад Армии (+${AMMO_PER_BOX} патронов). Готово партий: ${job.delivered}.`
+    `Batch delivered to the Army warehouse (+${AMMO_PER_BOX} ammunition). Batches completed: ${job.delivered}.`
   );
 }
 
@@ -477,11 +477,11 @@ function startCraft(
       0
     );
   } catch {
-    // Иначе phase=craft + freeze без таймера — вечный лок.
+    // Otherwise phase=craft + freeze without a timer causes a permanent lock.
     cancelCraft(player, job, true);
     job.phase = "blank";
     giveCarry(player, BLANK_ATTACH_MODEL);
-    player.sendClientMessage(Color.error, "Станок недоступен, попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "The machine is unavailable; try again.");
     return;
   }
 
@@ -513,7 +513,7 @@ function finishCraft(player: Player, expectedId: number): void {
     player.clearAnimations(ANIM_SYNC_ALL);
     player.toggleControllable(true);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 
   if (!isPlayerActive(player)) {
@@ -526,7 +526,7 @@ function finishCraft(player: Player, expectedId: number): void {
     job.defects += 1;
     player.sendClientMessage(
       Color.error,
-      "Брак: гильзы пошли трещиной. Возьмите новую заготовку."
+      "Defect: the casings cracked. Take a new blank."
     );
     return;
   }
@@ -535,7 +535,7 @@ function finishCraft(player: Player, expectedId: number): void {
   giveCarry(player, BLANK_ATTACH_MODEL);
   player.sendClientMessage(
     Color.info,
-    "Патроны собраны. Отнесите ящик на склад готовой продукции."
+    "Ammunition assembled. Take the box to the finished-goods warehouse."
   );
 }
 
@@ -555,33 +555,33 @@ function hire(player: Player): void {
   }
 
   if (account.hospitalized) {
-    player.sendClientMessage(Color.error, "Сначала закончите лечение.");
+    player.sendClientMessage(Color.error, "Finish treatment first.");
     return;
   }
 
   if (isJailed(player)) {
-    player.sendClientMessage(Color.error, "В тюрьме работать нельзя.");
+    player.sendClientMessage(Color.error, "You cannot work in prison.");
     return;
   }
 
   if (isMinerOnShift(player) || isLoaderOnShift(player)) {
-    player.sendClientMessage(Color.error, "Сначала закончите другую работу.");
+    player.sendClientMessage(Color.error, "Finish your other job first.");
     return;
   }
 
   if (getExam(player)) {
-    player.sendClientMessage(Color.error, "Сначала закончите экзамен в автошколе.");
+    player.sendClientMessage(Color.error, "Finish your driving-school exam first.");
     return;
   }
 
   const membership = getMembership(account);
   if (membership?.org.id !== ORG_ARMY_ID) {
-    player.sendClientMessage(Color.error, "Работа в цехе только для сотрудников Армии.");
+    player.sendClientMessage(Color.error, "Workshop work is only available to Army personnel.");
     return;
   }
 
   if (!isInFactoryOnFoot(player) || !near(player.getPos(), HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Подойдите к раздевалке цеха.");
+    player.sendClientMessage(Color.error, "Move closer to the workshop locker room.");
     return;
   }
 
@@ -604,11 +604,11 @@ function hire(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    "Смена в цехе патронов начата. Возьмите заготовку гильз и соберите партию на станке."
+    "Ammunition workshop shift started. Take a casing blank and assemble a batch at a machine."
   );
   player.sendClientMessage(
     Color.info,
-    "Готовые патроны сдайте на склад. Закончить смену — снова у раздевалки."
+    "Deliver finished ammunition to the warehouse. End the shift at the locker room."
   );
 }
 
@@ -629,7 +629,7 @@ function finishShift(
         !isInFactoryOnFoot(player) ||
         !near(player.getPos(), HIRE_POINT, PICKUP_RADIUS + 0.8)
       ) {
-        player.sendClientMessage(Color.error, "Подойдите к раздевалке цеха.");
+        player.sendClientMessage(Color.error, "Move closer to the workshop locker room.");
         return;
       }
     } catch {
@@ -663,8 +663,8 @@ function finishShift(
     player.sendClientMessage(
       Color.info,
       salary > 0
-        ? `Вы покинули завод. Смена закрыта. Зарплата: $${salary}.`
-        : "Вы покинули завод. Смена закрыта."
+        ? `You left the factory. Shift closed. Pay: $${salary}.`
+        : "You left the factory. Shift closed."
     );
     return;
   }
@@ -672,10 +672,10 @@ function finishShift(
   if (delivered > 0 || defects > 0) {
     player.sendClientMessage(
       Color.info,
-      `Смена закончена. Партий: ${delivered}, брак: ${defects}. Зарплата: $${salary}.`
+      `Shift ended. Batches: ${delivered}, defects: ${defects}. Pay: $${salary}.`
     );
   } else {
-    player.sendClientMessage(Color.info, "Смена закончена. Вы ничего не заработали.");
+    player.sendClientMessage(Color.info, "Shift ended. You earned nothing.");
   }
 }
 
@@ -695,7 +695,7 @@ function abortShift(player: Player, notify: boolean): void {
   if (notify && isPlayerActive(player)) {
     player.sendClientMessage(
       Color.error,
-      "Смена сорвана. Невыплаченная зарплата сгорела."
+      "Shift interrupted. Unpaid wages were forfeited."
     );
   }
 }
@@ -714,7 +714,7 @@ function cancelCraft(player: Player, job: Job, unlock: boolean): void {
       player.toggleControllable(true);
       player.clearAnimations(ANIM_SYNC_ALL);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
   }
 }
@@ -727,7 +727,7 @@ function destroyCraftObject(job: Job): void {
   try {
     job.craftObject.destroy();
   } catch {
-    // Уже уничтожен.
+    // Already destroyed.
   }
 
   job.craftObject = null;
@@ -754,7 +754,7 @@ function giveCarry(player: Player, model: number): void {
     );
     player.setSpecialAction(SPECIAL_ACTION_CARRY);
   } catch {
-    // Слот ещё не готов.
+    // Slot is not ready yet.
   }
 }
 
@@ -764,7 +764,7 @@ function clearCarry(player: Player): void {
     player.setSpecialAction(SPECIAL_ACTION_NONE);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -772,7 +772,7 @@ function clearHandObject(player: Player): void {
   try {
     player.removeAttachedObject(SLOT_HAND);
   } catch {
-    // Слота не было.
+    // Slot did not exist.
   }
 }
 
@@ -790,7 +790,7 @@ function playPutdown(player: Player): void {
       ANIM_SYNC_ALL
     );
   } catch {
-    // Библиотека подтянется позже.
+    // Library will load later.
   }
 }
 
@@ -800,7 +800,7 @@ function preloadAnims(player: Player): void {
     player.applyAnimation("CARRY", "PUTDWN", 4.1, false, false, false, false, 1, ANIM_SYNC_ALL);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Подтянется на первой сборке.
+    // It will load on the first assembly.
   }
 }
 
@@ -812,7 +812,7 @@ function restoreWorker(player: Player, skin: number | null): void {
       player.setSkin(skin);
     }
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -822,13 +822,13 @@ function showHireDialog(player: Player): void {
       player,
       ARMY_FACTORY_HIRE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Цех патронов",
-      "Переодеться и начать смену в цехе изготовления патронов?",
-      "Да",
-      "Нет"
+      "Ammunition Workshop",
+      "Change clothes and start a shift in the ammunition workshop?",
+      "Yes",
+      "No"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open dialog.");
   }
 }
 
@@ -839,13 +839,13 @@ function showQuitDialog(player: Player, job: Job): void {
       player,
       ARMY_FACTORY_QUIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Цех патронов",
-      `Завершить смену и получить зарплату?\nПартий: ${job.delivered}, брак: ${job.defects}, к выплате: $${salary}`,
-      "Да",
-      "Нет"
+      "Ammunition Workshop",
+      `End shift and collect pay?\nBatches: ${job.delivered}, defects: ${job.defects}, payable: $${salary}`,
+      "Yes",
+      "No"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open dialog.");
   }
 }
 

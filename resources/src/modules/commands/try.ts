@@ -5,16 +5,16 @@ import { byGender } from "../auth/gender";
 import { getGender } from "../auth/session";
 import { registerCommand } from "./registry";
 
-registerCommand("try", "Случайное действие: удачно или неудачно", (player, args) => {
+registerCommand("try", "Random action: success or failure", (player, args) => {
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Использование: /try [действие]");
+    player.sendClientMessage(Color.error, "Usage: /try [action]");
     return;
   }
 
   const ok = Math.random() < 0.5;
-  const tried = byGender(getGender(player), "попытался", "попыталась");
-  const result = ok ? "Удачно" : "Неудачно";
+  const tried = byGender(getGender(player), "tried", "tried");
+  const result = ok ? "Successful" : "Unsuccessful";
   const color = ok ? Color.tryOk : Color.tryFail;
 
   sendNearby(

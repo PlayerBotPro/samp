@@ -1,4 +1,4 @@
-/** Доля от стоимости дома в день (0.1%). */
+/** Fraction of the house value per day (0.1%). */
 export const HOUSE_RENT_RATE = 0.001;
 
 export function dailyHouseRent(price: number): number {
@@ -15,7 +15,7 @@ export function currentDateLocal(): string {
 
 export function formatRentDate(isoDate: string | null): string {
   if (!isoDate) {
-    return "не оплачено";
+    return "unpaid";
   }
 
   const [year, month, day] = isoDate.split("-");
@@ -36,7 +36,7 @@ export function rentAmountForDays(price: number, days: number): number {
   return dailyHouseRent(price) * days;
 }
 
-/** Сколько календарных дней осталось до конца оплаченного срока (0 — сегодня последний день). */
+/** Calendar days remaining until the paid period ends (0 — today is the final day). */
 export function rentDaysRemaining(paidUntil: string | null): number | null {
   if (!paidUntil) {
     return null;
@@ -54,12 +54,12 @@ export function rentDaysLeftLabel(days: number): string {
   const mod10 = days % 10;
   const mod100 = days % 100;
   if (mod10 === 1 && mod100 !== 11) {
-    return "день";
+    return "day";
   }
   if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return "дня";
+    return "days";
   }
-  return "дней";
+  return "days";
 }
 
 export function parseRentDate(value: Date | string | null | undefined): string | null {

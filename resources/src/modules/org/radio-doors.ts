@@ -23,7 +23,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY_ROOF = "На крышу могут только сотрудники радиоцентра.";
+const DENY_ROOF = "Only Radio Center personnel can access the roof.";
 
 type DoorKind = "street" | "interior" | "roof";
 
@@ -86,10 +86,10 @@ const DOORS: readonly RadioDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Радиоцентр\nВход",
+    label: "Radio Center\nEntrance",
     options: [
-      { key: "office", label: "Офис" },
-      { key: "roof", label: "Крыша" },
+      { key: "office", label: "Office" },
+      { key: "roof", label: "Roof" },
     ],
   },
   {
@@ -101,10 +101,10 @@ const DOORS: readonly RadioDoor[] = [
       interior: RADIO_INTERIOR,
       world: RADIO_WORLD,
     },
-    label: "Радиоцентр\nВыход",
+    label: "Radio Center\nExit",
     options: [
-      { key: "street", label: "Улица" },
-      { key: "roof", label: "Крыша" },
+      { key: "street", label: "Street" },
+      { key: "roof", label: "Roof" },
     ],
   },
   {
@@ -116,10 +116,10 @@ const DOORS: readonly RadioDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Радиоцентр\nКрыша",
+    label: "Radio Center\nRoof",
     options: [
-      { key: "street", label: "Улица" },
-      { key: "office", label: "Офис" },
+      { key: "street", label: "Street" },
+      { key: "office", label: "Office" },
     ],
   },
 ];
@@ -230,7 +230,7 @@ function tickRadioDoors(): void {
 
       onPickup.delete(id);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -238,7 +238,7 @@ function tickRadioDoors(): void {
 function openMenu(player: Player, door: RadioDoor): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+    deny(player, "You need treatment. Take a bed: /hospital.");
     return;
   }
 
@@ -253,21 +253,21 @@ function openMenu(player: Player, door: RadioDoor): void {
       player,
       RADIO_DOOR_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Радиоцентр",
+      "Radio Center",
       door.options.map((option) => option.label).join("\n"),
-      "Выбрать",
-      "Отмена"
+      "Select",
+      "Cancel"
     );
   } catch {
     pending.delete(id);
-    deny(player, "Не удалось открыть меню.");
+    deny(player, "Failed to open the menu.");
   }
 }
 
 function tryUse(player: Player, destKey: "office" | "street" | "roof"): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+    deny(player, "You need treatment. Take a bed: /hospital.");
     return;
   }
 
@@ -315,7 +315,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -337,7 +337,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

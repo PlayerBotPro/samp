@@ -10,7 +10,7 @@ const MIN_ADMIN_LEVEL = 5;
 
 function usageLines(): string[] {
   return [
-    "Использование: /gzcolor [id]",
+    "Usage: /gzcolor [id]",
     ...GANGS.map((gang) => `${gang.id} — ${gang.name}`),
   ];
 }
@@ -32,7 +32,7 @@ function parseGangId(args: string): number | null {
 export function bindAdminGzcolor(): void {
   registerCommand(
     "gzcolor",
-    "Сменить владельца гангзоны",
+    "Change gang zone owner",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -50,18 +50,18 @@ export function bindAdminGzcolor(): void {
       if (!turf) {
         player.sendClientMessage(
           Color.error,
-          "Встаньте на гангзону, которую хотите изменить."
+          "Stand in the gang zone you want to change."
         );
         return;
       }
 
       if (turf.orgId === orgId) {
-        player.sendClientMessage(Color.error, "Эта территория уже принадлежит этой банде.");
+        player.sendClientMessage(Color.error, "This territory already belongs to this gang.");
         return;
       }
 
       if (isZoneUnderCapture(turf.id)) {
-        player.sendClientMessage(Color.error, "Нельзя сменить владельца во время капта.");
+        player.sendClientMessage(Color.error, "You cannot change the owner during a capture.");
         return;
       }
 
@@ -79,11 +79,11 @@ async function applyOwner(
 ): Promise<void> {
   const saved = await setGangZoneOwner(zoneId, orgId);
   if (!saved) {
-    admin.sendClientMessage(Color.error, "Не удалось сохранить владельца зоны.");
+    admin.sendClientMessage(Color.error, "Failed to save the zone owner.");
     return;
   }
 
-  const nextName = getOrganization(orgId)?.name ?? "банде";
-  const prevName = getOrganization(previousOrgId)?.name ?? "никому";
-  admin.sendClientMessage(Color.info, `Зона #${zoneId}: ${prevName} → ${nextName}.`);
+  const nextName = getOrganization(orgId)?.name ?? "the gang";
+  const prevName = getOrganization(previousOrgId)?.name ?? "nobody";
+  admin.sendClientMessage(Color.info, `Zone #${zoneId}: ${prevName} → ${nextName}.`);
 }

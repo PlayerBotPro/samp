@@ -49,7 +49,7 @@ function readLiveHealth(player: Player, fallback: number): number {
       return Math.min(MAX_HEALTH, health);
     }
   } catch {
-    // Спек, смерть или выход — берём последнее из аккаунта.
+    // Spectating, death, or disconnect — use the latest account state.
   }
 
   return fallback;
@@ -58,7 +58,7 @@ function readLiveHealth(player: Player, fallback: number): number {
 function persistJailSeconds(userId: number, seconds: number, name: string): void {
   void saveUserJailedSeconds(userId, seconds).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить срок ${name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] could not save sentence for ${name}: ${message}`);
   });
 }
 
@@ -76,7 +76,7 @@ export function queueSave(player: Player): void {
     patchAccount(player, { health });
     void saveUserHealth(account.id, health).catch((error: unknown) => {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] не удалось сохранить HP ${account.name}: ${message}`);
+      omp.log(`[${SERVER_TAG}] could not save HP for ${account.name}: ${message}`);
     });
     return;
   }
@@ -90,7 +90,7 @@ export function queueSave(player: Player): void {
 
   void saveUserVitals(account.id, health, money, bank).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить персонажа ${account.name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] could not save character ${account.name}: ${message}`);
   });
 }
 
@@ -140,7 +140,7 @@ function decayHealth(player: Player): void {
     patchAccount(player, { health: next });
     queueSave(player);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -162,7 +162,7 @@ export const persistModule: GameModule = {
             patchAccount(player, { health: after });
           }
         } catch {
-          // Слот уже невалиден.
+          // Slot is no longer valid.
         }
       }
 

@@ -14,14 +14,14 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-registerCommand("stats", "Статистика персонажа", (player) => {
+registerCommand("stats", "Character statistics", (player) => {
   showStatsDialog(player);
 });
 
 export function showStatsDialog(player: Player): void {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Сначала войди в аккаунт.");
+    player.sendClientMessage(Color.error, "Log in first.");
     return;
   }
 
@@ -32,35 +32,35 @@ export function showStatsDialog(player: Player): void {
       health = Math.round(live);
     }
   } catch {
-    // Статы мира недоступны — покажем данные аккаунта.
+    // World stats are unavailable — show account data.
   }
 
   const membership = getMembership(account);
   const rank = membership
     ? `${membership.rank.title} (${membership.rank.id})`
-    : "Нет";
+    : "None";
   const body = [
-    statsRow("Имя", account.name),
-    statsRow("Проживание", residenceLabel(account.id)),
-    statsRow("Пол", genderLabel(account.gender)),
-    statsRow("Уровень", String(account.level)),
-    statsRow("Опыт", `${account.exp}/${expForNextLevel(account.level)}`),
-    statsRow("Законопослушность", String(account.lawfulness)),
-    statsRow("Скин", String(resolvePlayerSkin(account))),
-    statsRow("Дата рождения", formatBirthDate(account.birthDate)),
-    statsRow("Почта", account.email),
-    statsRow("Деньги", `$${account.money}`),
-    statsRow("Банк", `$${account.bank}`),
-    statsRow("Донат-счёт", String(account.donate)),
-    statsRow("Наркотики", `${account.drugs} шт.`),
-    statsRow("Патроны", `${account.ammo} шт.`),
-    statsRow("Металл", `${account.metal} шт.`),
-    statsRow("Розыск", String(account.wantedLevel)),
-    statsRow("Военный билет", account.militaryId ? "Есть" : "Нет"),
-    statsRow("Медкарта", account.medcard ? "Есть" : "Нет"),
-    statsRow("Здоровье", String(health)),
-    statsRow("Организация", membership?.org.name ?? "Нет"),
-    statsRow("Должность", rank),
+    statsRow("Name", account.name),
+    statsRow("Residence", residenceLabel(account.id)),
+    statsRow("Gender", genderLabel(account.gender)),
+    statsRow("Level", String(account.level)),
+    statsRow("Experience", `${account.exp}/${expForNextLevel(account.level)}`),
+    statsRow("Lawfulness", String(account.lawfulness)),
+    statsRow("Skin", String(resolvePlayerSkin(account))),
+    statsRow("Date of birth", formatBirthDate(account.birthDate)),
+    statsRow("Email", account.email),
+    statsRow("Cash", `$${account.money}`),
+    statsRow("Bank", `$${account.bank}`),
+    statsRow("Donation balance", String(account.donate)),
+    statsRow("Drugs", `${account.drugs} pcs.`),
+    statsRow("Ammunition", `${account.ammo} pcs.`),
+    statsRow("Metal", `${account.metal} pcs.`),
+    statsRow("Wanted level", String(account.wantedLevel)),
+    statsRow("Military ID", account.militaryId ? "Yes" : "No"),
+    statsRow("Medical card", account.medcard ? "Yes" : "No"),
+    statsRow("Health", String(health)),
+    statsRow("Organization", membership?.org.name ?? "None"),
+    statsRow("Position", rank),
   ].join("\n");
 
   try {
@@ -68,13 +68,13 @@ export function showStatsDialog(player: Player): void {
       player,
       STATS_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}Статистика ${account.name}`,
+      `${TITLE}${account.name}'s Statistics`,
       body,
-      "Закрыть",
+      "Close",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть статистику.");
+    player.sendClientMessage(Color.error, "Unable to open statistics.");
   }
 }
 

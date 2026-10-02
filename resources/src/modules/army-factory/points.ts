@@ -1,22 +1,22 @@
 import { ORG_ARMY_ID } from "../org/army";
 
-/** Ванильный интерьер завода (ID 2). */
+/** Vanilla factory interior (ID 2). */
 export const ARMY_FACTORY_INTERIOR = 2;
 
 /**
- * VW завода = id Армии. Армия и FBI входят в один инстанс.
- * Улица остаётся STREET_WORLD (0).
+ * Factory VW = Army id. The Army and FBI share one instance.
+ * The street remains STREET_WORLD (0).
  */
 export const ARMY_FACTORY_WORLD = ORG_ARMY_ID;
 
-/** Пикап раздевалки (устройство / завершение). */
+/** Locker-room pickup (start / end shift). */
 export const HIRE_POINT = {
   x: 2567.759,
   y: -1281.4629,
   z: 1044.125,
 } as const;
 
-/** Жёлтые пикапы — заготовки гильз. */
+/** Yellow pickups — casing blanks. */
 export const BLANK_POINTS: readonly { x: number; y: number; z: number }[] = [
   { x: 2559.323, y: -1287.3453, z: 1044.125 },
   { x: 2551.165, y: -1287.2174, z: 1044.125 },
@@ -26,7 +26,7 @@ export const BLANK_POINTS: readonly { x: number; y: number; z: number }[] = [
   { x: 2558.8235, y: -1299.9015, z: 1044.125 },
 ];
 
-/** Станы сборки: пикап + объект на столе + угол игрока. */
+/** Assembly stations: pickup + table object + player facing. */
 export const BENCH_POINTS: readonly {
   pickup: { x: number; y: number; z: number };
   object: { x: number; y: number; z: number; rz: number };
@@ -84,7 +84,7 @@ export const BENCH_POINTS: readonly {
   },
 ];
 
-/** Сдача готовых патронов. */
+/** Finished ammunition drop-off. */
 export const STOCK_POINTS: readonly { x: number; y: number; z: number }[] = [
   { x: 2564.3374, y: -1292.8196, z: 1044.125 },
 ];

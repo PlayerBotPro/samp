@@ -75,7 +75,7 @@ let metalStockLabel: TextLabel | null = null;
 
 function metalStockLabelText(): string {
   const metal = getWarehouse(WAREHOUSE_MINE_ID)?.metal ?? 0;
-  return `Метал\nна Складе\n${metal} кг`;
+  return `Metal\nin Storage\n${metal} kg`;
 }
 
 function refreshMetalStockLabel(): void {
@@ -86,7 +86,7 @@ function refreshMetalStockLabel(): void {
   try {
     metalStockLabel.updateText(Color.info, metalStockLabelText());
   } catch {
-    // Лейбл уже уничтожен.
+    // The label has already been destroyed.
   }
 }
 
@@ -121,7 +121,7 @@ export const minerModule: GameModule = {
     );
 
     new TextLabel(
-      "Шахта\nРабота шахтёра",
+      "Mine\nMiner job",
       Color.info,
       HIRE_POINT.x,
       HIRE_POINT.y,
@@ -132,7 +132,7 @@ export const minerModule: GameModule = {
     );
 
     new TextLabel(
-      "Шахта\nИнформация",
+      "Mine\nInformation",
       Color.info,
       INFO_POINT.x,
       INFO_POINT.y,
@@ -172,7 +172,7 @@ export const minerModule: GameModule = {
     );
 
     new TextLabel(
-      "Продажа металла\n15$ за 1кг.",
+      "Metal sales\n$15 per 1 kg.",
       Color.info,
       METAL_SELL_POINT.x,
       METAL_SELL_POINT.y,
@@ -272,7 +272,7 @@ function updateMineIcon(
       );
       iconShown.add(id);
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
     return;
   }
@@ -289,7 +289,7 @@ function hideMineIcon(player: Player): void {
   try {
     player.removeMapIcon(MAP_ICON_SLOT);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -363,7 +363,7 @@ function tickMiner(): void {
         showMetalBuyDialog(player);
       }
     } catch {
-      // Слот уже пуст.
+      // The slot is already empty.
     }
   });
 }
@@ -374,21 +374,21 @@ function showInfoDialog(player: Player): void {
       player,
       MINER_INFO_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Шахта",
+      "Mine",
       [
-        "Работа шахтёра",
+        "Miner job",
         "",
-        "Обычная руда: 6-16 kg, $15 за kg",
-        "Особая руда: редкий шанс, 3-8 kg, $90 за kg",
+        "Regular ore: 6-16 kg, $15 per kg",
+        "Special ore: rare chance, 3-8 kg, $90 per kg",
         "",
-        "Зарплата копится за смену и выдаётся",
-        "только когда вы завершаете работу.",
+        "Pay accumulates during the shift and is paid",
+        "only when you finish the job.",
       ].join("\n"),
-      "Закрыть",
+      "Close",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open the dialog.");
   }
 }
 
@@ -398,13 +398,13 @@ function showMetalBuyDialog(player: Player): void {
       player,
       MINER_METAL_BUY_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Покупка металла",
-      "Сколько кг металла вы хотите купить?\nЦена за кг: 15$",
-      "Купить",
-      "Отмена"
+      "Buy metal",
+      "How many kg of metal do you want to buy?\nPrice per kg: $15",
+      "Buy",
+      "Cancel"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open the dialog.");
   }
 }
 
@@ -419,13 +419,13 @@ function buyMetal(player: Player, rawInput: string): void {
   }
 
   if (!isOnFootAt(player, METAL_SELL_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Подойдите к точке продажи металла.");
+    player.sendClientMessage(Color.error, "Go to the metal sales point.");
     return;
   }
 
   const kg = Math.floor(Number(rawInput.trim().replace(",", ".")));
   if (!Number.isFinite(kg) || kg <= 0 || !Number.isSafeInteger(kg)) {
-    player.sendClientMessage(Color.error, "Введите целое число кг больше 0.");
+    player.sendClientMessage(Color.error, "Enter a whole number of kg greater than 0.");
     showMetalBuyDialog(player);
     return;
   }
@@ -435,8 +435,8 @@ function buyMetal(player: Player, rawInput: string): void {
     player.sendClientMessage(
       Color.error,
       stock <= 0
-        ? "На складе нет металла."
-        : `На складе только ${stock} кг металла.`
+        ? "There is no metal in storage."
+        : `Only ${stock} kg of metal is in storage.`
     );
     showMetalBuyDialog(player);
     return;
@@ -444,19 +444,19 @@ function buyMetal(player: Player, rawInput: string): void {
 
   const total = kg * METAL_PRICE_PER_KG;
   if (!Number.isSafeInteger(total) || total <= 0) {
-    player.sendClientMessage(Color.error, "Слишком большое количество.");
+    player.sendClientMessage(Color.error, "Amount is too large.");
     showMetalBuyDialog(player);
     return;
   }
 
   if (account.money < total) {
-    player.sendClientMessage(Color.error, `Недостаточно денег. Нужно $${total}.`);
+    player.sendClientMessage(Color.error, `Not enough money. You need $${total}.`);
     showMetalBuyDialog(player);
     return;
   }
 
   if (!takeMineMetal(kg)) {
-    player.sendClientMessage(Color.error, "На складе недостаточно металла.");
+    player.sendClientMessage(Color.error, "Not enough metal in storage.");
     showMetalBuyDialog(player);
     return;
   }
@@ -474,12 +474,12 @@ function buyMetal(player: Player, rawInput: string): void {
     saveUserMoney(account.id, nextMoney, account.bank),
     saveUserInventory(account.id, account.drugs, account.ammo, nextMetal),
   ]).catch(() => {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   });
 
   player.sendClientMessage(
     Color.info,
-    `Вы купили ${kg} кг металла за $${total}.`
+    `You bought ${kg} kg of metal for $${total}.`
   );
 }
 
@@ -489,13 +489,13 @@ function showHireDialog(player: Player): void {
       player,
       MINER_HIRE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Шахта",
-      "Вы хотите устроиться на работу шахтёра?",
-      "Да",
-      "Нет"
+      "Mine",
+      "Do you want to become a miner?",
+      "Yes",
+      "No"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open the dialog.");
   }
 }
 
@@ -505,13 +505,13 @@ function showQuitDialog(player: Player, job: Job): void {
       player,
       MINER_QUIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Шахта",
-      `Завершить смену и получить вознаграждение?\nСейчас: ${job.kg} kg, $${job.salary}`,
-      "Да",
-      "Нет"
+      "Mine",
+      `Finish your shift and collect your reward?\nCurrent: ${job.kg} kg, $${job.salary}`,
+      "Yes",
+      "No"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open the dialog.");
   }
 }
 
@@ -527,22 +527,22 @@ function hire(player: Player): void {
   }
 
   if (account.hospitalized) {
-    player.sendClientMessage(Color.error, "Сначала закончите лечение.");
+    player.sendClientMessage(Color.error, "Finish treatment first.");
     return;
   }
 
   if (isLoaderOnShift(player)) {
-    player.sendClientMessage(Color.error, "Сначала закончите смену грузчика.");
+    player.sendClientMessage(Color.error, "Finish your loader shift first.");
     return;
   }
 
   if (isArmyFactoryOnShift(player)) {
-    player.sendClientMessage(Color.error, "Сначала закончите смену в цехе патронов.");
+    player.sendClientMessage(Color.error, "Finish your ammunition factory shift first.");
     return;
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Подойдите к месту устройства.");
+    player.sendClientMessage(Color.error, "Go to the hiring point.");
     return;
   }
 
@@ -570,7 +570,7 @@ function hire(player: Player): void {
 
   givePickaxe(player);
   setMineCheckpoint(player, job);
-  player.sendClientMessage(Color.info, "Вы устроились шахтёром. Идите к отметке и добывайте руду.");
+  player.sendClientMessage(Color.info, "You are now a miner. Go to the marker and mine ore.");
 }
 
 function finishShift(player: Player): void {
@@ -582,7 +582,7 @@ function finishShift(player: Player): void {
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Подойдите к месту устройства.");
+    player.sendClientMessage(Color.error, "Go to the hiring point.");
     return;
   }
 
@@ -602,7 +602,7 @@ function finishShift(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Смена закончена. Вы добыли ${kg} kg руды и получили $${salary}.`
+    `Shift finished. You mined ${kg} kg of ore and received $${salary}.`
   );
 }
 
@@ -623,7 +623,7 @@ function abortShift(player: Player, notify: boolean): void {
   if (notify && isPlayerActive(player)) {
     player.sendClientMessage(
       Color.error,
-      "Смена сорвана. Руда и зарплата сгорели."
+      "Shift failed. Your ore and pay have been lost."
     );
   }
 }
@@ -647,7 +647,7 @@ function restoreWorker(player: Player, skin: number | null): void {
       player.setSkin(skin);
     }
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -733,7 +733,7 @@ function preloadAnims(player: Player): void {
     player.applyAnimation("CARRY", "crry_prtial", 4.1, false, false, false, false, 1, ANIM_SYNC_ALL);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Библиотека подтянется на первой добыче.
+    // The library will load on the first mining action.
   }
 }
 
@@ -756,7 +756,7 @@ function resetStance(player: Player): void {
     player.setSpecialAction(SPECIAL_ACTION_NONE);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -810,7 +810,7 @@ function finishPickup(player: Player, expectedId: number): void {
     return;
   }
 
-  player.sendClientMessage(Color.info, "Руда в тачке. Отвезите её к складу.");
+  player.sendClientMessage(Color.info, "The ore is in the cart. Take it to storage.");
 }
 
 function deliver(player: Player, job: Job): void {
@@ -836,12 +836,12 @@ function deliver(player: Player, job: Job): void {
   givePickaxe(player);
   setMineCheckpoint(player, job);
 
-  const kind = special ? "особая" : "обычная";
+  const kind = special ? "special" : "regular";
   player.sendClientMessage(
     Color.info,
-    `Сдано: ${kind} руда, ${kg} kg. +$${pay}`
+    `Delivered: ${kind} ore, ${kg} kg. +$${pay}`
   );
-  player.sendClientMessage(Color.white, `Зарплата за смену: $${job.salary}`);
+  player.sendClientMessage(Color.white, `Shift pay: $${job.salary}`);
 }
 
 function loseLoad(player: Player): void {
@@ -861,7 +861,7 @@ function loseLoad(player: Player): void {
   setMineCheckpoint(player, job);
   player.sendClientMessage(
     Color.error,
-    "Вы сломали телегу. Руда потеряна, добывайте снова."
+    "You broke the cart. The ore is lost; mine again."
   );
 }
 
@@ -870,7 +870,7 @@ function setMineCheckpoint(player: Player, job: Job): void {
   try {
     Checkpoint.set(player, point.x, point.y, point.z, CHECKPOINT_RADIUS);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -895,7 +895,7 @@ function givePickaxe(player: Player): void {
       0
     );
   } catch {
-    // Слот ещё не готов.
+    // The slot is not ready yet.
   }
 }
 
@@ -972,7 +972,7 @@ function giveCart(player: Player): void {
     );
     player.setSpecialAction(SPECIAL_ACTION_NONE);
   } catch {
-    // Слот ещё не готов.
+    // The slot is not ready yet.
   }
 }
 
@@ -981,7 +981,7 @@ function clearJobObjects(player: Player): void {
     try {
       player.removeAttachedObject(slot);
     } catch {
-      // Слота не было.
+      // The slot did not exist.
     }
   }
 }

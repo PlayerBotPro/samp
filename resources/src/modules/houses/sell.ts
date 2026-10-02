@@ -38,18 +38,18 @@ export function bindHouseSellDialog(): void {
 export function showSellHouseDialog(player: Player): void {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Сначала войди в аккаунт.");
+    player.sendClientMessage(Color.error, "Log in first.");
     return;
   }
 
   const house = findOwnedHouse(account.id);
   if (!house) {
-    player.sendClientMessage(Color.error, "У вас нет дома.");
+    player.sendClientMessage(Color.error, "You do not own a house.");
     return;
   }
 
   if (!isNearOwnHouse(player, house.id)) {
-    player.sendClientMessage(Color.error, "Подойдите к своему дому.");
+    player.sendClientMessage(Color.error, "Move closer to your house.");
     return;
   }
 
@@ -58,13 +58,13 @@ export function showSellHouseDialog(player: Player): void {
       player,
       HOUSE_SELL_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Продажа дома",
-      `Вы хотите продать дом (№${house.id}) государству за: $${house.price}?`,
-      "Продать",
-      "Отмена"
+      "Sell house",
+      `Do you want to sell house #${house.id} to the state for $${house.price}?`,
+      "Sell",
+      "Cancel"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть окно продажи.");
+    player.sendClientMessage(Color.error, "Could not open the sales window.");
   }
 }
 
@@ -77,12 +77,12 @@ async function confirmSellHouse(player: Player): Promise<void> {
 
   const house = findOwnedHouse(account.id);
   if (!house) {
-    player.sendClientMessage(Color.error, "У вас нет дома.");
+    player.sendClientMessage(Color.error, "You do not own a house.");
     return;
   }
 
   if (!isNearOwnHouse(player, house.id)) {
-    player.sendClientMessage(Color.error, "Подойдите к своему дому.");
+    player.sendClientMessage(Color.error, "Move closer to your house.");
     return;
   }
 
@@ -97,18 +97,18 @@ async function confirmSellHouse(player: Player): Promise<void> {
   } catch (error: unknown) {
     selling.delete(account.id);
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] продажа дома ${house.id} (${account.name}): ${message}`);
-    player.sendClientMessage(Color.error, "Продажа не прошла. Попробуйте ещё раз.");
+    omp.log(`[${SERVER_TAG}] house sale ${house.id} (${account.name}): ${message}`);
+    player.sendClientMessage(Color.error, "Sale failed. Try again.");
     return;
   }
   selling.delete(account.id);
 
   if (!result.ok) {
     if (result.reason === "owner") {
-      player.sendClientMessage(Color.error, "У вас нет дома.");
+      player.sendClientMessage(Color.error, "You do not own a house.");
       return;
     }
-    player.sendClientMessage(Color.error, "Продажа не прошла. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Sale failed. Try again.");
     return;
   }
 
@@ -122,7 +122,7 @@ async function confirmSellHouse(player: Player): Promise<void> {
 
   const cleared = clearHouseForSale(house.id);
   if (!cleared) {
-    player.sendClientMessage(Color.error, "Продажа не прошла. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Sale failed. Try again.");
     return;
   }
 
@@ -134,7 +134,7 @@ async function confirmSellHouse(player: Player): Promise<void> {
 
   void saveUserMoney(account.id, result.cashLeft, account.bank).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить деньги ${account.name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] could not save money for ${account.name}: ${message}`);
   });
 
   updateEntrancePickup(house.id);
@@ -144,6 +144,6 @@ async function confirmSellHouse(player: Player): Promise<void> {
   const sold = getHouse(house.id);
   player.sendClientMessage(
     Color.info,
-    `Вы продали дом №${house.id} государству за $${sold?.price ?? result.price}.`
+    `You sold house #${house.id} to the state for $${sold?.price ?? result.price}.`
   );
 }

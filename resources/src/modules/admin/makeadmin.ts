@@ -47,7 +47,7 @@ function findTarget(slot: number) {
 export function bindAdminMakeadmin(): void {
   registerCommand(
     "makeadmin",
-    "Выдать или снять админку",
+    "Grant or revoke admin rights",
     (player, args) => {
       if (!hasAdminAccess(player, 7)) {
         return;
@@ -57,28 +57,28 @@ export function bindAdminMakeadmin(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /makeadmin [id] [lvl] (0-7)"
+          "Usage: /makeadmin [id] [lvl] (0-7)"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (playerId(player) === playerId(target)) {
         player.sendClientMessage(
           Color.error,
-          "Нельзя выдать или снять админку себе."
+          "You cannot grant or revoke your own admin rights."
         );
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
@@ -101,12 +101,12 @@ async function grantAdmin(
   try {
     await saveAdminAccess(account.id, level);
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось сохранить админку.");
+    admin.sendClientMessage(Color.error, "Failed to save admin rights.");
     return;
   }
 
   if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
-    admin.sendClientMessage(Color.error, "Игрок не найден.");
+    admin.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
@@ -116,15 +116,15 @@ async function grantAdmin(
   const tag = playerChatName(target);
 
   if (level < 1) {
-    admin.sendClientMessage(Color.info, `Вы сняли админку: ${tag}.`);
-    target.sendClientMessage(Color.info, "Вас сняли с администрирования.");
+    admin.sendClientMessage(Color.info, `You revoked admin rights from ${tag}.`);
+    target.sendClientMessage(Color.info, "Your admin rights have been revoked.");
     return;
   }
 
-  admin.sendClientMessage(Color.info, `Вы выдали админку ${tag}: ${level} lvl.`);
+  admin.sendClientMessage(Color.info, `You granted ${tag} admin level ${level}.`);
   target.sendClientMessage(
     Color.info,
-    `Вам выдали администрирование. Уровень: ${level}. Придумайте пароль от админки.`
+    `You have been granted admin access. Level: ${level}. Set an admin password.`
   );
   promptAdminPasswordSetup(target);
 }

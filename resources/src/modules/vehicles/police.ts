@@ -4,7 +4,7 @@ import { registerOrgVehicle } from "./access";
 import { createServerVehicle } from "./spawn";
 
 const RESPAWN_SEC = 100;
-const DENY = "Вы не состоите в областной полиции.";
+const DENY = "You are not a member of the County Police.";
 
 const POLICE_VEHICLES: ReadonlyArray<{
   model: number;

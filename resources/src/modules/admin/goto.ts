@@ -60,7 +60,7 @@ function leaveVehicle(player: Player): void {
       player.removeFromVehicle();
     }
   } catch {
-    // Уже пешком.
+    // Already on foot.
   }
 }
 
@@ -107,7 +107,7 @@ function broadcastAdmins(text: string): void {
     try {
       other.sendClientMessage(Color.gray, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -115,7 +115,7 @@ function broadcastAdmins(text: string): void {
 export function bindAdminGoto(): void {
   registerCommand(
     "goto",
-    "Телепорт к игроку",
+    "Teleport to a player",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -123,38 +123,38 @@ export function bindAdminGoto(): void {
 
       const slot = parseSlot(args);
       if (slot === null) {
-        player.sendClientMessage(Color.error, "Использование: /goto [id]");
+        player.sendClientMessage(Color.error, "Usage: /goto [id]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (isSamePlayer(player, target)) {
-        player.sendClientMessage(Color.error, "Нельзя телепортироваться к себе.");
+        player.sendClientMessage(Color.error, "You cannot teleport to yourself.");
         return;
       }
 
       if (!canTeleport(player)) {
-        player.sendClientMessage(Color.error, "Сейчас нельзя телепортироваться.");
+        player.sendClientMessage(Color.error, "You cannot teleport now.");
         return;
       }
 
       const point = readPoint(target);
       if (!point || !teleportPlayer(player, point)) {
-        player.sendClientMessage(Color.error, "Не удалось телепортироваться.");
+        player.sendClientMessage(Color.error, "Failed to teleport.");
         return;
       }
 
       player.sendClientMessage(
         Color.info,
-        `Вы телепортировались к ${playerChatName(target)}.`
+        `You teleported to ${playerChatName(target)}.`
       );
       broadcastAdmins(
-        `Администратор ${playerChatName(player)} телепортировался к ${playerChatName(target)}.`
+        `Administrator ${playerChatName(player)} teleported to ${playerChatName(target)}.`
       );
     },
     true
@@ -162,7 +162,7 @@ export function bindAdminGoto(): void {
 
   registerCommand(
     "gethere",
-    "Телепорт игрока к себе",
+    "Teleport a player to yourself",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -170,47 +170,47 @@ export function bindAdminGoto(): void {
 
       const slot = parseSlot(args);
       if (slot === null) {
-        player.sendClientMessage(Color.error, "Использование: /gethere [id]");
+        player.sendClientMessage(Color.error, "Usage: /gethere [id]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (isSamePlayer(player, target)) {
-        player.sendClientMessage(Color.error, "Нельзя телепортировать себя.");
+        player.sendClientMessage(Color.error, "You cannot teleport yourself.");
         return;
       }
 
       if (!canTeleport(target)) {
-        player.sendClientMessage(Color.error, "Сейчас нельзя телепортировать игрока.");
+        player.sendClientMessage(Color.error, "You cannot teleport a player now.");
         return;
       }
 
       const point = readPoint(player);
       if (!point || !teleportPlayer(target, point)) {
-        player.sendClientMessage(Color.error, "Не удалось телепортировать игрока.");
+        player.sendClientMessage(Color.error, "Failed to teleport the player.");
         return;
       }
 
       player.sendClientMessage(
         Color.info,
-        `Вы телепортировали к себе ${playerChatName(target)}.`
+        `You teleported ${playerChatName(target)} to yourself.`
       );
       try {
         target.sendClientMessage(
           Color.info,
-          `Администратор ${playerChatName(player)} телепортировал вас.`
+          `Administrator ${playerChatName(player)} teleported you.`
         );
       } catch {
-        // Игрок уже вышел.
+        // Player already disconnected.
       }
 
       broadcastAdmins(
-        `[A] Администратор ${playerChatName(player)} телепортировал к себе игрока ${playerChatName(target)}`
+        `[A] Administrator ${playerChatName(player)} teleported player ${playerChatName(target)} to themselves`
       );
     },
     true

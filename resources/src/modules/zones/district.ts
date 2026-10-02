@@ -6,7 +6,7 @@ type District = {
   maxY: number;
 };
 
-/** Районы SA из zone.inc (GetPlayer2DZone): только X/Y. */
+/** SA districts from zone.inc (GetPlayer2DZone): X/Y only. */
 const DISTRICTS: readonly District[] = [
   { name: "The Big Ear", minX: -410, minY: 1403.3, maxX: -137.9, maxY: 1681.2 },
   { name: "Aldea Malvada", minX: -1372.1, minY: 2498.5, maxX: -1277.5, maxY: 2615.3 },

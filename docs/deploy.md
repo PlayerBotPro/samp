@@ -1,34 +1,34 @@
-# Деплой LSRP на сервер
+# Deploying LSRP to a server
 
-Как вынести сервер с локального OSPanel на VPS/выделенную машину: что нужно, как собрать мод, что копировать, как обновить.
+How to move the server from local OSPanel to a VPS/dedicated machine: what is required, how to build the game mode, what to copy, and how to update it.
 
-Локальная разработка — [README.md](../README.md). Устройство мода — [docs.md](docs.md).
+For local development, see [README.md](../README.md). For the game mode architecture, see [docs.md](docs.md).
 
-Пайплайн: [deploy.yml](../deploy.yml) в корне (сборка, typecheck, выкладка по SSH).
+The pipeline template is [deploy.yml](../deploy.yml) in the root (build, typecheck, SSH deployment).
 
-Сейчас дерево собрано под **Windows** (`omp-server.exe`, `*.dll`). На Linux те же файлы мода, но бинарники open.mp нужны **linux-сборки**, не `.exe`.
+The current tree is assembled for **Windows** (`omp-server.exe`, `*.dll`). Linux uses the same game-mode files but requires **Linux open.mp binaries**, not `.exe` files.
 
 ---
 
-## Что должно быть на сервере
+## What the server needs
 
-| Нужно | Зачем |
+| Requirement | Purpose |
 |---|---|
-| open.mp (под ОС сервера) | `omp-server` / `omp-server.exe`, `libnode`, папка `components/` |
-| **Node.js 18+** | сборка TS и `npm ci` в `resources/` |
-| **MySQL 8** | таблица `users` |
-| UDP **7777** (и TCP 7777, если включён artwork) | клиент SA-MP / open.mp |
-| База `lsrp` и пользователь MySQL **не root без пароля** | `.env` |
+| open.mp (for the server OS) | `omp-server` / `omp-server.exe`, `libnode`, `components/` |
+| **Node.js 18+** | Build TS and run `npm ci` in `resources/` |
+| **MySQL 8** | `users` table |
+| UDP **7777** (and TCP 7777 when artwork is enabled) | SA-MP / open.mp client |
+| `lsrp` database and a MySQL user **that is not passwordless root** | `.env` |
 
-omp-node крутит уже собранный `resources/dist/index.js`. Исходники `.ts` на проде для запуска не нужны, если собрал заранее.
+omp-node runs the already built `resources/dist/index.js`. The `.ts` sources are not needed in production if the game mode is built in advance.
 
-`mysql2` и `@omp-node/core` **не бандлятся** в JS (`packages=external`). На сервере обязателен `resources/node_modules` после `npm ci`.
+`mysql2` and `@omp-node/core` are **not bundled** into JS (`packages=external`). The server must contain `resources/node_modules` after `npm ci`.
 
 ---
 
-## Сборка мода
+## Build the game mode
 
-Из корня репозитория (локально или на сервере):
+From the repository root (locally or on the server):
 
 ```powershell
 cd resources
@@ -38,179 +38,179 @@ npm run typecheck
 npm run build
 ```
 
-Результат: `resources/dist/index.js` (и `.map`). Папка `dist/` в git **не лежит** — без `build` сервер поднимет пустой/старый мод.
+The result is `resources/dist/index.js` (and `.map`). `dist/` is **not** in git: without `build`, the server starts an empty or stale game mode.
 
-После любой правки TS: снова `npm run build`, затем **рестарт** `omp-server`. Hot-reload нет.
+After every TS change, run `npm run build` again, then **restart** `omp-server`. There is no hot reload.
 
 ---
 
-## Что копировать на сервер
+## What to copy to the server
 
-### Нужно
+### Required
 
 ```
 config.json
-bans.json                 (можно пустой [])
+bans.json                 (can be an empty [])
 gamemodes/lsrp.amx
-components/               (DLL/SO под ОС сервера)
+components/               (DLL/SO for the server OS)
 maps/
-sql/schema.sql            (эталон, таблица ещё создаётся сама)
+sql/schema.sql            (reference; the table is also created automatically)
 resources/omp-node.json
 resources/package.json
 resources/package-lock.json
-resources/dist/           (после npm run build)
-package.json              (скрипт start; на Linux см. ниже)
+resources/dist/           (after npm run build)
+package.json              (start script; see Linux below)
 ```
 
-Плюс бинарники open.mp под ОС: `omp-server.exe` + `libnode.dll` (Windows) или `omp-server` + `libnode.so` (Linux).
+Also copy open.mp binaries for the server OS: `omp-server.exe` + `libnode.dll` (Windows), or `omp-server` + `libnode.so` (Linux).
 
-`.env` **создай на сервере**, не копируй домашний.
+Create `.env` **on the server**; do not copy your local one.
 
-### Не копировать
+### Do not copy
 
-| Путь | Почему |
+| Path | Reason |
 |---|---|
-| `.env` | пароль БД с твоей машины |
-| `.git/` | не нужен для запуска |
-| `log.txt`, `*.log` | мусор |
-| `resources/src/` | не нужен, если собрал `dist` у себя |
-| `resources/node_modules/` | не тащи с Windows на Linux |
-| `node_modules/` в корне | его нет / не нужен |
+| `.env` | Contains the database password for your machine |
+| `.git/` | Not required to run the server |
+| `log.txt`, `*.log` | Junk files |
+| `resources/src/` | Not needed when you built `dist` locally |
+| `resources/node_modules/` | Do not move them from Windows to Linux |
+| root `node_modules/` | It does not exist / is not needed |
 
-Если деплой через `git pull` на сервере — копировать ничего не надо: клонируй репо, собери там, поставь runtime-зависимости.
+When deploying using `git pull` on the server, do not copy anything: clone the repository, build there, and install runtime dependencies.
 
 ---
 
-## Первый запуск на сервере
+## First server start
 
 ### 1. MySQL
 
 ```sql
 CREATE DATABASE lsrp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'lsrp'@'127.0.0.1' IDENTIFIED BY 'СИЛЬНЫЙ_ПАРОЛЬ';
+CREATE USER 'lsrp'@'127.0.0.1' IDENTIFIED BY 'STRONG_PASSWORD';
 GRANT ALL ON lsrp.* TO 'lsrp'@'127.0.0.1';
 FLUSH PRIVILEGES;
 ```
 
-Таблица `users` создаётся при старте мода. Схему можно заранее накатить из `sql/schema.sql`.
+The `users` table is created when the game mode starts. You may apply `sql/schema.sql` in advance.
 
-### 2. `.env` в корне сервера (рядом с `omp-server`)
+### 2. `.env` in the server root (beside `omp-server`)
 
 ```
 MYSQL_HOST=127.0.0.1
 MYSQL_PORT=3306
 MYSQL_USER=lsrp
-MYSQL_PASSWORD=СИЛЬНЫЙ_ПАРОЛЬ
+MYSQL_PASSWORD=STRONG_PASSWORD
 MYSQL_DATABASE=lsrp
 ```
 
-Если MySQL на другом хосте — пиши его, не `127.0.0.1`. С машины сервера пользователь должен иметь право коннекта.
+If MySQL is on another host, use that host rather than `127.0.0.1`. The server-machine user must have connection permission.
 
-### 3. Зависимости Node (на сервере)
+### 3. Node dependencies (on the server)
 
 ```powershell
 cd resources
 npm ci --omit=dev
 ```
 
-`--omit=dev` ставит только `mysql2` и `@omp-node/core`. Если собираешь мод **на этом же сервере**, ставь полный `npm ci` (нужны esbuild и typescript).
+`--omit=dev` installs only `mysql2` and `@omp-node/core`. If you build the game mode **on this server**, run the full `npm ci` (esbuild and TypeScript are required).
 
-Не копируй `node_modules` с Windows на Linux.
+Do not copy `node_modules` from Windows to Linux.
 
-### 4. `config.json` на проде
+### 4. Production `config.json`
 
-Перед открытием игрокам:
+Before opening the server to players:
 
-- `rcon.password` — задай свой **до** включения RCON; `enable` лучше оставить `false`. Не коммить рабочий пароль.
-- `network.public_addr` — белый IP или домен, если за NAT
-- `announce` — `true` только если нужен мастерлист
-- `password` — пароль на вход, если сервер закрытый
-- `name` / `game.mode` — как в `resources/src/shared/brand.ts` (после смены бренда — пересборка)
+- Set your own `rcon.password` **before** enabling RCON; it is best to leave `enable` as `false`. Do not commit a real password.
+- Set `network.public_addr` to the public IP or domain when behind NAT.
+- Set `announce` to `true` only when the master list is needed.
+- Set `password` when the server is private.
+- Keep `name` / `game.mode` aligned with `resources/src/shared/brand.ts` (rebuild after changing the brand).
 
-Порт: `network.port` (по умолчанию 7777). В файрволе: **UDP 7777**. TCP 7777 — для artwork, если `artwork.enable: true`.
+The port is `network.port` (7777 by default). Allow **UDP 7777** through the firewall. TCP 7777 is for artwork when `artwork.enable: true`.
 
-### 5. Старт
+### 5. Start
 
-Windows (как локально):
+Windows (as locally):
 
 ```powershell
 npm start
 ```
 
-или `omp-server.exe` из корня.
+Or run `omp-server.exe` from the root.
 
-Linux: бинарь обычно `./omp-server` (права `chmod +x`). Скрипт `npm start` в корне заточен под `.exe` — на Linux запускай бинарь напрямую.
+On Linux, the binary is usually `./omp-server` (make it executable with `chmod +x`). The root `npm start` script targets `.exe`; run the binary directly on Linux.
 
-В логе должны быть `MySQL подключен`, `таблица users готова`, `LSRP готов`. Клиент: `IP:7777`, ник `Name_Surname`.
+The log should include `MySQL connected`, `users table ready`, and `LSRP ready`. Connect with `IP:7777` and the `Name_Surname` nickname.
 
 ---
 
-## Обновление мода (уже стоит)
+## Updating an installed game mode
 
-1. Остановить `omp-server`.
-2. Залить новые файлы (или `git pull`).
-3. Собрать, если менялся TypeScript:
+1. Stop `omp-server`.
+2. Upload changed files (or run `git pull`).
+3. Build if TypeScript changed:
 
    ```powershell
    npm run build
    ```
 
-4. Если менялись `resources/package.json` / lock — снова `cd resources && npm ci --omit=dev`.
-5. Если менялись карты — залить `maps/*.txt`.
-6. Запустить сервер.
+4. If `resources/package.json` or its lock file changed, run `cd resources && npm ci --omit=dev` again.
+5. If maps changed, upload `maps/*.txt`.
+6. Start the server.
 
-Игрокам заходить заново. Сессии в памяти не переживают рестарт; HP/деньги к этому моменту должны быть в MySQL (выход и автосейв раз в 3 минуты).
+Players must reconnect. In-memory sessions do not survive a restart; HP/money should already be in MySQL (logout and autosave every 3 minutes).
 
 ---
 
-## Два рабочих сценария
+## Two practical scenarios
 
-### A. Собрал дома, залил на сервер
+### A. Build locally, upload to the server
 
-На своей машине:
+On your machine:
 
 ```powershell
 npm run build
 ```
 
-На сервер: `resources/dist/`, `maps/`, `config.json` (осторожно, не затри прод-настройки), при необходимости `gamemodes/`. На сервере один раз: `cd resources && npm ci --omit=dev`. Рестарт.
+Upload `resources/dist/`, `maps/`, and `config.json` (carefully: do not overwrite production settings); upload `gamemodes/` if needed. Once on the server, run `cd resources && npm ci --omit=dev`. Restart.
 
-`resources/src` на прод можно не класть.
+You do not need to place `resources/src` in production.
 
-### B. Git на сервере (удобно для обновлений)
+### B. Git on the server (convenient for updates)
 
 ```bash
 git clone <url> /opt/lsrp
 cd /opt/lsrp
-# поставить linux-бинари open.mp в этот каталог, если в репо только Windows
+# Install Linux open.mp binaries in this directory if the repository contains only Windows files.
 cd resources && npm ci && cd ..
 npm run build
-cd resources && npm ci --omit=dev && cd ..   # можно оставить полный ci
-cp .env.example .env                         # прописать пароль
-# поправить config.json
-./omp-server                                 # или omp-server.exe
+cd resources && npm ci --omit=dev && cd ..   # Full ci may be kept instead
+cp .env.example .env                         # Enter the password
+# Edit config.json
+./omp-server                                 # Or omp-server.exe
 ```
 
 ---
 
-## Windows Server (служба)
+## Windows Server (service)
 
-Чтобы сервер не падал вместе с сессией RDP, повесь `omp-server.exe` на NSSM / WinSW, **Working directory** = корень проекта (там `.env` и `maps/`).
+To keep the server running after the RDP session ends, run `omp-server.exe` with NSSM / WinSW. Set **Working directory** to the project root (where `.env` and `maps/` are located).
 
-Пример NSSM:
+Example NSSM configuration:
 
 ```text
 Path:           D:\lsrp\omp-server.exe
 Startup dir:    D:\lsrp
 ```
 
-Не запускай из другой папки: `.env` и `maps/` читаются из `cwd`.
+Do not start it from another folder: `.env` and `maps/` are read from `cwd`.
 
 ---
 
 ## Linux (systemd)
 
-Файл `/etc/systemd/system/lsrp.service` (путь к каталогу подставь свой):
+Create `/etc/systemd/system/lsrp.service` (adjust the directory path):
 
 ```ini
 [Unit]
@@ -234,60 +234,60 @@ sudo systemctl enable --now lsrp
 sudo journalctl -u lsrp -f
 ```
 
-Лог open.mp ещё пишется в `log.txt` в рабочем каталоге.
+open.mp also writes its log to `log.txt` in the working directory.
 
 ---
 
 ## GitHub Actions (`deploy.yml`)
 
-Файл в корне: [deploy.yml](../deploy.yml).
+The file is in the root: [deploy.yml](../deploy.yml).
 
-Не ставит MySQL и не копирует `.env` / `config.json` — это один раз руками (см. выше). Пайплайн собирает мод и заливает `resources/dist` и `maps/`, затем рестартит службу `lsrp`, если она есть.
+The workflow neither installs MySQL nor copies `.env` / `config.json`: configure these manually once. It builds the game mode, uploads `resources/dist` and `maps/`, then restarts the `lsrp` service when present.
 
-Секреты: репозиторий → **Settings → Secrets and variables → Actions**:
+Repository secrets: **Settings → Secrets and variables → Actions**:
 
-| Секрет | Пример |
+| Secret | Example |
 |---|---|
 | `DEPLOY_HOST` | `203.0.113.10` |
 | `DEPLOY_USER` | `root` |
-| `DEPLOY_SSH_KEY` | приватный ключ целиком |
+| `DEPLOY_SSH_KEY` | Complete private key |
 | `DEPLOY_PATH` | `/opt/lsrp` |
 
-SSH-порт в `deploy.yml` сейчас **22**. Другой порт — поправь `port:` в файле.
+The SSH port in `deploy.yml` is currently **22**. For another port, edit `port:` in the file.
 
-Запуск: **Actions → Deploy → Run workflow**, либо тег:
+Start it with **Actions → Deploy → Run workflow**, or tag a release:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-Без `DEPLOY_HOST` job выкладки пропускается, сборка всё равно проходит.
+Without `DEPLOY_HOST`, the deployment job is skipped while the build still runs.
 
 ---
 
-## Короткий чеклист
+## Short checklist
 
-- [ ] MySQL: база, пользователь, пароль
-- [ ] `.env` на сервере, не из домашнего ПК
-- [ ] `npm run build` → есть `resources/dist/index.js`
-- [ ] на сервере `resources/node_modules` через `npm ci --omit=dev` (не копировать с Windows на Linux)
-- [ ] `gamemodes/lsrp.amx` и `components/` на месте
+- [ ] MySQL database, user, and password
+- [ ] `.env` on the server, not from the local PC
+- [ ] `npm run build` → `resources/dist/index.js` exists
+- [ ] Server `resources/node_modules` created by `npm ci --omit=dev` (do not copy from Windows to Linux)
+- [ ] `gamemodes/lsrp.amx` and `components/` are present
 - [ ] `config.json`: RCON, announce, public_addr
-- [ ] файрвол UDP 7777
-- [ ] старт из **корня** проекта
-- [ ] в логе MySQL и «LSRP готов»
-- [ ] вход с клиента `Name_Surname`
+- [ ] Firewall allows UDP 7777
+- [ ] Start from the **project root**
+- [ ] Log contains MySQL and “LSRP ready”
+- [ ] Connect using `Name_Surname`
 
 ---
 
-## Частые ошибки
+## Frequent errors
 
-| Симптом | Что проверить |
+| Symptom | Check |
 |---|---|
-| «База данных недоступна» | `.env`, хост MySQL, пользователь, что сервер стартовали из корня |
-| Модули не грузятся / старый код | забыл `npm run build` или не перезапустил процесс |
-| `Cannot find package mysql2` | нет `resources/node_modules`, нужен `npm ci --omit=dev` |
-| Не стартует на Linux | залит Windows `.exe` / `.dll`; нужны linux-бинари open.mp |
-| Игроки не видят сервер | UDP 7777, `public_addr`, `announce` |
-| Кик за ник | клиент должен быть `Name_Surname`, латиница |
+| “Database unavailable” | `.env`, MySQL host, user, and that the server started from the root |
+| Modules do not load / old code | Forgot `npm run build` or did not restart the process |
+| `Cannot find package mysql2` | `resources/node_modules` is missing; run `npm ci --omit=dev` |
+| Does not start on Linux | Windows `.exe` / `.dll` was uploaded; Linux open.mp binaries are required |
+| Players cannot see the server | UDP 7777, `public_addr`, `announce` |
+| Kick for nickname | Client nickname must be Latin `Name_Surname` |

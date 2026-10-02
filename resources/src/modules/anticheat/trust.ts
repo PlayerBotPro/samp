@@ -57,7 +57,7 @@ export function trustWeapon(player: Player, weaponId: number, ammo: number): voi
   if (slot < 0 || slot >= WEAPON_SLOTS) return;
   const cur = state.weapons[slot];
   if (!cur) return;
-  // giveWeapon в SA добавляет патроны к слоту, не заменяет.
+  // SA giveWeapon adds ammo to the slot; it does not replace it.
   if (cur.id === weaponId) {
     cur.ammo = Math.max(0, cur.ammo + Math.floor(ammo));
   } else {
@@ -125,7 +125,7 @@ export function markSpectating(player: Player, spectating: boolean): void {
   }
 }
 
-/** Выдать оружие и пометить как легитимное. */
+/** Give a weapon and mark it as legitimate. */
 export function grantWeapon(player: Player, weaponId: number, ammo: number): void {
   try {
     player.giveWeapon(weaponId, ammo);
@@ -133,7 +133,7 @@ export function grantWeapon(player: Player, weaponId: number, ammo: number): voi
     return;
   }
   trustWeapon(player, weaponId, ammo);
-  // Подтянуть факт с клиента после выдачи (если getWeaponData доступен).
+  // Fetch actual client data after granting (if getWeaponData is available).
   try {
     const slot = weaponSlot(weaponId);
     if (slot < 0) return;

@@ -80,7 +80,7 @@ function applyVisibleSkin(target: Player): void {
 export function bindAdminSetskin(): void {
   registerCommand(
     "setskin",
-    "Установить скин игроку",
+    "Set a player skin",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -90,20 +90,20 @@ export function bindAdminSetskin(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /setskin [id] [skin] (1-311)"
+          "Usage: /setskin [id] [skin] (1-311)"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
@@ -122,12 +122,12 @@ async function applySkin(admin: Player, target: Player, skin: number): Promise<v
   try {
     await saveUserSkin(account.id, skin);
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось сохранить скин.");
+    admin.sendClientMessage(Color.error, "Failed to save the skin.");
     return;
   }
 
   if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
-    admin.sendClientMessage(Color.error, "Игрок не найден.");
+    admin.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
@@ -139,13 +139,13 @@ async function applySkin(admin: Player, target: Player, skin: number): Promise<v
 
   admin.sendClientMessage(
     Color.info,
-    `Вы изменили внешность игроку ${targetTag} на ${skin} скина.`
+    `You changed ${targetTag}'s appearance to skin ${skin}.`
   );
 
   if (isPlayerActive(target)) {
     target.sendClientMessage(
       Color.info,
-      `Администратор ${adminTag} изменил вашу внешность на ${skin} скина.`
+      `Administrator ${adminTag} changed your appearance to skin ${skin}.`
     );
   }
 }

@@ -60,13 +60,13 @@ function showPasswordDialog(
 ): void {
   setMode(player, mode);
   const prefix = error ? `${error}\n\n` : "";
-  const title = mode === "login" ? "Админка: вход" : "Админка: пароль";
+  const title = mode === "login" ? "Admin panel: login" : "Admin panel: password";
   const body =
     mode === "login"
-      ? `${prefix}Введи пароль от админки:`
+      ? `${prefix}Enter the admin password:`
       : mode === "set"
-        ? `${prefix}Пароль от админки ещё не задан.\nПридумай пароль (от 6 символов):`
-        : `${prefix}Повтори пароль от админки:`;
+        ? `${prefix}No admin password is set yet.\nCreate a password (at least 6 characters):`
+        : `${prefix}Repeat the admin password:`;
 
   try {
     Dialog.show(
@@ -76,10 +76,10 @@ function showPasswordDialog(
       title,
       body,
       "OK",
-      "Отмена"
+      "Cancel"
     );
   } catch {
-    // Игрок уже вышел.
+    // Player already disconnected.
   }
 }
 
@@ -90,7 +90,7 @@ export function promptAdminPasswordSetup(player: Player): void {
 function kickAfterFails(player: Player): void {
   player.sendClientMessage(
     Color.error,
-    "Три неверные попытки входа в админку. Кик."
+    "Three incorrect admin login attempts. Kicked."
   );
   kickSamePlayer(player);
 }
@@ -98,12 +98,12 @@ function kickAfterFails(player: Player): void {
 async function startAlogin(player: Player): Promise<void> {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Сначала войди в аккаунт.");
+    player.sendClientMessage(Color.error, "Log in to your account first.");
     return;
   }
 
   if (isAdminLoggedIn(player)) {
-    player.sendClientMessage(Color.info, "Вы уже авторизованы в админке.");
+    player.sendClientMessage(Color.info, "You are already logged in to the admin panel.");
     return;
   }
 
@@ -111,7 +111,7 @@ async function startAlogin(player: Player): Promise<void> {
   try {
     creds = await findAdminCredentials(account.id);
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось проверить админку.");
+    player.sendClientMessage(Color.error, "Failed to verify the admin panel.");
     return;
   }
 
@@ -143,14 +143,14 @@ async function finishSetPassword(
     const hash = await hashPassword(password);
     await saveAdminPassword(account.id, hash);
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось сохранить пароль админки.");
+    player.sendClientMessage(Color.error, "Failed to save the admin password.");
     return;
   }
 
   markAdminLoggedIn(player);
   player.sendClientMessage(
     Color.info,
-    `Пароль админки сохранён. Вход выполнен (lvl ${account.adminLevel}).`
+    `Admin password saved. Logged in (lvl ${account.adminLevel}).`
   );
 }
 
@@ -164,7 +164,7 @@ async function tryLogin(player: Player, password: string): Promise<void> {
   try {
     creds = await findAdminCredentials(account.id);
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось проверить пароль.");
+    player.sendClientMessage(Color.error, "Failed to verify the password.");
     return;
   }
 
@@ -178,7 +178,7 @@ async function tryLogin(player: Player, password: string): Promise<void> {
     markAdminLoggedIn(player);
     player.sendClientMessage(
       Color.info,
-      `Вход в админку выполнен (lvl ${creds.adminLevel}).`
+      `Admin login successful (lvl ${creds.adminLevel}).`
     );
     return;
   }
@@ -193,7 +193,7 @@ async function tryLogin(player: Player, password: string): Promise<void> {
   showPasswordDialog(
     player,
     "login",
-    `Неверный пароль. Осталось попыток: ${left}`
+    `Incorrect password. Attempts remaining: ${left}`
   );
 }
 
@@ -235,12 +235,12 @@ async function handleAloginDialog(
   if (mode === "confirm") {
     const pending = takePendingAdminPassword(player);
     if (!pending) {
-      showPasswordDialog(player, "set", "Сначала введи пароль.");
+      showPasswordDialog(player, "set", "Enter a password first.");
       return;
     }
 
     if (input !== pending) {
-      showPasswordDialog(player, "set", "Пароли не совпадают.");
+      showPasswordDialog(player, "set", "Passwords do not match.");
       return;
     }
 
@@ -249,7 +249,7 @@ async function handleAloginDialog(
   }
 
   if (!input) {
-    showPasswordDialog(player, "login", "Введи пароль от админки.");
+    showPasswordDialog(player, "login", "Enter the admin password.");
     return;
   }
 
@@ -259,7 +259,7 @@ async function handleAloginDialog(
 export function bindAlogin(): void {
   registerCommand(
     "alogin",
-    "Вход в админку",
+    "Admin login",
     (player) => {
       void startAlogin(player);
     },

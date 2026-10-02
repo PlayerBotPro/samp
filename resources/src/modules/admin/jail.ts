@@ -60,7 +60,7 @@ function broadcastAll(color: number, text: string): void {
     try {
       other.sendClientMessage(color, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -68,7 +68,7 @@ function broadcastAll(color: number, text: string): void {
 export function bindAdminJail(): void {
   registerCommand(
     "jail",
-    "Посадить игрока в тюрьму",
+    "Jail a player",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -78,30 +78,30 @@ export function bindAdminJail(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /jail [id] [минуты] [причина (не обязательно)]"
+          "Usage: /jail [id] [minutes] [reason (optional)]"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (isJailed(target)) {
-        player.sendClientMessage(Color.error, "Игрок уже в тюрьме.");
+        player.sendClientMessage(Color.error, "Player is already in jail.");
         return;
       }
 
       if (account.adminLevel >= 1) {
-        player.sendClientMessage(Color.error, "Нельзя посадить администратора.");
+        player.sendClientMessage(Color.error, "You cannot jail an administrator.");
         return;
       }
 
@@ -112,7 +112,7 @@ export function bindAdminJail(): void {
 
   registerCommand(
     "unjail",
-    "Выпустить игрока из тюрьмы",
+    "Release a player from jail",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -121,24 +121,24 @@ export function bindAdminJail(): void {
       const raw = args.trim();
       const slot = Number(raw);
       if (!raw || !Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Использование: /unjail [id]");
+        player.sendClientMessage(Color.error, "Usage: /unjail [id]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (!isJailed(target)) {
-        player.sendClientMessage(Color.error, "Игрок не в тюрьме.");
+        player.sendClientMessage(Color.error, "Player is not in jail.");
         return;
       }
 
@@ -156,22 +156,22 @@ async function applyAndAnnounce(
 ): Promise<void> {
   const ok = await applyJail(target, minutes);
   if (!ok) {
-    admin.sendClientMessage(Color.error, "Не удалось посадить игрока.");
+    admin.sendClientMessage(Color.error, "Failed to jail player.");
     return;
   }
 
   const adminTag = playerChatName(admin);
   const targetTag = playerChatName(target);
   const line = reason
-    ? `Администратор ${adminTag} посадил игрока ${targetTag} в тюрьму на ${minutes} мин. Причина: ${reason}.`
-    : `Администратор ${adminTag} посадил игрока ${targetTag} в тюрьму на ${minutes} мин.`;
+    ? `Administrator ${adminTag} jailed player ${targetTag} for ${minutes} min. Reason: ${reason}.`
+    : `Administrator ${adminTag} jailed player ${targetTag} for ${minutes} min.`;
   broadcastAll(Color.error, line);
 }
 
 async function applyUnjailAndAnnounce(admin: Player, target: Player): Promise<void> {
   const ok = await applyUnjail(target);
   if (!ok) {
-    admin.sendClientMessage(Color.error, "Не удалось выпустить игрока.");
+    admin.sendClientMessage(Color.error, "Failed to release player.");
     return;
   }
 
@@ -179,6 +179,6 @@ async function applyUnjailAndAnnounce(admin: Player, target: Player): Promise<vo
   const targetTag = playerChatName(target);
   broadcastAll(
     Color.error,
-    `Администратор ${adminTag} выпустил игрока ${targetTag} из тюрьмы.`
+    `Administrator ${adminTag} released player ${targetTag} from jail.`
   );
 }

@@ -18,7 +18,7 @@ const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
 const MAX_ARMOR = 100;
-const DENY = "Открыть могут сотрудники LSPD, областной полиции и FBI.";
+const DENY = "Only LSPD, County Police, and FBI employees can open this.";
 
 const POINT = {
   x: -100.0232,
@@ -34,8 +34,8 @@ type LockerItem = {
 };
 
 const ITEMS: readonly LockerItem[] = [
-  { label: "Бронежилет", kind: "armor", id: 0 },
-  { label: "Дубинка", kind: "weapon", id: 3, ammo: 1 },
+  { label: "Body armor", kind: "armor", id: 0 },
+  { label: "Nightstick", kind: "weapon", id: 3, ammo: 1 },
 ];
 
 const inside = new Set<number>();
@@ -43,7 +43,7 @@ const inside = new Set<number>();
 export function bindPrisonLocker(): void {
   new Pickup(PICKUP_MODEL, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, PRISON_WORLD);
   new TextLabel(
-    "Оружейная\nСклад тюрьмы",
+    "Armory\nPrison warehouse",
     Color.info,
     POINT.x,
     POINT.y,
@@ -116,7 +116,7 @@ function tickLocker(): void {
       inside.add(id);
       tryOpen(player);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -137,7 +137,7 @@ function canUseLocker(player: Player, tellDeny = false): boolean {
 
   if (account.hospitalized) {
     if (tellDeny) {
-      tell(player, Color.error, "Сначала пройдите лечение в больнице.");
+      tell(player, Color.error, "Complete hospital treatment first.");
     }
     return false;
   }
@@ -160,13 +160,13 @@ function showLocker(player: Player): void {
       player,
       PRISON_LOCKER_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Оружейная",
+      "Armory",
       ITEMS.map((item, index) => `${index + 1}. ${item.label}`).join("\n"),
-      "Взять",
-      "Закрыть"
+      "Take",
+      "Close"
     );
   } catch {
-    tell(player, Color.error, "Не удалось открыть склад.");
+    tell(player, Color.error, "Could not open the warehouse.");
   }
 }
 
@@ -184,14 +184,14 @@ function giveItem(player: Player, item: LockerItem): void {
   try {
     if (item.kind === "armor") {
       grantArmour(player, MAX_ARMOR);
-      tell(player, Color.info, "Вы надели бронежилет.");
+      tell(player, Color.info, "You equipped body armor.");
       return;
     }
 
     grantWeapon(player, item.id, item.ammo ?? 1);
-    tell(player, Color.info, `Вы взяли: ${item.label}.`);
+    tell(player, Color.info, `You took: ${item.label}.`);
   } catch {
-    tell(player, Color.error, "Не удалось выдать снаряжение.");
+    tell(player, Color.error, "Could not issue equipment.");
   }
 }
 
@@ -199,7 +199,7 @@ function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, text);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 

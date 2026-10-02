@@ -20,9 +20,9 @@ const AMMO_LABEL_HEIGHT = 1.4;
 const AMMO_LABEL_DRAW_DISTANCE = 12;
 const SWAT_SKIN = 285;
 const MAX_ARMOR = 100;
-const DENY = "Вы не состоите в FBI.";
+const DENY = "You are not a member of the FBI.";
 
-/** Аммунация FBI (интерьер 6, VW = org_id). */
+/** FBI ammunation (interior 6, VW = org_id). */
 const POINT = {
   x: 312.4084,
   y: -165.5791,
@@ -37,14 +37,14 @@ type LockerItem = {
 };
 
 const ITEMS: readonly LockerItem[] = [
-  { label: "Бронежилет", kind: "armor", id: 0 },
-  { label: "Дубинка", kind: "weapon", id: 3, ammo: 1 },
+  { label: "Body Armor", kind: "armor", id: 0 },
+  { label: "Nightstick", kind: "weapon", id: 3, ammo: 1 },
   { label: "Desert Eagle", kind: "weapon", id: 24, ammo: 50 },
   { label: "Shotgun", kind: "weapon", id: 25, ammo: 40 },
   { label: "MP5", kind: "weapon", id: 29, ammo: 120 },
   { label: "M4", kind: "weapon", id: 31, ammo: 150 },
   { label: "Sniper Rifle", kind: "weapon", id: 34, ammo: 30 },
-  { label: "Спец. форма SWAT", kind: "skin", id: SWAT_SKIN },
+  { label: "SWAT Uniform", kind: "skin", id: SWAT_SKIN },
 ];
 
 const inside = new Set<number>();
@@ -52,7 +52,7 @@ let ammoStockLabel: TextLabel | null = null;
 
 function ammoStockLabelText(): string {
   const ammo = getWarehouse(ORG_FBI_ID)?.ammo ?? 0;
-  return `Патроны: ${ammo}`;
+  return `Ammunition: ${ammo}`;
 }
 
 export function refreshFbiAmmoStockLabel(): void {
@@ -63,7 +63,7 @@ export function refreshFbiAmmoStockLabel(): void {
   try {
     ammoStockLabel.updateText(Color.info, ammoStockLabelText());
   } catch {
-    // Лейбл уже уничтожен.
+    // Label has already been destroyed.
   }
 }
 
@@ -146,7 +146,7 @@ function tickLocker(): void {
       inside.add(id);
       tryOpen(player);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -167,7 +167,7 @@ function canUseLocker(player: Player, tellDeny = false): boolean {
 
   if (account.hospitalized) {
     if (tellDeny) {
-      tell(player, Color.error, "Сначала пройдите лечение в больнице.");
+      tell(player, Color.error, "Receive treatment at the hospital first.");
     }
     return false;
   }
@@ -189,13 +189,13 @@ function showLocker(player: Player): void {
       player,
       FBI_LOCKER_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Оружейная",
+      "Armory",
       ITEMS.map((item, index) => `${index + 1}. ${item.label}`).join("\n"),
-      "Взять",
-      "Закрыть"
+      "Take",
+      "Close"
     );
   } catch {
-    tell(player, Color.error, "Не удалось открыть склад.");
+    tell(player, Color.error, "Failed to open the warehouse.");
   }
 }
 
@@ -213,20 +213,20 @@ function giveItem(player: Player, item: LockerItem): void {
   try {
     if (item.kind === "armor") {
       grantArmour(player, MAX_ARMOR);
-      tell(player, Color.info, "Вы надели бронежилет.");
+      tell(player, Color.info, "You put on body armor.");
       return;
     }
 
     if (item.kind === "skin") {
       player.setSkin(item.id);
-      tell(player, Color.info, "Вы надели спец. форму SWAT. После смерти или выхода она сбросится.");
+      tell(player, Color.info, "You put on a SWAT uniform. It will reset after death or disconnection.");
       return;
     }
 
     grantWeapon(player, item.id, item.ammo ?? 1);
-    tell(player, Color.info, `Вы взяли: ${item.label}.`);
+    tell(player, Color.info, `You took: ${item.label}.`);
   } catch {
-    tell(player, Color.error, "Не удалось выдать снаряжение.");
+    tell(player, Color.error, "Failed to issue equipment.");
   }
 }
 
@@ -234,7 +234,7 @@ function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, text);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

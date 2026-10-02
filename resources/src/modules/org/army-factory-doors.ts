@@ -10,7 +10,7 @@ import { ORG_ARMY_ID } from "./army";
 import { ORG_FBI_ID } from "./fbi";
 import { getMembership } from "./membership";
 
-/** Реэкспорт для остального кода органов. */
+/** Re-export for the rest of the organization code. */
 export { ARMY_FACTORY_INTERIOR, ARMY_FACTORY_WORLD };
 
 const PICKUP_MODEL = 19132;
@@ -22,14 +22,14 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Войти могут сотрудники Армии и FBI.";
+const DENY = "Army and FBI personnel can enter.";
 const ALLOWED = [ORG_ARMY_ID, ORG_FBI_ID] as const;
 
 type FactoryDoor = {
   pickup: { x: number; y: number; z: number; interior: number; world: number };
   dest: SpawnPoint;
   label: string;
-  /** false = выход, проверка органа не нужна */
+  /** false = exit; organization check not required */
   staffOnly: boolean;
 };
 
@@ -50,7 +50,7 @@ const DOORS: readonly FactoryDoor[] = [
       interior: ARMY_FACTORY_INTERIOR,
       world: ARMY_FACTORY_WORLD,
     },
-    label: "Завод\nВход",
+    label: "Factory\nEntrance",
     staffOnly: true,
   },
   {
@@ -69,7 +69,7 @@ const DOORS: readonly FactoryDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Выход на базу",
+    label: "Exit to base",
     staffOnly: false,
   },
 ];
@@ -134,7 +134,7 @@ function tickFactoryDoors(): void {
         }
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -143,7 +143,7 @@ function tryUse(player: Player, door: FactoryDoor): void {
   if (door.staffOnly) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+      deny(player, "You need treatment. Take a bed: /hospital.");
       return;
     }
 
@@ -174,7 +174,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -193,7 +193,7 @@ function teleport(player: Player, point: SpawnPoint): void {
   lastTeleportAt.set(id, now);
 
   try {
-    // Выход на улицу: смена в цехе закрывается с выплатой.
+    // Exit to the street: the workshop shift is closed with payment.
     if (point.interior === 0 && isArmyFactoryOnShift(player)) {
       endArmyFactoryShift(player);
     }
@@ -201,7 +201,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

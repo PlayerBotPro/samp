@@ -35,7 +35,7 @@ const AMMO_ONLY_IDS = new Set<number>([
 export function bindAdminWarehouse(): void {
   registerCommand(
     "warehouse",
-    "Состояние складов организаций",
+    "Organization warehouse status",
     (player) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -63,13 +63,13 @@ function showWarehouseList(player: Player): void {
       player,
       WAREHOUSE_LIST_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Склады",
+      "Warehouses",
       lines.join("\n"),
-      "Выбрать",
-      "Отмена"
+      "Select",
+      "Cancel"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть список складов.");
+    player.sendClientMessage(Color.error, "Failed to open the warehouse list.");
   }
 }
 
@@ -101,11 +101,11 @@ function showWarehouseInfo(player: Player, orgId: number): void {
       DIALOG_STYLE_MSGBOX,
       warehouseName(orgId),
       formatWarehouseInfo(record),
-      "Закрыть",
+      "Close",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть склад.");
+    player.sendClientMessage(Color.error, "Failed to open the warehouse.");
   }
 }
 
@@ -113,22 +113,22 @@ function formatWarehouseInfo(record: WarehouseRecord): string {
   const lines: string[] = [];
 
   if (record.orgId === WAREHOUSE_MINE_ID) {
-    lines.push(`Металл: ${record.metal}`);
+    lines.push(`Metal: ${record.metal}`);
   } else if (record.orgId === ORG_HOSPITAL_ID) {
-    lines.push(`Медпрепараты: ${record.meds}`);
+    lines.push(`Medical supplies: ${record.meds}`);
   } else if (AMMO_ONLY_IDS.has(record.orgId)) {
-    lines.push(`Патроны: ${record.ammo}`);
+    lines.push(`Ammunition: ${record.ammo}`);
   } else if (warehouseUsesLock(record.orgId)) {
-    lines.push(`Патроны: ${record.ammo}`);
-    lines.push(`Металл: ${record.metal}`);
-    lines.push(`Наркотики: ${record.drugs}`);
+    lines.push(`Ammunition: ${record.ammo}`);
+    lines.push(`Metal: ${record.metal}`);
+    lines.push(`Drugs: ${record.drugs}`);
     lines.push("");
-    lines.push(record.isLocked ? "Склад закрыт" : "Склад открыт");
+    lines.push(record.isLocked ? "Warehouse is locked" : "Warehouse is open");
   } else {
-    lines.push(`Патроны: ${record.ammo}`);
-    lines.push(`Медпрепараты: ${record.meds}`);
-    lines.push(`Металл: ${record.metal}`);
-    lines.push(`Наркотики: ${record.drugs}`);
+    lines.push(`Ammunition: ${record.ammo}`);
+    lines.push(`Medical supplies: ${record.meds}`);
+    lines.push(`Metal: ${record.metal}`);
+    lines.push(`Drugs: ${record.drugs}`);
   }
 
   return lines.join("\n");
@@ -136,10 +136,10 @@ function formatWarehouseInfo(record: WarehouseRecord): string {
 
 function warehouseName(orgId: number): string {
   if (orgId === WAREHOUSE_MINE_ID) {
-    return "Шахта";
+    return "Mine";
   }
 
-  return getOrganization(orgId)?.name ?? `Склад #${orgId}`;
+  return getOrganization(orgId)?.name ?? `Warehouse #${orgId}`;
 }
 
 function pickWarehouseId(listItem: number, inputText: string): number | null {

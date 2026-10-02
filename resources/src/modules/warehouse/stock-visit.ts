@@ -1,9 +1,9 @@
 import type { Player } from "@omp-node/core";
 import { playerId } from "../../shared/player";
 
-/** Меню уже показали на этом заходе на маркер. */
+/** Menu already shown during this entry into the marker. */
 const stockVisitByPlayer = new Set<number>();
-/** Сейчас открыт диалог склада — нельзя перебивать. */
+/** A warehouse dialog is currently open — do not interrupt it. */
 const stockDialogBusy = new Set<number>();
 
 export function isOrgStockDialogBusy(player: Player): boolean {
@@ -24,7 +24,7 @@ export function setOrgStockDialogBusy(player: Player, busy: boolean): void {
   }
 }
 
-/** @returns false — уже показывали меню на этом заходе. */
+/** @returns false — the menu was already shown during this entry. */
 export function markOrgStockVisit(player: Player): boolean {
   const id = playerId(player);
   if (id === null) {
@@ -39,7 +39,7 @@ export function markOrgStockVisit(player: Player): boolean {
   return true;
 }
 
-/** Вышел с маркера — можно снова открыть при следующем входе. */
+/** Left the marker — it can be opened again on the next entry. */
 export function clearOrgStockVisit(player: Player): void {
   const id = playerId(player);
   if (id !== null) {

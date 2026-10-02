@@ -62,7 +62,7 @@ function stopTalkAnim(player: Player): void {
   try {
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Уже вышел или анимации нет.
+    // Already disconnected or no animation.
   }
 }
 
@@ -94,7 +94,7 @@ export function playLocalSpeech(
   try {
     player.setChatBubble(text, color, radius, duration);
   } catch {
-    // Пузырь не обязателен, чат всё равно уйдёт.
+    // Bubble is optional; chat will still be sent.
   }
 
   if (!canPlayTalkAnim(player)) {
@@ -136,7 +136,7 @@ export function playLocalSpeech(
       try {
         player.clearAnimations(ANIM_SYNC_ALL);
       } catch {
-        // Уже вышел.
+        // Already disconnected.
       }
     }, duration)
   );

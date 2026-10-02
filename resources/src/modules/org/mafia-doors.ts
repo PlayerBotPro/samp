@@ -69,13 +69,13 @@ function hqDoors(
         world,
       },
       dest: streetExit,
-      label: "Выход на улицу",
+      label: "Exit to Street",
     },
   ];
 }
 
 const DOORS: readonly MafiaDoor[] = [
-  ...hqDoors("LCN\nВход", LCN_WORLD, { x: 1122.7086, y: -2036.9874, z: 69.8942 }, {
+  ...hqDoors("LCN\nEntrance", LCN_WORLD, { x: 1122.7086, y: -2036.9874, z: 69.8942 }, {
     x: 1125.1136,
     y: -2036.9993,
     z: 69.8822,
@@ -83,7 +83,7 @@ const DOORS: readonly MafiaDoor[] = [
     interior: 0,
     world: STREET_WORLD,
   }),
-  ...hqDoors("Yakuza\nВход", YAKUZA_WORLD, { x: 678.3608, y: -1281.7167, z: 13.6332 }, {
+  ...hqDoors("Yakuza\nEntrance", YAKUZA_WORLD, { x: 678.3608, y: -1281.7167, z: 13.6332 }, {
     x: 675.7552,
     y: -1281.6864,
     z: 13.6332,
@@ -92,7 +92,7 @@ const DOORS: readonly MafiaDoor[] = [
     world: STREET_WORLD,
   }),
   ...hqDoors(
-    "Русская мафия\nВход",
+    "Russian Mafia\nEntrance",
     RUSSIAN_MAFIA_WORLD,
     { x: 952.5553, y: -909.2405, z: 45.7656 },
     {
@@ -166,7 +166,7 @@ function tickMafiaDoors(): void {
         }
       }
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -174,7 +174,7 @@ function tickMafiaDoors(): void {
 function tryUse(player: Player, door: MafiaDoor): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+    deny(player, "You need treatment. Take a bed: /hospital.");
     return;
   }
 
@@ -197,7 +197,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -219,7 +219,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

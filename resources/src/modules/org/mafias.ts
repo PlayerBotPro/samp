@@ -6,7 +6,7 @@ export const ORG_LCN_ID = 14;
 export const ORG_YAKUZA_ID = 15;
 export const ORG_RUSSIAN_MAFIA_ID = 16;
 
-/** Madd Dogg's Mansion — общий интерьер семей, разные VW. */
+/** Madd Dogg's Mansion — shared family interior, different VWs. */
 export const MAFIA_INTERIOR = 5;
 export const LCN_WORLD = 14;
 export const YAKUZA_WORLD = 15;
@@ -59,7 +59,7 @@ function defineMafia(
   };
 
   if (org.ranks.length !== MAX_ORG_RANK) {
-    throw new Error(`${name}: нужно 10 рангов`);
+    throw new Error(`${name}: 10 ranks required`);
   }
 
   return org;
@@ -107,21 +107,21 @@ export const YAKUZA = defineMafia(
 
 export const RUSSIAN_MAFIA = defineMafia(
   ORG_RUSSIAN_MAFIA_ID,
-  "Русская мафия",
+  "Russian Mafia",
   0x1a5c6eff,
   mafiaHqSpawn(RUSSIAN_MAFIA_WORLD),
   169,
   [
-    { title: "Шнырь", male: 112 },
-    { title: "Босяк", male: 112 },
-    { title: "Браток", male: 272 },
-    { title: "Бык", male: 272 },
-    { title: "Авторитет", male: 126 },
-    { title: "Зам. бригадира", male: 125 },
-    { title: "Бригадир", male: 111 },
-    { title: "Смотрящий", male: 98 },
-    { title: "Блатной", male: 46 },
-    { title: "Вор в законе", male: 46 },
+    { title: "Runner", male: 112 },
+    { title: "Hood", male: 112 },
+    { title: "Brother", male: 272 },
+    { title: "Enforcer", male: 272 },
+    { title: "Authority", male: 126 },
+    { title: "Deputy Brigadier", male: 125 },
+    { title: "Brigadier", male: 111 },
+    { title: "Overseer", male: 98 },
+    { title: "Made Man", male: 46 },
+    { title: "Thief-in-Law", male: 46 },
   ]
 );
 
@@ -139,7 +139,7 @@ export const LCN_GATES: OrgGateDef[] = [
     ry: 0,
     rz: 90,
     radius: 14,
-    denyMessage: "Вы не состоите в La Cosa Nostra.",
+    denyMessage: "You are not a member of La Cosa Nostra.",
   },
 ];
 
@@ -149,7 +149,7 @@ const YAKUZA_GATE = {
   rx: 0,
   ry: 0,
   radius: 14,
-  denyMessage: "Вы не состоите в Yakuza.",
+  denyMessage: "You are not a member of Yakuza.",
 } as const;
 
 export const YAKUZA_GATES: OrgGateDef[] = [
@@ -192,6 +192,6 @@ export const RUSSIAN_MAFIA_GATES: OrgGateDef[] = [
     ryOpen: 0,
     rz: 0.7162,
     radius: 14,
-    denyMessage: "Вы не состоите в русской мафии.",
+    denyMessage: "You are not a member of the Russian Mafia.",
   },
 ];

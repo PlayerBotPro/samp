@@ -7,7 +7,7 @@ import { attachLightBar } from "./light-bar";
 const PLAYER_STATE_DRIVER = 2;
 /** Left Ctrl. KEY_ACTION = 1. */
 const KEY_ACTION = 1;
-/** LMB. KEY_FIRE = 4. В pawn на этой клавише фары. */
+/** LMB. KEY_FIRE = 4. Pawn uses this key for headlights. */
 const KEY_FIRE = 4;
 const PARAM_ON = 1;
 const PARAM_OFF = 0;
@@ -27,12 +27,12 @@ export type ServerVehicleDef = {
   lightBar?: boolean;
 };
 
-/** Ручной двигатель для всего транспорта на сервере. */
+/** Manual engine for all server vehicles. */
 export function startEngineControl(): void {
   try {
     Vehicle.useManualEngineAndLights();
   } catch {
-    // Ядро уже в ручном режиме.
+    // Core is already in manual mode.
   }
 
   for (const vehicle of omp.vehicles.all()) {
@@ -55,7 +55,7 @@ export function startEngineControl(): void {
   });
 }
 
-/** Единственная точка спавна транспорта: мир, двигатель выключен. */
+/** Single vehicle spawn point: world, engine off. */
 export function createServerVehicle(def: ServerVehicleDef): Vehicle | null {
   let vehicle: Vehicle;
   try {
@@ -78,7 +78,7 @@ export function createServerVehicle(def: ServerVehicleDef): Vehicle | null {
     vehicle.setVirtualWorld(def.world ?? STREET_WORLD);
     setEngine(vehicle, false, false);
   } catch {
-    // Машина уже в мире — параметры догонятся на vehicleSpawn.
+    // Vehicle is already in the world — vehicleSpawn will apply the parameters.
   }
 
   if (def.lightBar) {
@@ -101,7 +101,7 @@ function setEngine(vehicle: Vehicle, on: boolean, lights?: boolean): void {
       asParam(params.objective)
     );
   } catch {
-    // Транспорт уже уничтожен.
+    // Vehicle already destroyed.
   }
 }
 
@@ -118,7 +118,7 @@ function setLights(vehicle: Vehicle, on: boolean): void {
       asParam(params.objective)
     );
   } catch {
-    // Транспорт уже уничтожен.
+    // Vehicle already destroyed.
   }
 }
 
@@ -149,10 +149,10 @@ function toggleEngine(player: Player): void {
   try {
     player.sendClientMessage(
       Color.info,
-      running ? "Двигатель заглушен." : "Двигатель запущен."
+      running ? "Engine stopped." : "Engine started."
     );
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -175,7 +175,7 @@ function playToggleSound(player: Player): void {
     try {
       player.playGameSound(LIGHTS_SOUND_ID, 0, 0, 0);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   }
 }

@@ -20,7 +20,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Открыть могут сотрудники LSPD, областной полиции и FBI.";
+const DENY = "Only LSPD, County Police, and FBI employees can open this.";
 
 const POINT = {
   x: 1810.8636,
@@ -52,7 +52,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Тюрьма",
+    label: "Prison",
     staffOnly: true,
   },
   {
@@ -65,7 +65,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Выход на улицу",
+    label: "Exit to street",
     staffOnly: true,
   },
   {
@@ -78,7 +78,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Тюремные камеры",
+    label: "Prison cells",
     staffOnly: false,
   },
   {
@@ -91,7 +91,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Выход\nКухня\nКомната дежурного\nКомната охраны",
+    label: "Exit\nKitchen\nDuty room\nGuard room",
     staffOnly: false,
   },
   {
@@ -104,7 +104,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_YARD_WORLD,
     },
-    label: "Тюремный двор",
+    label: "Prison yard",
     staffOnly: false,
     liveLabel: true,
   },
@@ -118,7 +118,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Тюремные камеры",
+    label: "Prison cells",
     staffOnly: false,
   },
   {
@@ -131,7 +131,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Спортзал",
+    label: "Gym",
     staffOnly: false,
   },
   {
@@ -144,7 +144,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Тюремные камеры",
+    label: "Prison cells",
     staffOnly: false,
   },
   {
@@ -157,7 +157,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Кухня",
+    label: "Kitchen",
     staffOnly: false,
   },
   {
@@ -170,7 +170,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Комната дежурного",
+    label: "Duty room",
     staffOnly: false,
   },
   {
@@ -183,7 +183,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Комната охраны",
+    label: "Guard room",
     staffOnly: true,
   },
   {
@@ -196,7 +196,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Комната дежурного",
+    label: "Duty room",
     staffOnly: true,
   },
 ];
@@ -297,7 +297,7 @@ function tickPrison(): void {
 
       onPickup.delete(id);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or the player has already disconnected.
     }
   });
 }
@@ -311,7 +311,7 @@ function tryUse(player: Player, door: PrisonDoor): void {
   if (door.staffOnly) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "Вам нужно лечение. Займите койку: /hospital.");
+      deny(player, "You need treatment. Take a bed: /hospital.");
       return;
     }
 
@@ -324,7 +324,7 @@ function tryUse(player: Player, door: PrisonDoor): void {
   }
 
   if (door.dest.world === PRISON_YARD_WORLD && !isPrisonYardOpen()) {
-    deny(player, "Двор закрыт.");
+    deny(player, "The yard is locked.");
     return;
   }
 
@@ -347,7 +347,7 @@ function deny(player: Player, message: string): void {
   try {
     player.sendClientMessage(Color.error, message);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -369,7 +369,7 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -418,7 +418,7 @@ function updateIcon(
       );
       iconShown.add(id);
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
     return;
   }
@@ -430,7 +430,7 @@ function updateIcon(
   try {
     player.removeMapIcon(MAP_ICON_SLOT);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
   iconShown.delete(id);
 }

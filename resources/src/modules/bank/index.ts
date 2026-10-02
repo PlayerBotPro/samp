@@ -84,7 +84,7 @@ export const bankModule: GameModule = {
     );
 
     new TextLabel(
-      "Банк\nВход",
+      "Bank\nEntrance",
       Color.info,
       STREET_PICKUP.x,
       STREET_PICKUP.y,
@@ -103,7 +103,7 @@ export const bankModule: GameModule = {
       BANK_WORLD
     );
     new TextLabel(
-      "Выход на улицу",
+      "Exit to street",
       Color.info,
       INTERIOR_PICKUP.x,
       INTERIOR_PICKUP.y,
@@ -172,7 +172,7 @@ function tickBank(): void {
 
       tickTellers(player, world, interior);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -229,7 +229,7 @@ function updateIcon(
       );
       iconShown.add(id);
     } catch {
-      // Игрок уже вышел.
+      // Player has already disconnected.
     }
     return;
   }
@@ -241,7 +241,7 @@ function updateIcon(
   try {
     player.removeMapIcon(MAP_ICON_SLOT);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
   iconShown.delete(id);
 }
@@ -279,6 +279,6 @@ function teleport(player: Player, point: SpawnPoint): void {
     placeAt(player, point);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }

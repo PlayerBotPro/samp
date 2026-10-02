@@ -1,4 +1,4 @@
-/** Коды детектов античита (серверные проверки). */
+/** Anticheat detection codes (server-side checks). */
 export enum AcCode {
   AirBreakFoot = 0,
   AirBreakVeh = 1,
@@ -93,7 +93,7 @@ export const SPECIAL_ACTION = {
   jetpack: 2,
 } as const;
 
-/** Слот оружия по ID (GTA SA). */
+/** Weapon slot by ID (GTA SA). */
 export function weaponSlot(weaponId: number): number {
   if (weaponId <= 0) return -1;
   if (weaponId === 1) return 0;

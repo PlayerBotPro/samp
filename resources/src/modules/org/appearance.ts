@@ -41,7 +41,7 @@ export function applyOrgVisuals(player: Player): void {
     return;
   }
 
-  // Маскировка армии (банды): скин/цвет как у армии, членство банды не меняется.
+  // Army disguise (gangs): Army skin/color; gang membership does not change.
   if (syncArmyDisguise(player)) {
     applyArmyDisguiseVisuals(player, account);
     return;
@@ -51,6 +51,6 @@ export function applyOrgVisuals(player: Player): void {
     player.setSkin(resolvePlayerSkin(account));
     player.setColor(resolveNametagColor(account));
   } catch {
-    // Слот ещё не в игре.
+    // Slot is not in-game yet.
   }
 }

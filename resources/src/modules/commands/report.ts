@@ -14,7 +14,7 @@ const COOLDOWN_MS = 30_000;
 
 const lastReportAt = new Map<number, number>();
 
-registerCommand("report", "Связь с администрацией", (player) => {
+registerCommand("report", "Contact administration", (player) => {
   showReportDialog(player);
 });
 
@@ -45,7 +45,7 @@ export function showReportDialog(player: Player, error?: string): void {
   if (wait > 0 && !error) {
     player.sendClientMessage(
       Color.error,
-      `Репорт можно отправить через ${formatWait(wait)}.`
+      `You can send another report in ${formatWait(wait)}.`
     );
     return;
   }
@@ -56,13 +56,13 @@ export function showReportDialog(player: Player, error?: string): void {
       player,
       REPORT_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Связь с администрацией",
-      `${prefix}Опишите вопрос или жалобу.`,
-      "Отправить",
-      "Отмена"
+      "Contact administration",
+      `${prefix}Describe your question or complaint.`,
+      "Send",
+      "Cancel"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть репорт.");
+    player.sendClientMessage(Color.error, "Failed to open the report dialog.");
   }
 }
 
@@ -76,21 +76,21 @@ function sendReport(player: Player, raw: string): void {
   if (wait > 0) {
     player.sendClientMessage(
       Color.error,
-      `Репорт можно отправить через ${formatWait(wait)}.`
+      `You can send another report in ${formatWait(wait)}.`
     );
     return;
   }
 
   const text = sanitizeChatText(raw.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    showReportDialog(player, "Введите текст.");
+    showReportDialog(player, "Enter a message.");
     return;
   }
 
-  const verb = byGender(account.gender, "написал", "написала");
+  const verb = byGender(account.gender, "wrote", "wrote");
   const authorId = playerId(player);
   const authorLine = clipClientMessage(`${playerChatName(player)}: ${text}`);
-  const adminLine = clipClientMessage(`Игрок ${playerChatName(player)} ${verb}: ${text}`);
+  const adminLine = clipClientMessage(`Player ${playerChatName(player)} ${verb}: ${text}`);
 
   try {
     player.sendClientMessage(Color.info, authorLine);
@@ -112,7 +112,7 @@ function sendReport(player: Player, raw: string): void {
     try {
       other.sendClientMessage(Color.info, adminLine);
     } catch {
-      // Слот пустой.
+      // Player slot is empty.
     }
   });
 }
@@ -129,5 +129,5 @@ function reportWaitMs(player: Player): number {
 
 function formatWait(ms: number): string {
   const seconds = Math.max(1, Math.ceil(ms / 1000));
-  return `${seconds} сек.`;
+  return `${seconds} sec.`;
 }

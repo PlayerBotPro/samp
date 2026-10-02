@@ -4,7 +4,7 @@ import { registerOrgVehicle } from "./access";
 import { createServerVehicle } from "./spawn";
 
 const RESPAWN_SEC = 1800;
-const DENY = "Сесть могут сотрудники LSPD, областной полиции и FBI.";
+const DENY = "Only LSPD, County Police, and FBI personnel may enter.";
 
 const PRISON_VEHICLES: ReadonlyArray<{
   model: number;

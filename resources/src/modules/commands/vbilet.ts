@@ -16,15 +16,15 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-registerCommand("vbilet", "Военный билет: посмотреть или показать по id", (player, args) => {
+registerCommand("vbilet", "Military ID: view or show by ID", (player, args) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Сначала войдите в аккаунт.");
+    player.sendClientMessage(Color.error, "Log in first.");
     return;
   }
 
   if (!account.militaryId) {
-    player.sendClientMessage(Color.error, "У вас нет военного билета.");
+    player.sendClientMessage(Color.error, "You do not have a military ID.");
     return;
   }
 
@@ -36,13 +36,13 @@ registerCommand("vbilet", "Военный билет: посмотреть ил�
 
   const slot = Number(rawId);
   if (!Number.isInteger(slot) || slot < 0) {
-    player.sendClientMessage(Color.error, "Использование: /vbilet [id]");
+    player.sendClientMessage(Color.error, "Usage: /vbilet [id]");
     return;
   }
 
   const target = omp.players.at(slot);
   if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-    player.sendClientMessage(Color.error, "Игрок не найден.");
+    player.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
@@ -52,19 +52,19 @@ registerCommand("vbilet", "Военный билет: посмотреть ил�
   }
 
   if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-    player.sendClientMessage(Color.error, "Игрок слишком далеко.");
+    player.sendClientMessage(Color.error, "Player is too far away.");
     return;
   }
 
   showMilitaryId(target, account);
-  const verb = byGender(account.gender, "показал", "показала");
-  player.sendClientMessage(Color.gray, `Вы ${verb} военный билет: ${playerName(target)}.`);
-  target.sendClientMessage(Color.gray, `${account.name} ${verb} вам военный билет.`);
+  const verb = byGender(account.gender, "showed", "showed");
+  player.sendClientMessage(Color.gray, `You ${verb} your military ID to ${playerName(target)}.`);
+  target.sendClientMessage(Color.gray, `${account.name} ${verb} you their military ID.`);
 });
 
 registerCommand(
   "givevbilet",
-  "Выдать военный билет (Армия, ранг 8+)",
+  "Issue military ID (Army, rank 8+)",
   (player, args) => {
     const account = getAccount(player);
     const membership = account ? getMembership(account) : null;
@@ -76,61 +76,61 @@ registerCommand(
     ) {
       player.sendClientMessage(
         Color.error,
-        "Выдавать военный билет может сотрудник Армии с ранга 8 и выше."
+        "Only Army staff of rank 8 or higher may issue military IDs."
       );
       return;
     }
 
     const slot = Number(args.trim());
     if (!Number.isInteger(slot) || slot < 0) {
-      player.sendClientMessage(Color.error, "Использование: /givevbilet [id]");
+      player.sendClientMessage(Color.error, "Usage: /givevbilet [id]");
       return;
     }
 
     const target = omp.players.at(slot);
     if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-      player.sendClientMessage(Color.error, "Игрок не найден.");
+      player.sendClientMessage(Color.error, "Player not found.");
       return;
     }
 
     if (playerId(target) === playerId(player)) {
-      player.sendClientMessage(Color.error, "Нельзя выдать военный билет себе.");
+      player.sendClientMessage(Color.error, "You cannot issue yourself a military ID.");
       return;
     }
 
     const targetAccount = getAccount(target);
     if (!targetAccount) {
-      player.sendClientMessage(Color.error, "Игрок не найден.");
+      player.sendClientMessage(Color.error, "Player not found.");
       return;
     }
 
     if (targetAccount.militaryId) {
-      player.sendClientMessage(Color.error, "У игрока уже есть военный билет.");
+      player.sendClientMessage(Color.error, "The player already has a military ID.");
       return;
     }
 
     patchAccount(target, { militaryId: true });
     void saveUserMilitaryId(targetAccount.id, true).catch(() => {
-      // Кэш уже обновлён.
+      // Cache is already updated.
     });
 
     player.sendClientMessage(
       Color.info,
-      `Вы выдали военный билет игроку ${playerName(target)}.`
+      `You issued a military ID to ${playerName(target)}.`
     );
     target.sendClientMessage(
       Color.info,
-      `${playerName(player)} выдал вам военный билет. Посмотреть: /vbilet`
+      `${playerName(player)} issued you a military ID. View it: /vbilet`
     );
   }
 );
 
 function showMilitaryId(viewer: Player, owner: Account): void {
-  const served = byGender(owner.gender, "Отслужил", "Отслужила");
+  const served = byGender(owner.gender, "Served", "Served");
   const body = [
-    row("Имя", owner.name),
-    row("Статус", "Военный билет получен"),
-    row("Служба", served),
+    row("Name", owner.name),
+    row("Status", "Military ID issued"),
+    row("Service", served),
   ].join("\n");
 
   try {
@@ -138,13 +138,13 @@ function showMilitaryId(viewer: Player, owner: Account): void {
       viewer,
       VBILET_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}Военный билет ${owner.name}`,
+      `${TITLE}${owner.name}'s Military ID`,
       body,
-      "Закрыть",
+      "Close",
       ""
     );
   } catch {
-    viewer.sendClientMessage(Color.error, "Не удалось открыть военный билет.");
+    viewer.sendClientMessage(Color.error, "Unable to open military ID.");
   }
 }
 

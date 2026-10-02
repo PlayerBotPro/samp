@@ -4,10 +4,10 @@ import { playerChatName } from "../../shared/player";
 import { playLocalSpeech } from "../chat/talk";
 import { registerCommand } from "./registry";
 
-registerCommand("w", "Шепнуть тем, кто стоит рядом", (player, args) => {
+registerCommand("w", "Whisper to nearby players", (player, args) => {
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Использование: /w [текст]");
+    player.sendClientMessage(Color.error, "Usage: /w [text]");
     return;
   }
 
@@ -15,7 +15,7 @@ registerCommand("w", "Шепнуть тем, кто стоит рядом", (pla
     player,
     WHISPER_RADIUS,
     Color.whisper,
-    `${playerChatName(player)} шепчет: ${text}`
+    `${playerChatName(player)} whispers: ${text}`
   );
   playLocalSpeech(player, text, { radius: WHISPER_RADIUS, color: Color.whisper });
 });

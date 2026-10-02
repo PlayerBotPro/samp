@@ -19,7 +19,7 @@ export const Color = {
   govNews: 0x3399ffff,
 } as const;
 
-/** Цвет в тексте клиентского чата: {RRGGBB}. */
+/** Color tag in client chat text: {RRGGBB}. */
 export function chatColorTag(color: number): string {
   const rgb = ((color >>> 8) & 0xffffff).toString(16).padStart(6, "0").toUpperCase();
   return `{${rgb}}`;

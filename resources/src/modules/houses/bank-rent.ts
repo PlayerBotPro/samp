@@ -53,28 +53,28 @@ export function showHouseRentMenu(player: Player): void {
         player,
         BANK_HOUSE_RENT_EMPTY_DIALOG_ID,
         DIALOG_STYLE_MSGBOX,
-        "Оплата дома",
-        "У вас нет дома.",
-        "Назад",
+        "House payment",
+        "You do not own a house.",
+        "Back",
         ""
       );
     } catch {
-      player.sendClientMessage(Color.error, "У вас нет дома.");
+      player.sendClientMessage(Color.error, "You do not own a house.");
     }
     return;
   }
 
   const daily = dailyHouseRent(house.price);
   const lines = [
-    `Дом №${house.id} (${houseClassLabel(house.classId)})`,
-    `Оплачено до: ${formatRentDate(house.rentPaidUntil)}`,
-    `Ежедневная плата: $${daily}`,
+    `House #${house.id} (${houseClassLabel(house.classId)})`,
+    `Paid through: ${formatRentDate(house.rentPaidUntil)}`,
+    `Daily payment: $${daily}`,
   ];
 
   if (isRentLastDay(house)) {
     lines.push("");
-    lines.push("Сегодня последний оплаченный день.");
-    lines.push("Завтра в 00:00 дом будет изъят, если не оплатите.");
+    lines.push("Today is the last paid day.");
+    lines.push("The house will be seized tomorrow at 00:00 if you do not pay.");
   }
 
   try {
@@ -82,13 +82,13 @@ export function showHouseRentMenu(player: Player): void {
       player,
       BANK_HOUSE_RENT_INFO_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Оплата дома",
+      "House payment",
       lines.join("\n"),
-      "Далее",
-      "Назад"
+      "Next",
+      "Back"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть оплату дома.");
+    player.sendClientMessage(Color.error, "Could not open house payment.");
   }
 }
 
@@ -100,18 +100,18 @@ function showDaysInputDialog(player: Player): void {
 
   const house = findOwnedHouse(account.id);
   if (!house) {
-    player.sendClientMessage(Color.error, "У вас нет дома.");
+    player.sendClientMessage(Color.error, "You do not own a house.");
     return;
   }
 
   const daily = dailyHouseRent(house.price);
   const bank = Math.max(0, Math.floor(account.bank));
   const body = [
-    `Дом №${house.id}`,
-    `Ежедневная плата: $${daily}`,
-    `Банковский счёт: $${bank}`,
+    `House #${house.id}`,
+    `Daily payment: $${daily}`,
+    `Bank account: $${bank}`,
     "",
-    "Введите количество дней:",
+    "Enter the number of days:",
   ].join("\n");
 
   try {
@@ -119,13 +119,13 @@ function showDaysInputDialog(player: Player): void {
       player,
       BANK_HOUSE_RENT_DAYS_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Оплата дома",
+      "House payment",
       body,
-      "Далее",
-      "Назад"
+      "Next",
+      "Back"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть ввод дней.");
+    player.sendClientMessage(Color.error, "Could not open day input.");
   }
 }
 
@@ -174,13 +174,13 @@ export function handleHouseRentDialog(
 
     const house = findOwnedHouse(account.id);
     if (!house) {
-      player.sendClientMessage(Color.error, "У вас нет дома.");
+      player.sendClientMessage(Color.error, "You do not own a house.");
       return true;
     }
 
     const days = parseRentDays(inputText);
     if (days === null) {
-      player.sendClientMessage(Color.error, "Введите целое число дней от 1 до 999.");
+      player.sendClientMessage(Color.error, "Enter a whole number of days from 1 to 999.");
       showDaysInputDialog(player);
       return true;
     }
@@ -188,7 +188,7 @@ export function handleHouseRentDialog(
     const amount = rentAmountForDays(house.price, days);
     const bank = Math.max(0, Math.floor(account.bank));
     if (amount > bank) {
-      player.sendClientMessage(Color.error, "Недостаточно денег на банковском счёте.");
+      player.sendClientMessage(Color.error, "Not enough money in your bank account.");
       showDaysInputDialog(player);
       return true;
     }
@@ -206,20 +206,20 @@ export function handleHouseRentDialog(
         player,
         BANK_HOUSE_RENT_CONFIRM_DIALOG_ID,
         DIALOG_STYLE_MSGBOX,
-        "Подтверждение",
+        "Confirmation",
         [
-          `Дом №${house.id}`,
-          `Оплата: ${days} ${dayLabel(days)} — $${amount}`,
-          `Новая дата оплаты: ${formatRentDate(paidUntil)}`,
+          `House #${house.id}`,
+          `Payment: ${days} ${dayLabel(days)} — $${amount}`,
+          `New payment date: ${formatRentDate(paidUntil)}`,
           "",
-          "Списание с банковского счёта.",
+          "Charged to your bank account.",
         ].join("\n"),
-        "Оплатить",
-        "Назад"
+        "Pay",
+        "Back"
       );
     } catch {
       clearHouseRentPending(player);
-      player.sendClientMessage(Color.error, "Не удалось открыть подтверждение.");
+      player.sendClientMessage(Color.error, "Could not open confirmation.");
     }
     return true;
   }
@@ -250,7 +250,7 @@ async function confirmHouseRent(player: Player): Promise<void> {
   const house = findOwnedHouse(account.id);
   if (!house || house.id !== pending.houseId) {
     clearHouseRentPending(player);
-    player.sendClientMessage(Color.error, "У вас нет дома.");
+    player.sendClientMessage(Color.error, "You do not own a house.");
     return;
   }
 
@@ -265,8 +265,8 @@ async function confirmHouseRent(player: Player): Promise<void> {
   } catch (error: unknown) {
     payingRent.delete(account.id);
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] оплата дома ${house.id} (${account.name}): ${message}`);
-    player.sendClientMessage(Color.error, "Оплата не прошла. Попробуйте ещё раз.");
+    omp.log(`[${SERVER_TAG}] house payment ${house.id} (${account.name}): ${message}`);
+    player.sendClientMessage(Color.error, "Payment failed. Try again.");
     return;
   }
   payingRent.delete(account.id);
@@ -274,15 +274,15 @@ async function confirmHouseRent(player: Player): Promise<void> {
 
   if (!result.ok) {
     if (result.reason === "owner") {
-      player.sendClientMessage(Color.error, "У вас нет дома.");
+      player.sendClientMessage(Color.error, "You do not own a house.");
       return;
     }
     if (result.reason === "funds") {
-      player.sendClientMessage(Color.error, "Недостаточно денег на банковском счёте.");
+      player.sendClientMessage(Color.error, "Not enough money in your bank account.");
       showDaysInputDialog(player);
       return;
     }
-    player.sendClientMessage(Color.error, "Оплата не прошла. Попробуйте ещё раз.");
+    player.sendClientMessage(Color.error, "Payment failed. Try again.");
     return;
   }
 
@@ -300,16 +300,16 @@ async function confirmHouseRent(player: Player): Promise<void> {
 
   void saveUserMoney(account.id, account.money, result.bankLeft).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] не удалось сохранить банк ${account.name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] could not save bank account for ${account.name}: ${message}`);
   });
 
   player.sendClientMessage(
     Color.tryOk,
-    `Дом №${house.id} оплачен на ${pending.days} ${dayLabel(pending.days)}. Оплачено до: ${formatRentDate(result.paidUntil)}.`
+    `House #${house.id} is paid for ${pending.days} ${dayLabel(pending.days)}. Paid through: ${formatRentDate(result.paidUntil)}.`
   );
   player.sendClientMessage(
     Color.info,
-    `С банковского счёта списано $${result.amount}. Баланс: $${result.bankLeft}.`
+    `$${result.amount} was charged to your bank account. Balance: $${result.bankLeft}.`
   );
 }
 
@@ -331,10 +331,10 @@ function dayLabel(days: number): string {
   const mod10 = days % 10;
   const mod100 = days % 100;
   if (mod10 === 1 && mod100 !== 11) {
-    return "день";
+    return "day";
   }
   if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return "дня";
+    return "days";
   }
-  return "дней";
+  return "days";
 }

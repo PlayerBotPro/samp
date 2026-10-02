@@ -84,7 +84,7 @@ export const loaderModule: GameModule = {
     );
 
     new TextLabel(
-      "Склад\nРабота грузчика",
+      "Warehouse\nLoader job",
       Color.info,
       HIRE_POINT.x,
       HIRE_POINT.y,
@@ -123,13 +123,13 @@ export const loaderModule: GameModule = {
     omp.on("playerKeyStateChange", (player, newKeys, oldKeys) => {
       const pressed = newKeys & ~oldKeys;
       if ((pressed & KEY_JUMP) !== 0 || (pressed & KEY_FIRE) !== 0) {
-        dropBag(player, "Вы уронили мешок!");
+        dropBag(player, "You dropped the bag!");
       }
     });
 
     omp.on("playerStateChange", (player, newState) => {
       if (newState === PLAYER_STATE_DRIVER || newState === PLAYER_STATE_PASSENGER) {
-        dropBag(player, "Вы уронили мешок!");
+        dropBag(player, "You dropped the bag!");
       }
     });
 
@@ -194,7 +194,7 @@ function tickLoader(): void {
         showHireDialog(player);
       }
     } catch {
-      // Слот уже пуст.
+      // Slot is already empty.
     }
   });
 }
@@ -233,7 +233,7 @@ function updateLoaderIcon(
       );
       iconShown.add(id);
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
     return;
   }
@@ -250,7 +250,7 @@ function hideLoaderIcon(player: Player): void {
   try {
     player.removeMapIcon(MAP_ICON_SLOT);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -260,13 +260,13 @@ function showHireDialog(player: Player): void {
       player,
       LOADER_HIRE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Склад",
-      "Вы хотите устроиться на работу грузчика?",
-      "Да",
-      "Нет"
+      "Warehouse",
+      "Do you want to become a loader?",
+      "Yes",
+      "No"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Could not open the dialog.");
   }
 }
 
@@ -276,13 +276,13 @@ function showQuitDialog(player: Player, job: Job): void {
       player,
       LOADER_QUIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Склад",
-      `Завершить смену и получить зарплату?\nПеренесено мешков: ${job.bags}, $${job.salary}`,
-      "Да",
-      "Нет"
+      "Warehouse",
+      `End your shift and receive payment?\nBags moved: ${job.bags}, $${job.salary}`,
+      "Yes",
+      "No"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Could not open the dialog.");
   }
 }
 
@@ -298,32 +298,32 @@ function hire(player: Player): void {
   }
 
   if (account.hospitalized) {
-    player.sendClientMessage(Color.error, "Сначала закончите лечение.");
+    player.sendClientMessage(Color.error, "Finish treatment first.");
     return;
   }
 
   if (isJailed(player)) {
-    player.sendClientMessage(Color.error, "В тюрьме работать нельзя.");
+    player.sendClientMessage(Color.error, "You cannot work in prison.");
     return;
   }
 
   if (isMinerOnShift(player)) {
-    player.sendClientMessage(Color.error, "Сначала закончите смену на шахте.");
+    player.sendClientMessage(Color.error, "Finish your mine shift first.");
     return;
   }
 
   if (isArmyFactoryOnShift(player)) {
-    player.sendClientMessage(Color.error, "Сначала закончите смену в цехе патронов.");
+    player.sendClientMessage(Color.error, "Finish your ammunition factory shift first.");
     return;
   }
 
   if (getExam(player)) {
-    player.sendClientMessage(Color.error, "Сначала закончите экзамен в автошколе.");
+    player.sendClientMessage(Color.error, "Finish your driving-school exam first.");
     return;
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Подойдите к месту устройства.");
+    player.sendClientMessage(Color.error, "Move closer to the employment point.");
     return;
   }
 
@@ -350,7 +350,7 @@ function hire(player: Player): void {
   setPickupCheckpoint(player);
   player.sendClientMessage(
     Color.info,
-    "Рабочий день начат. Отнесите мешки с погрузки на склад — метка на радаре."
+    "Workday started. Carry bags from the loading area to the warehouse — marker on the radar."
   );
 }
 
@@ -363,7 +363,7 @@ function finishShift(player: Player): void {
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Подойдите к месту устройства.");
+    player.sendClientMessage(Color.error, "Move closer to the employment point.");
     return;
   }
 
@@ -383,7 +383,7 @@ function finishShift(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Смена закончена. Мешков: ${bags}. Зарплата: $${salary}.`
+    `Shift complete. Bags: ${bags}. Pay: $${salary}.`
   );
 }
 
@@ -400,7 +400,7 @@ function abortShift(player: Player, notify: boolean): void {
   if (notify && isPlayerActive(player)) {
     player.sendClientMessage(
       Color.error,
-      "Смена сорвана. Невыплаченная зарплата сгорела."
+      "Shift failed. Unpaid wages were lost."
     );
   }
 }
@@ -413,7 +413,7 @@ function restoreWorker(player: Player, skin: number | null): void {
       player.setSkin(skin);
     }
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -453,12 +453,12 @@ function takeBag(player: Player, job: Job): void {
   } catch {
     clearBag(player);
     setPickupCheckpoint(player);
-    player.sendClientMessage(Color.error, "Не удалось взять мешок. Попробуйте снова.");
+    player.sendClientMessage(Color.error, "Could not take the bag. Try again.");
     return;
   }
 
   job.phase = "carry";
-  player.sendClientMessage(Color.info, "Мешок в руках. Отнесите его к точке разгрузки.");
+  player.sendClientMessage(Color.info, "Bag in hand. Carry it to the unloading point.");
 }
 
 function deliverBag(player: Player, job: Job): void {
@@ -485,9 +485,9 @@ function deliverBag(player: Player, job: Job): void {
 
   player.sendClientMessage(
     Color.info,
-    `Мешков перенесено: ${job.bags}. +$${PAY_PER_BAG}`
+    `Bags moved: ${job.bags}. +$${PAY_PER_BAG}`
   );
-  player.sendClientMessage(Color.white, `Зарплата за смену: $${job.salary}`);
+  player.sendClientMessage(Color.white, `Shift wages: $${job.salary}`);
 }
 
 function dropBag(player: Player, message: string): void {
@@ -508,7 +508,7 @@ function dropBag(player: Player, message: string): void {
     playTiredAnim(player);
     setPickupCheckpoint(player);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 
   player.sendClientMessage(Color.error, message);
@@ -518,7 +518,7 @@ function setPickupCheckpoint(player: Player): void {
   try {
     Checkpoint.set(player, PICKUP_POINT.x, PICKUP_POINT.y, PICKUP_POINT.z, CHECKPOINT_RADIUS);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -547,14 +547,14 @@ function clearBag(player: Player): void {
   try {
     player.removeAttachedObject(SLOT_BAG);
   } catch {
-    // Слота не было.
+    // There was no slot.
   }
 
   try {
     player.setSpecialAction(SPECIAL_ACTION_NONE);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -572,7 +572,7 @@ function playTiredAnim(player: Player): void {
       ANIM_SYNC_ALL
     );
   } catch {
-    // Библиотека подтянется позже.
+    // The library will load later.
   }
 }
 
@@ -581,7 +581,7 @@ function preloadAnims(player: Player): void {
     player.applyAnimation("PED", "IDLE_tired", 4.1, false, false, false, false, 1, ANIM_SYNC_ALL);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Библиотека подтянется при первой разгрузке.
+    // The library will load on first unloading.
   }
 }
 

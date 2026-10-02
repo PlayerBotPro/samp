@@ -12,7 +12,7 @@ export function dist3(
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-/** Скорость в условных «км/ч» из velocity SA-MP. */
+/** Speed in approximate “km/h” from SA-MP velocity. */
 export function speedFromVelocity(vx: number, vy: number, vz: number): number {
   return Math.round(Math.hypot(vx, vy, vz) * 179.28625);
 }

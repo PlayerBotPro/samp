@@ -7,67 +7,67 @@ export type ExamQuestion = {
 };
 
 export const EXAM_RULES =
-  "Краткие правила ПДД:\n" +
-  "1. На красный свет — полная остановка.\n" +
-  "2. В городе — не выше 60 km/h.\n" +
-  "3. На равнозначном перекрёстке уступайте помехе справа.\n" +
-  "4. Обгон через сплошную линию запрещён.\n" +
-  "5. Ремень безопасности / шлем обязательны.\n\n" +
-  "Далее тест из 5 вопросов. Нужно ответить на все правильно.\n" +
-  "Стоимость теста: $500.";
+  "Brief traffic rules:\n" +
+  "1. Come to a full stop at a red light.\n" +
+  "2. In the city — no more than 60 km/h.\n" +
+  "3. At an uncontrolled intersection, yield to traffic on the right.\n" +
+  "4. Overtaking across a solid line is prohibited.\n" +
+  "5. Seat belt / helmet required.\n\n" +
+  "Next is a 5-question test. You must answer all questions correctly.\n" +
+  "Test fee: $500.";
 
 const CAR_QUESTIONS: readonly ExamQuestion[] = [
   {
-    text: "Что делать на красный сигнал светофора?",
-    answers: ["Остановиться", "Проехать быстрее", "Подать сигнал и ехать"],
+    text: "What should you do at a red traffic light?",
+    answers: ["Stop", "Drive through faster", "Honk and drive"],
     correct: 0,
   },
   {
-    text: "Какая максимальная скорость в городе?",
+    text: "What is the maximum speed in the city?",
     answers: ["120 km/h", "60 km/h", "200 km/h"],
     correct: 1,
   },
   {
-    text: "Кому уступать на равнозначном перекрёстке?",
-    answers: ["Помехе слева", "Никому", "Помехе справа"],
+    text: "Who must you yield to at an uncontrolled intersection?",
+    answers: ["Traffic on the left", "No one", "Traffic on the right"],
     correct: 2,
   },
   {
-    text: "Можно ли обгонять через сплошную линию?",
-    answers: ["Нет", "Да", "Только ночью"],
+    text: "Can you overtake across a solid line?",
+    answers: ["No", "Yes", "Only at night"],
     correct: 0,
   },
   {
-    text: "Нужен ли ремень безопасности?",
-    answers: ["Нет", "Только на трассе", "Да, обязателен"],
+    text: "Is a seat belt required?",
+    answers: ["No", "Only on highways", "Yes, it is required"],
     correct: 2,
   },
 ];
 
 const MOTO_QUESTIONS: readonly ExamQuestion[] = [
   {
-    text: "Что делать на красный сигнал светофора?",
-    answers: ["Остановиться", "Объехать по обочине", "Проехать, если никого нет"],
+    text: "What should you do at a red traffic light?",
+    answers: ["Stop", "Drive around on the shoulder", "Drive through if no one is around"],
     correct: 0,
   },
   {
-    text: "Нужен ли шлем на мотоцикле?",
-    answers: ["Нет", "Да, обязателен", "Только за городом"],
+    text: "Is a helmet required on a motorcycle?",
+    answers: ["No", "Yes, it is required", "Only outside the city"],
     correct: 1,
   },
   {
-    text: "Можно ли ехать между рядами машин?",
-    answers: ["Да, всегда", "Только на пустом шоссе", "Нет"],
+    text: "Can you ride between lanes of cars?",
+    answers: ["Yes, always", "Only on an empty highway", "No"],
     correct: 2,
   },
   {
-    text: "Какая максимальная скорость в городе?",
-    answers: ["60 km/h", "140 km/h", "Без ограничений"],
+    text: "What is the maximum speed in the city?",
+    answers: ["60 km/h", "140 km/h", "No limit"],
     correct: 0,
   },
   {
-    text: "Можно ли обгонять через сплошную линию?",
-    answers: ["Да, на мотоцикле можно", "Нет", "Только справа"],
+    text: "Can you overtake across a solid line?",
+    answers: ["Yes, on a motorcycle", "No", "Only on the right"],
     correct: 1,
   },
 ];

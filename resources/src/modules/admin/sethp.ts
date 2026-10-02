@@ -30,7 +30,7 @@ function parseSethpArgs(args: string): { slot: number; hp: number } | null {
 export function bindAdminSethp(): void {
   registerCommand(
     "sethp",
-    "Установить HP игроку",
+    "Set a player's HP",
     (player, args) => {
       if (!hasAdminAccess(player, 4)) {
         return;
@@ -40,24 +40,24 @@ export function bindAdminSethp(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /sethp [id] [hp] (0-100)"
+          "Usage: /sethp [id] [hp] (0-100)"
         );
         return;
       }
 
       const target = omp.players.at(parsed.slot);
       if (!target || !isPlayerActive(target)) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       try {
         if (target.isNPC()) {
-          player.sendClientMessage(Color.error, "Игрок не найден.");
+          player.sendClientMessage(Color.error, "Player not found.");
           return;
         }
       } catch {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
@@ -65,7 +65,7 @@ export function bindAdminSethp(): void {
       if (!samePlayer && isAdminLoggedIn(target)) {
         player.sendClientMessage(
           Color.error,
-          "Администраторам запрещено изменять уровень здоровья."
+          "Administrators cannot change health."
         );
         return;
       }
@@ -78,7 +78,7 @@ export function bindAdminSethp(): void {
 
       player.sendClientMessage(
         Color.info,
-        `HP игрока ${parsed.slot} установлено: ${parsed.hp}`
+        `Player ${parsed.slot} HP set to: ${parsed.hp}`
       );
     },
     true

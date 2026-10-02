@@ -56,9 +56,9 @@ type OrgStockPoint = {
 };
 
 const ITEM_LABEL: Record<StockItem, string> = {
-  ammo: "патроны",
-  metal: "металл",
-  drugs: "наркотики",
+  ammo: "ammunition",
+  metal: "metal",
+  drugs: "drugs",
 };
 
 const pendingByPlayer = new Map<number, PendingTransfer>();
@@ -96,15 +96,15 @@ export function bindOrgWarehouseInteract(): void {
 }
 
 /**
- * Тик складов: игрок вышел из радиуса маркера — сброс визита
- * (снова открыть меню = отойти и зайти на маркер).
+ * Warehouse tick: player left the marker radius — reset the visit.
+ * (To reopen the menu, step away and return to the marker.)
  */
 export function notifyOrgStockStanding(player: Player, inside: boolean): void {
   if (inside) {
     return;
   }
 
-  // Пока открыт диалог — не сбрасываем pending (иначе ввод количества «молча» пропадает).
+  // Do not reset pending while the dialog is open (otherwise amount input is silently lost).
   if (isOrgStockDialogBusy(player)) {
     return;
   }
@@ -151,16 +151,16 @@ function tryOpenStockMenu(player: Player): void {
 
 function showMenu(player: Player, orgId: number): void {
   const wh = getWarehouse(orgId);
-  // Закрыт → «Открыть склад», открыт → «Закрыть склад».
+  // Locked → "Open warehouse", open → "Lock warehouse".
   const lockLabel =
-    wh && !wh.isLocked ? "Закрыть склад" : "Открыть склад";
+    wh && !wh.isLocked ? "Lock warehouse" : "Open warehouse";
   const body = [
-    "Положить патроны",
-    "Положить металл",
-    "Положить наркотики",
-    `${LIME}Взять патроны`,
-    `${LIME}Взять металл`,
-    `${LIME}Взять наркотики`,
+    "Store ammunition",
+    "Store metal",
+    "Store drugs",
+    `${LIME}Take ammunition`,
+    `${LIME}Take metal`,
+    `${LIME}Take drugs`,
     lockLabel,
   ].join("\n");
 
@@ -169,14 +169,14 @@ function showMenu(player: Player, orgId: number): void {
       player,
       ORG_WAREHOUSE_MENU_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Склад организации",
+      "Organization warehouse",
       body,
-      "Выбрать",
-      "Отмена"
+      "Select",
+      "Cancel"
     );
     setOrgStockDialogBusy(player, true);
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Could not open the dialog.");
   }
 }
 
@@ -192,7 +192,7 @@ function onMenuResponse(player: Player, accepted: boolean, listItem: number): vo
 
   const stock = findStockAtPlayer(player);
   if (!stock) {
-    player.sendClientMessage(Color.error, "Подойдите ближе к складу.");
+    player.sendClientMessage(Color.error, "Move closer to the warehouse.");
     return;
   }
 
@@ -205,7 +205,7 @@ function onMenuResponse(player: Player, accepted: boolean, listItem: number): vo
 
   if (listItem === 6) {
     toggleLock(player, stock.orgId);
-    // Сразу показать меню с актуальным «Открыть/Закрыть».
+    // Immediately show the menu with the current "Open/Lock" state.
     showMenu(player, stock.orgId);
     return;
   }
@@ -217,7 +217,7 @@ function onMenuResponse(player: Player, accepted: boolean, listItem: number): vo
 
   const wh = getWarehouse(stock.orgId);
   if (mapped.action === "take" && wh?.isLocked) {
-    player.sendClientMessage(Color.error, "Склад закрыт.");
+    player.sendClientMessage(Color.error, "The warehouse is locked.");
     return;
   }
 
@@ -271,25 +271,25 @@ function showAmountDialog(
   const label = ITEM_LABEL[item];
   const playerHave = playerItemAmount(account, item);
   const stockHave = wh ? warehouseItemAmount(wh, item) : 0;
-  const verb = action === "put" ? "положить на склад" : "взять со склада";
+  const verb = action === "put" ? "store" : "take";
   const available =
     action === "put"
-      ? `У вас: ${playerHave} шт.\nНа складе: ${stockHave} шт.`
-      : `На складе: ${stockHave} шт.\nУ вас: ${playerHave} шт.`;
+      ? `You have: ${playerHave} units\nIn warehouse: ${stockHave} units`
+      : `In warehouse: ${stockHave} units\nYou have: ${playerHave} units`;
 
   try {
     Dialog.show(
       player,
       ORG_WAREHOUSE_AMOUNT_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Склад организации",
-      `Сколько ${label} ${verb}?\n${available}\nМаксимум за раз: ${MAX_TRANSFER}`,
-      "ОК",
-      "Отмена"
+      "Organization warehouse",
+      `How much ${label} do you want to ${verb}?\n${available}\nMaximum per transaction: ${MAX_TRANSFER}`,
+      "OK",
+      "Cancel"
     );
     setOrgStockDialogBusy(player, true);
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Could not open the dialog.");
     clearPending(player);
   }
 }
@@ -308,13 +308,13 @@ function onAmountResponse(player: Player, accepted: boolean, rawInput: string): 
   const id = playerId(player);
   const pending = id !== null ? pendingByPlayer.get(id) : undefined;
   if (!pending) {
-    player.sendClientMessage(Color.error, "Операция прервана. Зайдите на склад снова.");
+    player.sendClientMessage(Color.error, "Operation cancelled. Enter the warehouse again.");
     return;
   }
 
   const stock = findStockAtPlayer(player);
   if (!stock || stock.orgId !== pending.orgId) {
-    player.sendClientMessage(Color.error, "Подойдите ближе к складу.");
+    player.sendClientMessage(Color.error, "Move closer to the warehouse.");
     clearPending(player);
     return;
   }
@@ -329,14 +329,14 @@ function onAmountResponse(player: Player, accepted: boolean, rawInput: string): 
 
   const wh = getWarehouse(pending.orgId);
   if (pending.action === "take" && (!wh || wh.isLocked)) {
-    player.sendClientMessage(Color.error, "Склад закрыт.");
+    player.sendClientMessage(Color.error, "The warehouse is locked.");
     clearPending(player);
     return;
   }
 
   const amount = Math.floor(Number(rawInput.trim().replace(",", ".")));
   if (!Number.isFinite(amount) || amount <= 0 || !Number.isSafeInteger(amount)) {
-    player.sendClientMessage(Color.error, "Введите целое число больше 0.");
+    player.sendClientMessage(Color.error, "Enter an integer greater than 0.");
     showAmountDialog(player, pending.action, pending.item, pending.orgId);
     return;
   }
@@ -344,7 +344,7 @@ function onAmountResponse(player: Player, accepted: boolean, rawInput: string): 
   if (amount > MAX_TRANSFER) {
     player.sendClientMessage(
       Color.error,
-      `За один раз можно не больше ${MAX_TRANSFER} шт.`
+      `You can transfer no more than ${MAX_TRANSFER} units at a time.`
     );
     showAmountDialog(player, pending.action, pending.item, pending.orgId);
     return;
@@ -367,7 +367,7 @@ function applyPut(player: Player, orgId: number, item: StockItem, amount: number
 
   const have = playerItemAmount(account, item);
   if (have < amount) {
-    player.sendClientMessage(Color.error, `Недостаточно: ${ITEM_LABEL[item]}.`);
+    player.sendClientMessage(Color.error, `Not enough ${ITEM_LABEL[item]}.`);
     showAmountDialog(player, "put", item, orgId);
     return;
   }
@@ -376,7 +376,7 @@ function applyPut(player: Player, orgId: number, item: StockItem, amount: number
   const nextAmmo = item === "ammo" ? account.ammo - amount : account.ammo;
   const nextMetal = item === "metal" ? account.metal - amount : account.metal;
   if (nextDrugs < 0 || nextAmmo < 0 || nextMetal < 0) {
-    player.sendClientMessage(Color.error, `Недостаточно: ${ITEM_LABEL[item]}.`);
+    player.sendClientMessage(Color.error, `Not enough ${ITEM_LABEL[item]}.`);
     showAmountDialog(player, "put", item, orgId);
     return;
   }
@@ -392,18 +392,18 @@ function applyPut(player: Player, orgId: number, item: StockItem, amount: number
   }
 
   void saveUserInventory(account.id, nextDrugs, nextAmmo, nextMetal).catch(() => {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   });
 
   refreshStockLabels(orgId);
   clearPending(player);
   player.sendClientMessage(
     Color.info,
-    `Вы положили на склад: ${ITEM_LABEL[item]} ${amount} шт.`
+    `You stored ${amount} units of ${ITEM_LABEL[item]}.`
   );
   broadcastStock(
     orgId,
-    `[Склад] ${membership.rank.title} ${playerChatName(player)} положил на склад: ${ITEM_LABEL[item]} ${amount} шт.`
+    `[Warehouse] ${membership.rank.title} ${playerChatName(player)} stored ${amount} units of ${ITEM_LABEL[item]}.`
   );
 }
 
@@ -423,7 +423,7 @@ function applyTake(player: Player, orgId: number, item: StockItem, amount: numbe
         : takeWarehouseDrugs(orgId, amount);
 
   if (!taken) {
-    player.sendClientMessage(Color.error, `На складе недостаточно: ${ITEM_LABEL[item]}.`);
+    player.sendClientMessage(Color.error, `The warehouse does not have enough ${ITEM_LABEL[item]}.`);
     showAmountDialog(player, "take", item, orgId);
     return;
   }
@@ -437,7 +437,7 @@ function applyTake(player: Player, orgId: number, item: StockItem, amount: numbe
     !Number.isSafeInteger(nextAmmo) ||
     !Number.isSafeInteger(nextMetal)
   ) {
-    // Откат склада в кэше/БД через обратное добавление.
+    // Roll back the warehouse in cache/database by adding the items back.
     if (item === "ammo") {
       addWarehouseAmmo(orgId, amount);
     } else if (item === "metal") {
@@ -445,25 +445,25 @@ function applyTake(player: Player, orgId: number, item: StockItem, amount: numbe
     } else {
       addWarehouseDrugs(orgId, amount);
     }
-    player.sendClientMessage(Color.error, "Слишком большое количество.");
+    player.sendClientMessage(Color.error, "Amount is too large.");
     clearPending(player);
     return;
   }
 
   patchAccount(player, { drugs: nextDrugs, ammo: nextAmmo, metal: nextMetal });
   void saveUserInventory(account.id, nextDrugs, nextAmmo, nextMetal).catch(() => {
-    // Кэш уже обновлён.
+    // The cache has already been updated.
   });
 
   refreshStockLabels(orgId);
   clearPending(player);
   player.sendClientMessage(
     Color.info,
-    `Вы взяли со склада: ${ITEM_LABEL[item]} ${amount} шт.`
+    `You took ${amount} units of ${ITEM_LABEL[item]} from the warehouse.`
   );
   broadcastStock(
     orgId,
-    `[Склад] ${membership.rank.title} ${playerChatName(player)} взял со склада: ${ITEM_LABEL[item]} ${amount} шт.`
+    `[Warehouse] ${membership.rank.title} ${playerChatName(player)} took ${amount} units of ${ITEM_LABEL[item]} from the warehouse.`
   );
 }
 
@@ -477,7 +477,7 @@ function toggleLock(player: Player, orgId: number): void {
   if (membership.rank.id < LOCK_MIN_RANK) {
     player.sendClientMessage(
       Color.error,
-      "Открывать и закрывать склад может только ранг 7 и выше."
+      "Only rank 7 and above can open and lock the warehouse."
     );
     return;
   }
@@ -488,19 +488,19 @@ function toggleLock(player: Player, orgId: number): void {
 
   const wh = getWarehouse(orgId);
   const currentlyOpen = Boolean(wh && !wh.isLocked);
-  // Открыт → закрыть; закрыт → открыть.
+  // Open → lock; locked → open.
   const nextLocked = currentlyOpen;
   setWarehouseLocked(orgId, nextLocked);
   refreshStockLabels(orgId);
 
-  const verb = nextLocked ? "закрыл склад" : "открыл склад";
+  const verb = nextLocked ? "locked the warehouse" : "opened the warehouse";
   player.sendClientMessage(
     Color.info,
-    nextLocked ? "Склад закрыт." : "Склад открыт."
+    nextLocked ? "The warehouse is locked." : "The warehouse is open."
   );
   broadcastStock(
     orgId,
-    `[Склад] ${membership.rank.title} ${playerChatName(player)} ${verb}.`
+    `[Warehouse] ${membership.rank.title} ${playerChatName(player)} ${verb}.`
   );
 }
 
@@ -518,8 +518,8 @@ function denyOutsider(player: Player, orgId: number): void {
 
   lastDenyAt.set(id, now);
   const org = getOrganization(orgId);
-  const name = org?.name ?? "организации";
-  player.sendClientMessage(Color.error, `Доступ к складу разрешён только ${name}.`);
+  const name = org?.name ?? "this organization";
+  player.sendClientMessage(Color.error, `Warehouse access is only available to ${name}.`);
 }
 
 function broadcastStock(orgId: number, rawLine: string): void {
@@ -546,7 +546,7 @@ function broadcastStock(orgId: number, rawLine: string): void {
     try {
       other.sendClientMessage(Color.info, line);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }

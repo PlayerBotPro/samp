@@ -25,7 +25,7 @@ import {
 
 const SAVE_EVERY_MS = 30_000;
 const TICK_MS = 1000;
-const INMATE_DENY = "Вы отбываете срок. Этот выход закрыт.";
+const INMATE_DENY = "You are serving a sentence. This exit is locked.";
 
 const CELLS: readonly SpawnPoint[] = [
   { x: -86.0985, y: 2444.3215, z: 1179.3195, angle: 179.9293, interior: 0, world: PRISON_WORLD },
@@ -89,13 +89,13 @@ export function placeInJail(player: Player): void {
         player.removeFromVehicle();
       }
     } catch {
-      // Пешком.
+      // On foot.
     }
 
     placeAt(player, pickJailCell());
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -135,13 +135,13 @@ export async function applyJail(player: Player, minutes: number): Promise<boolea
     player.setHealth(MAX_HEALTH);
     trustHealth(player, MAX_HEALTH);
   } catch {
-    // Слот ещё не готов.
+    // Slot is not ready yet.
   }
 
   placeInJail(player);
   clearArmyDisguise(player);
   applyOrgVisuals(player);
-  tell(player, Color.error, `Вас посадили в тюрьму. Срок: ${minutes} мин.`);
+  tell(player, Color.error, `You were sent to prison. Sentence: ${minutes} min.`);
   return true;
 }
 
@@ -168,7 +168,7 @@ export async function applyUnjail(player: Player): Promise<boolean> {
 
   placeAtSpawn(player, resolveOrgSpawn(account) ?? DEFAULT_SPAWN);
   applyOrgVisuals(player);
-  tell(player, Color.info, "Вас выпустили из тюрьмы.");
+  tell(player, Color.info, "You were released from prison.");
   return true;
 }
 
@@ -244,7 +244,7 @@ async function releaseFromJail(player: Player): Promise<void> {
 
   placeAtSpawn(player, FREEDOM);
   applyOrgVisuals(player);
-  tell(player, Color.info, "Вы отсидели срок и вышли на свободу.");
+  tell(player, Color.info, "You served your sentence and are now free.");
 }
 
 function confineInmate(player: Player): void {
@@ -267,13 +267,13 @@ function placeAtSpawn(player: Player, dest: SpawnPoint): void {
         player.removeFromVehicle();
       }
     } catch {
-      // Пешком.
+      // On foot.
     }
 
     placeAt(player, dest);
     refreshStreamForPlayer(player);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -293,7 +293,7 @@ function persistJail(player: Player, force: boolean): void {
   }
 
   void saveUserJailedSeconds(account.id, account.jailSeconds).catch(() => {
-    // Сохранится при выходе или следующем тике.
+    // It will save on disconnect or the next tick.
   });
 }
 
@@ -301,6 +301,6 @@ function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, text);
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }

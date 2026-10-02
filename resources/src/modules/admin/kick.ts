@@ -18,7 +18,7 @@ function broadcastAll(color: number, text: string): void {
     try {
       other.sendClientMessage(color, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -30,7 +30,7 @@ function kickSoon(player: Player): void {
 export function bindAdminKick(): void {
   registerCommand(
     "kick",
-    "Кикнуть игрока",
+    "Kick a player",
     (player, args) => {
       if (!canUseKick(player)) {
         return;
@@ -47,7 +47,7 @@ export function bindAdminKick(): void {
       if (!idPart) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /kick [id] [причина (не обязательно)]"
+          "Usage: /kick [id] [reason (optional)]"
         );
         return;
       }
@@ -56,32 +56,32 @@ export function bindAdminKick(): void {
       if (!Number.isInteger(slot) || slot < 0) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /kick [id] [причина (не обязательно)]"
+          "Usage: /kick [id] [reason (optional)]"
         );
         return;
       }
 
       const target = omp.players.at(slot);
       if (!target || !isPlayerActive(target)) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       try {
         if (target.isNPC()) {
-          player.sendClientMessage(Color.error, "Игрок не найден.");
+          player.sendClientMessage(Color.error, "Player not found.");
           return;
         }
       } catch {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       const adminTag = playerChatName(player);
       const targetTag = playerChatName(target);
       const line = reason
-        ? `Администратор ${adminTag} кикнул игрока ${targetTag}. Причина: ${reason}.`
-        : `Администратор ${adminTag} кикнул игрока ${targetTag}.`;
+        ? `Administrator ${adminTag} kicked player ${targetTag}. Reason: ${reason}.`
+        : `Administrator ${adminTag} kicked player ${targetTag}.`;
       broadcastAll(Color.error, line);
       kickSoon(target);
     },

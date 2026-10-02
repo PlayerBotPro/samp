@@ -29,7 +29,7 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-/** Зона выдачи медкарт в больнице (весь служебный блок ~20 м). */
+/** Medcard issue area in the hospital (entire staff area, ~20 m). */
 const ISSUE_POINT = {
   x: 1165.0743,
   y: -1350.3879,
@@ -43,18 +43,18 @@ type MedcardOffer = {
   expiresAt: number;
 };
 
-/** Предложения медкарты: slot цели → оффер. */
+/** Medcard offers: target slot → offer. */
 const pendingOffers = new Map<number, MedcardOffer>();
 
-registerCommand("medcard", "Медкарта: посмотреть или показать по id", (player, args) => {
+registerCommand("medcard", "Medcard: view or show it by ID", (player, args) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Сначала войдите в аккаунт.");
+    player.sendClientMessage(Color.error, "Log in first.");
     return;
   }
 
   if (!account.medcard) {
-    player.sendClientMessage(Color.error, "У вас нет медицинской карты.");
+    player.sendClientMessage(Color.error, "You do not have a medical card.");
     return;
   }
 
@@ -66,13 +66,13 @@ registerCommand("medcard", "Медкарта: посмотреть или пок
 
   const slot = Number(rawId);
   if (!Number.isInteger(slot) || slot < 0) {
-    player.sendClientMessage(Color.error, "Использование: /medcard [id]");
+    player.sendClientMessage(Color.error, "Usage: /medcard [id]");
     return;
   }
 
   const target = omp.players.at(slot);
   if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-    player.sendClientMessage(Color.error, "Игрок не найден.");
+    player.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
@@ -82,19 +82,19 @@ registerCommand("medcard", "Медкарта: посмотреть или пок
   }
 
   if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-    player.sendClientMessage(Color.error, "Игрок слишком далеко.");
+    player.sendClientMessage(Color.error, "Player is too far away.");
     return;
   }
 
   showMedcard(target, account);
-  const verb = byGender(account.gender, "показал", "показала");
-  player.sendClientMessage(Color.gray, `Вы ${verb} медкарту: ${playerName(target)}.`);
-  target.sendClientMessage(Color.gray, `${account.name} ${verb} вам медкарту.`);
+  const verb = byGender(account.gender, "showed", "showed");
+  player.sendClientMessage(Color.gray, `You ${verb} your medical card to ${playerName(target)}.`);
+  target.sendClientMessage(Color.gray, `${account.name} ${verb} you their medical card.`);
 });
 
 registerCommand(
   "givemedcard",
-  "Выдать медкарту (Больница, ранг 6+)",
+  "Issue a medical card (Hospital, rank 6+)",
   (player, args) => {
     const account = getAccount(player);
     const membership = account ? getMembership(account) : null;
@@ -106,7 +106,7 @@ registerCommand(
     ) {
       player.sendClientMessage(
         Color.error,
-        "Выдавать медкарту может сотрудник больницы с ранга 6 и выше."
+        "Only hospital employees of rank 6 or higher can issue medical cards."
       );
       return;
     }
@@ -114,7 +114,7 @@ registerCommand(
     if (!isInMedcardIssueZone(player)) {
       player.sendClientMessage(
         Color.error,
-        "Выдавать медкарту можно только в больнице."
+        "Medical cards can only be issued at the hospital."
       );
       return;
     }
@@ -123,7 +123,7 @@ registerCommand(
     if (parts.length < 2) {
       player.sendClientMessage(
         Color.error,
-        `Использование: /givemedcard [id] [сумма ${MIN_PRICE}-${MAX_PRICE}]`
+        `Usage: /givemedcard [id] [amount ${MIN_PRICE}-${MAX_PRICE}]`
       );
       return;
     }
@@ -131,7 +131,7 @@ registerCommand(
     const slot = Number(parts[0]);
     const price = Math.floor(Number(parts[1]));
     if (!Number.isInteger(slot) || slot < 0) {
-      player.sendClientMessage(Color.error, "Неверный id игрока.");
+      player.sendClientMessage(Color.error, "Invalid player ID.");
       return;
     }
 
@@ -143,14 +143,14 @@ registerCommand(
     ) {
       player.sendClientMessage(
         Color.error,
-        `Сумма должна быть от $${MIN_PRICE} до $${MAX_PRICE}.`
+        `Amount must be between $${MIN_PRICE} and $${MAX_PRICE}.`
       );
       return;
     }
 
     const target = omp.players.at(slot);
     if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-      player.sendClientMessage(Color.error, "Игрок не найден.");
+      player.sendClientMessage(Color.error, "Player not found.");
       return;
     }
 
@@ -161,30 +161,30 @@ registerCommand(
     }
 
     if (targetSlot === issuerSlot) {
-      player.sendClientMessage(Color.error, "Нельзя выдать медкарту себе.");
+      player.sendClientMessage(Color.error, "You cannot issue a medical card to yourself.");
       return;
     }
 
     if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-      player.sendClientMessage(Color.error, "Игрок слишком далеко.");
+      player.sendClientMessage(Color.error, "Player is too far away.");
       return;
     }
 
     const targetAccount = getAccount(target);
     if (!targetAccount) {
-      player.sendClientMessage(Color.error, "Игрок не найден.");
+      player.sendClientMessage(Color.error, "Player not found.");
       return;
     }
 
     if (targetAccount.medcard) {
-      player.sendClientMessage(Color.error, "У игрока уже есть медицинская карта.");
+      player.sendClientMessage(Color.error, "The player already has a medical card.");
       return;
     }
 
     if (targetAccount.money < price) {
       player.sendClientMessage(
         Color.error,
-        `У игрока недостаточно денег. Нужно $${price}.`
+        `The player does not have enough money. $${price} required.`
       );
       return;
     }
@@ -198,15 +198,15 @@ registerCommand(
 
     player.sendClientMessage(
       Color.info,
-      `Вы предложили медкарту игроку ${playerName(target)} за $${price}.`
+      `You offered a medical card to ${playerName(target)} for $${price}.`
     );
     target.sendClientMessage(
       Color.white,
-      `${playerName(player)} предлагает медкарту за $${price}.`
+      `${playerName(player)} offers you a medical card for $${price}.`
     );
     target.sendClientMessage(
       Color.white,
-      "Нажмите {00CC00}Y {FFFFFF}для просмотра или {FF6600}N {FFFFFF}для отказа"
+      "Press {00CC00}Y {FFFFFF}to view or {FF6600}N {FFFFFF}to decline"
     );
   }
 );
@@ -230,7 +230,7 @@ export function bindMedcardOffers(): void {
 
     if (Date.now() > offer.expiresAt) {
       pendingOffers.delete(slot);
-      player.sendClientMessage(Color.error, "Предложение медкарты истекло.");
+      player.sendClientMessage(Color.error, "The medical card offer has expired.");
       return;
     }
 
@@ -268,40 +268,40 @@ function acceptOffer(target: Player, targetSlot: number, offer: MedcardOffer): v
   }
 
   if (targetAccount.medcard) {
-    target.sendClientMessage(Color.error, "У вас уже есть медицинская карта.");
+    target.sendClientMessage(Color.error, "You already have a medical card.");
     return;
   }
 
   const issuer = omp.players.at(offer.issuerId);
   if (!issuer || !isPlayerActive(issuer) || !isAuthenticated(issuer)) {
-    target.sendClientMessage(Color.error, "Врач вышел из игры. Сделка отменена.");
+    target.sendClientMessage(Color.error, "The doctor left the game. Transaction cancelled.");
     return;
   }
 
   const issuerAccount = getAccount(issuer);
   if (!issuerAccount || issuerAccount.id !== offer.issuerUserId) {
-    target.sendClientMessage(Color.error, "Врач вышел из игры. Сделка отменена.");
+    target.sendClientMessage(Color.error, "The doctor left the game. Transaction cancelled.");
     return;
   }
 
   if (!arePlayersNearby(target, issuer, WHISPER_RADIUS)) {
-    target.sendClientMessage(Color.error, "Врач слишком далеко. Сделка отменена.");
-    issuer.sendClientMessage(Color.error, "Пациент слишком далеко. Сделка отменена.");
+    target.sendClientMessage(Color.error, "The doctor is too far away. Transaction cancelled.");
+    issuer.sendClientMessage(Color.error, "The patient is too far away. Transaction cancelled.");
     return;
   }
 
   if (!isInMedcardIssueZone(issuer)) {
-    target.sendClientMessage(Color.error, "Врач должен быть в больнице. Сделка отменена.");
-    issuer.sendClientMessage(Color.error, "Выдавайте медкарту только в больнице.");
+    target.sendClientMessage(Color.error, "The doctor must be at the hospital. Transaction cancelled.");
+    issuer.sendClientMessage(Color.error, "Only issue medical cards at the hospital.");
     return;
   }
 
   const price = offer.price;
   if (targetAccount.money < price) {
-    target.sendClientMessage(Color.error, `Недостаточно денег. Нужно $${price}.`);
+    target.sendClientMessage(Color.error, `Not enough money. $${price} required.`);
     issuer.sendClientMessage(
       Color.error,
-      `${playerName(target)} не смог оплатить медкарту ($${price}).`
+      `${playerName(target)} could not pay for the medical card ($${price}).`
     );
     return;
   }
@@ -309,7 +309,7 @@ function acceptOffer(target: Player, targetSlot: number, offer: MedcardOffer): v
   const nextTargetMoney = targetAccount.money - price;
   const nextIssuerMoney = issuerAccount.money + price;
   if (!Number.isSafeInteger(nextIssuerMoney)) {
-    target.sendClientMessage(Color.error, "Не удалось провести оплату.");
+    target.sendClientMessage(Color.error, "Payment failed.");
     return;
   }
 
@@ -330,29 +330,29 @@ function acceptOffer(target: Player, targetSlot: number, offer: MedcardOffer): v
     saveUserMoney(issuerAccount.id, nextIssuerMoney, issuerAccount.bank),
     saveUserMedcard(targetAccount.id, true),
   ]).catch(() => {
-    // Кэш уже обновлён.
+    // Cache is already updated.
   });
 
   issuer.sendClientMessage(
     Color.info,
-    `Игрок ${playerName(target)} купил медкарту за $${price}.`
+    `Player ${playerName(target)} bought a medical card for $${price}.`
   );
   target.sendClientMessage(
     Color.info,
-    `Вы купили медкарту за $${price}. Посмотреть: /medcard`
+    `You bought a medical card for $${price}. View it with: /medcard`
   );
   showMedcard(target, getAccount(target) ?? { ...targetAccount, medcard: true });
 }
 
 function refuseOffer(target: Player, targetSlot: number, offer: MedcardOffer): void {
   pendingOffers.delete(targetSlot);
-  target.sendClientMessage(Color.gray, "Вы отказались от медкарты.");
+  target.sendClientMessage(Color.gray, "You declined the medical card.");
 
   const issuer = omp.players.at(offer.issuerId);
   if (issuer && isPlayerActive(issuer)) {
     issuer.sendClientMessage(
       Color.gray,
-      `${playerName(target)} отказался от медкарты.`
+      `${playerName(target)} declined the medical card.`
     );
   }
 }
@@ -375,9 +375,9 @@ function isInMedcardIssueZone(player: Player): boolean {
 
 function showMedcard(viewer: Player, owner: Account): void {
   const body = [
-    row("Имя", owner.name),
-    row("Статус", "Медицинская карта оформлена"),
-    row("Годность", "Годен"),
+    row("Name", owner.name),
+    row("Status", "Medical card issued"),
+    row("Fitness", "Fit"),
   ].join("\n");
 
   try {
@@ -385,13 +385,13 @@ function showMedcard(viewer: Player, owner: Account): void {
       viewer,
       MEDCARD_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}Медкарта ${owner.name}`,
+      `${TITLE}Medical card: ${owner.name}`,
       body,
-      "Закрыть",
+      "Close",
       ""
     );
   } catch {
-    viewer.sendClientMessage(Color.error, "Не удалось открыть медкарту.");
+    viewer.sendClientMessage(Color.error, "Failed to open the medical card.");
   }
 }
 

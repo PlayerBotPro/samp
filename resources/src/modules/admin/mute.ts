@@ -61,7 +61,7 @@ function broadcastAll(color: number, text: string): void {
     try {
       other.sendClientMessage(color, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -69,7 +69,7 @@ function broadcastAll(color: number, text: string): void {
 export function bindAdminMute(): void {
   registerCommand(
     "mute",
-    "Заглушить игрока",
+    "Mute a player",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -79,25 +79,25 @@ export function bindAdminMute(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /mute [id] [минуты] [причина (не обязательно)]"
+          "Usage: /mute [id] [minutes] [reason (optional)]"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (account.adminLevel >= 1) {
-        player.sendClientMessage(Color.error, "Нельзя поставить мут администратору.");
+        player.sendClientMessage(Color.error, "You cannot mute an administrator.");
         return;
       }
 
@@ -131,14 +131,14 @@ async function applyMute(
       patchAccount(target, { mutedUntil: previous });
       watchMute(target);
     }
-    admin.sendClientMessage(Color.error, "Не удалось сохранить мут.");
+    admin.sendClientMessage(Color.error, "Failed to save the mute.");
     return;
   }
 
   const adminTag = playerChatName(admin);
   const targetTag = playerChatName(target);
   const line = reason
-    ? `Администратор ${adminTag} заглушил игрока ${targetTag}. Причина: ${reason}.`
-    : `Администратор ${adminTag} заглушил игрока ${targetTag}.`;
+    ? `Administrator ${adminTag} muted player ${targetTag}. Reason: ${reason}.`
+    : `Administrator ${adminTag} muted player ${targetTag}.`;
   broadcastAll(Color.error, line);
 }

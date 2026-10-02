@@ -26,7 +26,7 @@ function broadcastAll(color: number, text: string): void {
     try {
       other.sendClientMessage(color, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -40,7 +40,7 @@ function broadcastAdmins(text: string): void {
     try {
       other.sendClientMessage(Color.gray, text);
     } catch {
-      // Слот пустой.
+      // Slot is empty.
     }
   });
 }
@@ -96,7 +96,7 @@ async function applyBan(
 ): Promise<void> {
   const account = getAccount(target);
   if (!account) {
-    admin.sendClientMessage(Color.error, "Игрок не авторизован.");
+    admin.sendClientMessage(Color.error, "Player is not logged in.");
     return;
   }
 
@@ -105,7 +105,7 @@ async function applyBan(
   try {
     await saveUserBan(account.id, untilUnix, reason);
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось сохранить бан.");
+    admin.sendClientMessage(Color.error, "Failed to save the ban.");
     return;
   }
 
@@ -114,7 +114,7 @@ async function applyBan(
   const targetTag = playerChatName(target);
   broadcastAll(
     Color.error,
-    `Администратор ${adminTag} забанил игрока ${targetTag} на ${days} ${word}. Причина: ${reason}.`
+    `Administrator ${adminTag} banned player ${targetTag} for ${days} ${word}. Reason: ${reason}.`
   );
 
   if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
@@ -127,7 +127,7 @@ async function applyBan(
 async function applyUnban(admin: Player, rawName: string): Promise<void> {
   const name = rawName.trim();
   if (!name || name.includes(" ") || name.length > 24) {
-    admin.sendClientMessage(Color.error, "Использование: /unban [Nick_Name]");
+    admin.sendClientMessage(Color.error, "Usage: /unban [Nick_Name]");
     return;
   }
 
@@ -135,35 +135,35 @@ async function applyUnban(admin: Player, rawName: string): Promise<void> {
   try {
     row = await findUserByName(name);
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось проверить бан.");
+    admin.sendClientMessage(Color.error, "Failed to check the ban.");
     return;
   }
 
   if (!row) {
-    admin.sendClientMessage(Color.error, "Игрок не найден.");
+    admin.sendClientMessage(Color.error, "Player not found.");
     return;
   }
 
   const until = parseBannedUntil(row.banned_until);
   if (!isBanActive(until)) {
-    admin.sendClientMessage(Color.error, "Игрок не забанен.");
+    admin.sendClientMessage(Color.error, "Player is not banned.");
     return;
   }
 
   try {
     await clearUserBan(row.id);
   } catch {
-    admin.sendClientMessage(Color.error, "Не удалось снять бан.");
+    admin.sendClientMessage(Color.error, "Failed to remove the ban.");
     return;
   }
 
-  broadcastAdmins(`Администратор ${playerChatName(admin)} разбанил игрока ${row.name}.`);
+  broadcastAdmins(`Administrator ${playerChatName(admin)} unbanned player ${row.name}.`);
 }
 
 export function bindAdminBan(): void {
   registerCommand(
     "ban",
-    "Забанить игрока",
+    "Ban a player",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -173,19 +173,19 @@ export function bindAdminBan(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Использование: /ban [id] [дни] [причина]"
+          "Usage: /ban [id] [days] [reason]"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Игрок не найден.");
+        player.sendClientMessage(Color.error, "Player not found.");
         return;
       }
 
       if (!getAccount(target)) {
-        player.sendClientMessage(Color.error, "Игрок не авторизован.");
+        player.sendClientMessage(Color.error, "Player is not logged in.");
         return;
       }
 
@@ -196,7 +196,7 @@ export function bindAdminBan(): void {
 
   registerCommand(
     "unban",
-    "Разбанить игрока",
+    "Unban a player",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;

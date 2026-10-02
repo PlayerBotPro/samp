@@ -1,642 +1,120 @@
-# LSRP — версия 2
+# LSRP — Version 2
 
-Что появилось **после** базовой документации [docs.md](docs.md). База (логин, больница, мэрия, шахта, армия как орган, админка 1–7 с `/alogin`) там. Здесь — дельта v2.
+This document describes additions after [docs.md](docs.md): the baseline covers login, hospital, city hall, mine, the Army, and admin levels 1–7 with `/alogin`. Player-facing text is Russian (UTF-8).
 
-Тексты игроку — **русский (UTF-8)**.
+## Startup
 
----
-
-## Оглавление
-
-1. [Новые модули и порядок старта](#новые-модули-и-порядок-старта)
-2. [База данных](#база-данных)
-3. [Спавн и мир](#спавн-и-мир)
-4. [Транспорт](#транспорт)
-5. [Спидометр](#спидометр)
-6. [Банк](#банк)
-7. [Payday и законопослушность](#payday-и-законопослушность)
-8. [Сейф-зоны](#сейф-зоны)
-9. [Тюрьма](#тюрьма)
-10. [Репорт и ответ админа](#репорт-и-ответ-админа)
-11. [Мут чата](#мут-чата)
-12. [Админка v2](#админка-v2)
-13. [Армия: транспорт](#армия-транспорт)
-14. [Больница как орган](#больница-как-орган)
-15. [Банды](#банды)
-16. [Мафии](#мафии)
-17. [Гангзоны и капт](#гангзоны-и-капт)
-18. [Чат и регистрация](#чат-и-регистрация)
-19. [Команды игрока](#команды-игрока)
-20. [Диалоги](#диалоги)
-21. [Звуки](#звуки)
-22. [Куда править](#куда-править)
-
----
-
-## Новые модули и порядок старта
-
-Добавлены: `vehicles`, `bank`, `prison`. Сейф-зоны живут в `zones`. Спидометр — в `hud/speedo.ts`.
-
-Порядок в `src/index.ts` (важно):
-
-1. `database`, `persist`, `auth`, `spawn`, `mapping`
-2. `hospital`, `cityhall`, `bank`, `miner`, `gps`, `prison`, `afk`, `payday`, `worldtime`, `zones`
-3. `hud`, `session`, `chat`, `commands`
-4. `admin`, `org`, `autoschool`
-5. **`vehicles` последним** — машины после органов и ворот
+Added modules: `vehicles`, `bank`, and `prison`; safe zones are in `zones`, and the speedometer is `hud/speedo.ts`. In `src/index.ts`, start `database`, `persist`, `auth`, `spawn`, and `mapping`; then gameplay modules through `zones`; then `hud`, `session`, `chat`, and `commands`; then `admin`, `org`, and `autoschool`; start `vehicles` last, after organizations and gates.
 
 ```
 resources/src/modules/
-  vehicles/     спавн, двигатель, фары, лимит, армия / больница / банды
-  bank/         интерьер, кассы, переводы
-  prison/       иконка и служебный вход в тюрьму
-  hud/speedo.ts HUD водителя
-  zones/        closed zones, сейф-зоны, гангзоны, капт
-  org/          армия, больница, банды 9–13
+  vehicles/     spawn, engine, lights, limiter, organization vehicles
+  bank/         interior, tellers, transfers
+  prison/       map icon and service entrance
+  hud/speedo.ts driver HUD
+  zones/        closed zones, safe zones, gang zones, captures
 ```
 
-GPS v2: метки **ЖД ЛС**, **Тюрьма**, **Банк**, **Областная полиция**, **LSPD**, **FBI**, **Автошкола**, **LCN**, **Yakuza**, **Русская мафия**, **Grove Street**, **Ballas**, **Vagos**, **Rifa**, **Aztecas**.
+GPS adds LS Railway Station, Jail, Bank, County Police, LSPD, FBI, Driving School, LCN, Yakuza, Russian Mafia, Grove Street, Ballas, Vagos, Rifa, and Aztecas. In `/mn`, **Contact administration** opens the report dialog.
 
-`/mn`: пункт **Svyaz' s administraciey** → диалог репорта.
+## Database and world
 
----
+`sql/schema.sql` plus migrations in `auth/repository.ts` are authoritative.
 
-## База данных
-
-Эталон `sql/schema.sql` + миграции в `auth/repository.ts`. Новые колонки:
-
-| Колонка | Смысл |
+| Column | Meaning |
 |---|---|
-| `bank` | INT, банковский счёт, по умолчанию 0 |
-| `lawfulness` | SMALLINT, −100…100, новый персонаж **100** |
-| `muted_until` | INT UNSIGNED NULL, unix **секунды**; NULL = нет мута |
-| `jail_seconds` | INT UNSIGNED, оставшийся срок; 0 = не в тюрьме. Тикает **только онлайн** |
-| `license_car` `license_moto` `license_fly` `license_boat` `license_gun` | TINYINT, 0 = нет лицензии |
-| `banned_until` | DATETIME NULL, дата и время **конца** бана; NULL = не забанен. Вручную: `2026-09-27 18:00:00`, не «7 дней» |
-| `ban_reason` | VARCHAR(128) NULL, причина бана |
+| `bank` | INT bank account, default 0 |
+| `lawfulness` | SMALLINT −100…100, new characters start at 100 |
+| `muted_until` | INT UNSIGNED NULL Unix seconds; NULL means no mute |
+| `jail_seconds` | INT UNSIGNED remaining sentence; counts down only while online |
+| `license_car`, `license_moto`, `license_fly`, `license_boat`, `license_gun` | TINYINT license flags |
+| `banned_until` | DATETIME NULL ban end, not a duration |
+| `ban_reason` | VARCHAR(128) NULL ban reason |
 
-В памяти: `Account.bank`, `Account.lawfulness`, `Account.mutedUntil` (мс), `Account.jailSeconds`, `Account.licenses`.
+Runtime account fields: `bank`, `lawfulness`, `mutedUntil` (ms), `jailSeconds`, and `licenses`. `gang_zones` holds the 104 map-cell rectangles and their `org_id`; reseeding does not overwrite capture ownership.
 
-Таблица **`gang_zones`**: клетка карты банд. Seed в том же `schema.sql` (104 строки). Координаты и стартовый владелец из seed; **`org_id` при повторном seed не перезаписывается** (капты).
+Civilian spawn: `1760.25, -1898.83, 13.56` (`spawn/point.ts`). The station heart pickup heals to 100 HP. Worlds: street 0, hospital 1, bank 2, jail 3, jail yard 4.
 
-| Колонка | Смысл |
+## Vehicles and HUD
+
+Create vehicles only with `createServerVehicle`; engine and lights start off in street world. Eleven Faggio (462) scooters (color 191) spawn beside the station and respawn in 100 seconds; no license is required.
+
+Drivers require `license_car` for cars, `license_moto` for motorcycles except Faggio, Pizzaboy, and bicycles, and `license_fly` for helicopters and planes. Passengers do not need licenses. Driving-school exam students may use the school Premier/Wayfarer; see `vehicles/drive-license.ts`.
+
+`Vehicle.useManualEngineAndLights()` disables automatic starting. The driver toggles the engine with Left Ctrl (`KEY_ACTION = 1`) and lights with left mouse button (`KEY_FIRE = 4`); sound 4604 plays only for the driver. Respawn stops the engine and disables lights. A Hunter both fires and toggles lights on left mouse button.
+
+`/limit` applies to a vehicle rather than a player:
+
+| Command | Effect |
 |---|---|
-| `id` | id клетки 0–103 |
-| `min_x` `min_y` `max_x` `max_y` | прямоугольник |
-| `org_id` | текущий владелец (банда 9–13) |
+| `/limit` | show current limit or hint |
+| `/limit [10–200]` | set this vehicle’s km/h limit |
+| `/limit 0` | remove it |
 
----
+Velocity is capped every 100 ms only for limited vehicles. The limiter resets on `vehicleDeath` and `vehicleSpawn`, including `/respcar`; occupied vehicles are not respawned.
 
-## Спавн и мир
+Only the driver sees the lower-right speedometer: live km/h and body HP, static `Fuel 100`, plus `Open / max / E / S / M / L / B`. M and L change green/white; `max` shows the red limit when active.
 
-Гражданский спавн у ЖД ЛС: `1760.25, -1898.83, 13.56` (`spawn/point.ts`).
+## Bank, payday, safe zones, and jail
 
-Пикап сердца у вокзала: лечит до 100 HP.
+The bank uses world 2 and dialogs for balance, cash ↔ bank deposit/withdrawal, and P2P transfer by player ID. The money cap is `2147483647`; teller operations are serialized, including payday and `/givemoney` bank deposits. `/stats` displays balance.
 
-Миры: улица `0`, больница `1`, банк `2`, тюрьма `3`, двор тюрьмы `4`.
+At `:00`, authenticated non-AFK players receive one experience point, organization salary to the bank, +1 lawfulness below 100, and sound 6400. A full account cannot receive salary. Lawfulness starts at 100 and appears in `/stats` and passports.
 
----
+Safe zones are invisible and cover the station, city hall, hospital, mine, and driving school. In street world/interior 0, on-foot players cannot deal damage and health/armor are restored.
 
-## Транспорт
+The Jail icon is near `1810.86, -1576.44, 13.52`. Its service entrance and vehicles are restricted to LSPD, County Police, and FBI. `prison/` defines interior rooms, yard, locker, and controls. `/pult` opens/closes the yard; dialogs are 26–27. `/jail [id] [minutes] [reason]` is admin level 3+, accepts 1–10080 minutes, cannot jail admins, and persists `jail_seconds`. Death, killing, and reconnecting do not clear a sentence. `/unjail [id]` releases online jailed players; see `prison/sentence.ts` and `admin/jail.ts`.
 
-Модуль `vehicles`. Создание только через `createServerVehicle` — двигатель и фары выкл, мир улицы.
+## Reports, mute, and admin commands
 
-### Скутера у ЖД
+`/report` and `/mn` use dialog 20. Its `account.id` cooldown is 30 seconds and survives reconnects; blank submission does not consume it, and mute does not block it. `/ans [id] [text]` is admin 1+, sends the answer to the target and `/alogin` admins, and plays sound 1085 for the target only.
 
-11 × **Faggio (462)**, цвет **191**, угол −90, респавн 100 с. Координата X `1775.908`, Y от `-1933.96` до `-1917.94`. Права не нужны.
+`/mute [id] [minutes] [reason]` is level 2, accepts 1–10080 minutes, cannot mute admins, and writes `muted_until`. It blocks normal chat and `/me /do /try /todo /b /s /w /r /d /gov /f`, not `/report`.
 
-За рулём без лицензии нельзя: авто — `license_car`, мото (кроме Faggio/Pizzaboy и великов) — `license_moto`, вертолёт/самолёт — `license_fly`. Пассажиру лицензия не нужна. На экзамене автошколы ученик может вести Premier/Wayfarer. `vehicles/drive-license.ts`.
+Additional admin commands: `/slap` (1); `/veh`, `/delveh`, `/jail`, `/unjail`, `/tpcor` (3); `/respcar`, `/setskin`, `/ban`, `/unban`, `/tpint` (4); `/makeleader`, `/gzcolor` (5); `/givemoney`, `/setlevel` (6). `/ban` accepts 1–3650 days and blocks login through `banned_until`; `/givemoney` uses 0 cash and 1 bank.
 
-### Двигатель
+## Organizations
 
-`Vehicle.useManualEngineAndLights()` — автозавода нет.
+Army (`org_id = 1`) has 25 base vehicles, 100-second respawn, and member-only access; see `vehicles/army.ts`. Hospital is `org_id = 2`, `gov: true`, color `0xff7a8aff`, has 10 ranks, member-only Ambulance/Maverick/FBI Rancher, and roof logic in `org/hospital-roof.ts`. City Hall is `org_id = 3`, `gov: true`, color `0xffff00ff`, has 10 ranks, `/r`, `/d`, rank-10 `/gov`, member-only vehicles, locker, service entrance, and roof.
 
-За рулём **Left Ctrl** (`KEY_ACTION = 1`): вкл/выкл. Сообщения `Dvigatel' zapushchen.` / `Dvigatel' zaglushen.` Запуск включает фары, глушение гасит. Респавн снова глушит и гасит свет.
-
-### Фары
-
-За рулём **ЛКМ** (`KEY_FIRE = 4`): вкл/выкл в любом состоянии двигателя. Звук **4604** только водителю. На спидометре **L** зелёная, когда горят. Респавн гасит.
-
-На Hunter ЛКМ и стреляет, и переключает фары (как в pawn-образце).
-
-### Ограничитель `/limit`
-
-Лимит висит **на машине**, не на игроке. Следующий водитель тоже ограничен и видит это на HUD.
-
-| Команда | Эффект |
-|---|---|
-| `/limit` | текущий лимит или подсказка |
-| `/limit [10–200]` | км/ч этой машины |
-| `/limit 0` | снять |
-
-Нужно быть за рулём. Скорость по XY режется каждые 100 мс, таймер крутится **только** у машин с лимитом.
-
-Сбрасывается при **взрыве** (`vehicleDeath`) и **респавне** (`vehicleSpawn`, в т.ч. `/respcar`). Занятую машину `/respcar` не респавнит — лимит остаётся.
-
----
-
-## Спидометр
-
-Только **водитель**. Фон справа снизу, как pawn-HUD.
-
-| Строка | Живое / статика |
-|---|---|
-| скорость км/ч | живая |
-| `Fuel 100` | статика (топлива ещё нет) |
-| HP кузова | живое |
-| статусы | Open / max / E / S / M / L / B |
-
-Буквы:
-
-| Метка | Смысл | Сейчас |
+| ID | Organization | File |
 |---|---|---|
-| Open / Lock | двери | всегда Open |
-| max | ограничитель | белый выкл; красное **число км/ч** если `/limit` |
-| E | мало топлива | статика, белая |
-| S | сигналка | статика, белая |
-| M | мотор | зелёная / белая |
-| L | фары | зелёная / белая |
-| B | капот или багажник | статика, белая |
+| 4 | County Police | `org/police.ts` |
+| 5 | LSPD | `org/lspd.ts` |
+| 6 | FBI | `org/fbi.ts` |
+| 7 | Driving School | `org/autoschool.ts` |
+| 8 | Radio Center | `org/radio.ts` |
 
----
+Organizations 4–8 are `gov: true`, `illegal: false`, use `/r`, `/d`, rank-10 `/gov`, and ranks 9–10 staff management. Their vehicle, door, map, and locker modules define access. FBI, LSPD, and County Police share designated service routes and LSPD gates. Locker dialogs: 22 County Police, 23 LSPD, 24 FBI.
 
-## Банк
+Radio Center uses `maps/radio.txt`, world 8, dialog 36 for office/street/roof, camera pickup 367, and member-only News Chopper/Newsvan vehicles. `/ad` costs $500 and queues an announcement; `/edit` lets employees accept or reject it. Accepted broadcasts wait at least 3 minutes and have a 3-minute interval.
 
-Интерьер, отдельный VW **2**. Кассы (пикапы) → диалоги.
+Driving School sells missing licenses through `/selllic [id]` and runs $500 five-question car/motorcycle exams followed by a 29-checkpoint route in the school Premier or Wayfarer. See `modules/autoschool/`.
 
-- Баланс
-- Пополнить / снять (нал ↔ банк)
-- Перевод игроку по id (P2P)
+## Gangs, mafias, and captures
 
-Потолок денег `2147483647`. Касса занята — вторая операция ждёт. Payday и `/givemoney` в банк учитывают занятость кассы.
-
-GPS: **Bank**. В `/stats` виден банковский баланс.
-
----
-
-## Payday и законопослушность
-
-В `:00` (не AFK, авторизован):
-
-1. +1 exp, ап уровня до 100, exp сбрасывается по порогу.
-2. Зарплата органа **на банк**, не в руки. Сообщение `Zarplata … na bankovskiy schet.` Если счёт забит — не капает.
-3. Законопослушность +1, если меньше 100.
-4. Звук **6400** только получившему payday.
-
-`lawfulness`: −100…100, старт 100. В `/stats` и паспорте: `Zakonoposlushnost'`.
-
----
-
-## Сейф-зоны
-
-Невидимые (без GangZone и текста). Пешком нельзя нанести урон; HP/броня откатываются.
-
-Районы: ЖД, мэрия, больница, шахта, автошкола. Только VW улицы, interior 0.
-
----
-
-## Тюрьма
-
-Иконка на карте (слот 4, тип 30) в радиусе ~300 м: `1810.86, -1576.44, 13.52`. GPS: **Тюрьма**.
-
-Служебный вход (пикап **19132**, только LSPD / областная полиция / FBI): улица `1797.87, -1578.79, 14.09` ↔ интерьер VW **3** `-95.76, 2446.23, 1179.32`. Выход: `-95.70, 2448.59, 1179.32` → улица `1800.35, -1578.62, 14.07`. Объекты интерьера из `maps/jail.txt` в этом VW, уличный маппинг участка остаётся на улице.
-
-Внутри (любой, тот же VW **3**): холл `-101.09, 2440.26` ↔ камеры `-92.98, 2437.12`; камеры `-92.95, 2430.61` ↔ спортзал `-101.42, 2425.09`; комната дежурного `-103.09, 2447.47` ↔ кухня `-104.36, 2431.46`. Двор (любой, VW **4**): интерьер `-58.45, 2435.01` ↔ двор `1770.91, -1546.76`.
-
-Комната охраны (только LSPD / областная полиция / FBI): дежурка `-90.12, 2444.77` ↔ охрана `-107.13, 2436.37` (этаж `1186.34`). Оружейка там же (пикап **19134**, диалог **25**): только броня и дубинка. `prison/prison-locker.ts`.
-
-Транспорт у тюрьмы (FBI Truck 528, Enforcer 427, Ranger 599) — улица, респавн 1800 с. Сесть могут **LSPD, областная полиция и FBI**. Чужому: двери закрыты. `vehicles/prison.ts`.
-
-Пульт `/pult` (текст у `-96.09, 2434.69`, только те же органы и только у подсказки): двор открыть/закрыть, камеры — заглушка. Закрытый двор не пускает с интерьера. Диалоги **26–27**. `prison/control.ts`.
-
-`/jail [id] [minuty] [prichina]` — админ **3+**, 1–10080 минут. Админа с `adminLevel >= 1` посадить нельзя. Кто уже сидит — повторно посадить нельзя. Пишется в `jail_seconds`. Случайная камера (20 точек, VW **3**). Скин заключённого: мужской **42**, женский **69**. Смерть, килл и реконнект не сбрасывают срок: снова камера, больница пропускается. Пока срок > 0: холл/камеры, спортзал, кухня, двор (если открыт) — можно; улица, охрана и `/pult` — нельзя. Истекло: улица `1806.36, -1574.08, 13.45`. `/unjail [id]` — выпуск: спавн органа или дефолтный; оффлайн и не сидящий — отказ. `prison/sentence.ts`, `admin/jail.ts`.
-
----
-
-## Репорт и ответ админа
-
-### `/report` и пункт `/mn`
-
-Диалог **20**. Кулдаун **30 с** по `account.id` (реконнект не сбрасывает). Пустое окно кулдаун не тратит. Мут чата **не** блокирует репорт.
-
-Отправитель видит: `Name_Surname[id]: text`  
-Админы с `/alogin`: `Igrok Name_Surname[id] napisal/napisala: text` (пол персонажа).  
-Это **не** `/a`. Цвет `Color.info`.
-
-### `/ans` (админ 1+)
-
-`/ans [id] [tekst]`
-
-Одна строка игроку и всем `/alogin`:
-
-`[A] Administrator Name[id] otvetil/otvetila igroku Name[id]: text`
-
-Цвет админ-чата. Звук **1085** только цели. Дубля, если цель сама админ, нет.
-
----
-
-## Мут чата
-
-`/mute [id] [minuty] [prichina]` — уровень **2**, 1–10080 минут. Админа с `adminLevel >= 1` замутить нельзя. Пишется в `muted_until`.
-
-Блокирует обычный чат и `/me /do /try /todo /b /s /w /r /d /gov /f`. **Не** блокирует `/report`.
-
-По истечении: `Vy snova mozhete pol'zovat'sya chatom.` Таймер + проверка на спавне.
-
----
-
-## Админка v2
-
-Клик по карте и `/ahelp` как в v1. Добавлено:
-
-| Ур. | Команда | Поведение |
+| ID | Gang | Color |
 |---|---|---|
-| 1 | `/ans [id] [tekst]` | ответ на репорт, см. выше |
-| 1 | `/slap [id]` | подкинуть вверх (из машины выкидывает); себя и админов можно; серый лог только админам |
-| 2 | `/mute [id] [min] [prichina]` | мут чата |
-| 3 | `/veh` `/delveh` | создать / удалить админ-машину |
-| 3 | `/jail [id] [min] [prichina]` | посадка в тюрьму, см. выше |
-| 3 | `/unjail [id]` | выпуск из тюрьмы на спавн органа / дефолт |
-| 3 | `/tpcor [x] [y] [z]` | телепорт, VW/interior не сбрасываются; за рулём едет машина |
-| 4 | `/respcar` | через 30 с респавн **пустых** машин; таймер доигрывает, даже если админ вышел |
-| 4 | `/setskin [id] [1–311]` | гражданский скин в БД; скин органа пока в органе |
-| 4 | `/ban [id] [dni] [prichina]` | 1–3650 дней; кик + диалог цели; объявление всем; вход закрыт до `banned_until` |
-| 4 | `/unban [Nick_Name]` | снять бан оффлайн; серый лог только админам |
-| 4 | `/tpint [id]` | телепорт в интерьер по номеру из списка; без id — диалог со страницами |
-| 5 | `/makeleader [id]` | список органов или снять; нужен паспорт; ранг 10 |
-| 5 | `/gzcolor [id]` | владелец гангзоны под ногами; только банды 9–13; во время капта этой клетки нельзя |
-| 6 | `/givemoney [id] [0-1] [summa]` | 0 — нал, 1 — банк; себе можно |
-| 6 | `/setlevel [id] [1–100]` | уровень, exp 0 |
+| 9 | Grove Street | `0x009900aa` |
+| 10 | The Ballas | `0xcc00ffaa` |
+| 11 | Los Santos Vagos | `0xffcd00aa` |
+| 12 | The Rifa | `0x6666ffaa` |
+| 13 | Varios Los Aztecas | `0x00b4e1aa` |
 
-`/kick` без изменений (ур. 2). `/makeadmin` / `/makeleader` как в v1; снятие с органа выкидывает из транспорта органа.
+Gangs spawn in their headquarters, have 10 ranks, organization-colored names/zones, and use `/f`. Ranks 9–10 use `/invite`, `/uninvite`, `/rang`; invitations require a passport, expire after 60 seconds, and require proximity in the same interior/world. Gang vehicles are members-only. See `org/gangs.ts`, `vehicles/gangs.ts`, and `org/gang-doors.ts`.
 
----
+Mafias are LCN (14), Yakuza (15), and Russian Mafia (16): `gov: false`, `illegal: false`, `mafia: true`. They use `/f`, have no turf captures, and share gang staff controls. See `org/mafias.ts`, `vehicles/mafias.ts`, and `org/mafia-doors.ts`.
 
-## Армия: транспорт
+There are 104 east-LS gang cells. Spawn/HQ cells cannot be captured. `/capture` requires gang rank 8+, a living attacker on an enemy cell in street world, and a defender online. One capture lasts 420 seconds. Only attacker-vs-defender kills on that cell score; a strict attacker lead transfers `org_id`. HUD/GPS is visible only to the two gangs. See `zones/turf.ts`, `zones/capture.ts`, and `commands/capture.ts`.
 
-25 единиц у базы, респавн 100 с. Сесть могут **только** члены Армии (`org_id = 1`). Чужому: двери закрыты, `Вы не состоите в армии.` Сняли с органа, пока сидел — выкинет.
+## Commands, dialogs, and sounds
 
-Цвет **173** (оба слота): модели **431, 445, 500**. Остальные `-1` (случайный).
+v2 adds `/report`, `/limit`, staff commands, `/r /f /d /gov`, `/capture`, `/time`, `/lic`, `/selllic`, `/ad`, and `/edit`. `/stats` and `/pass` include bank, lawfulness, and organization.
 
-| Модель | Что |
-|---|---|
-| 425 | Hunter |
-| 470 | Patriot ×10 |
-| 500 | Mesa ×3, цвет 173 |
-| 431 | Bus, цвет 173 |
-| 433 | Barracks ×4 |
-| 445 | Admiral ×2, цвет 173 |
-| 430 | Predator ×3 |
-| 548 | Leviathan |
+Do not reuse dialog IDs: 1–12 v1; 13–19 bank; 20 report; 21 invite; 22–25 lockers; 26–27 jail control; 28–31 licenses; 32–35 exams; 36–39 Radio Center; 40 ban notice; 41 `/tpint`.
 
-Координаты: `vehicles/army.ts`.
+`playGameSound` is Pawn `PlayerPlaySound` and targets one player. IDs: 1083 skin-selection arrows, 1085 `/ans`, 4604 lights, 6400 payday.
 
----
+## Where to edit
 
-## Больница как орган
-
-`org_id = 2`, `gov: true`. Цвет `0xff7a8aff`. Спавн в интерьере больницы. 10 рангов.
-
-Транспорт у входа (Ambulance 416, Maverick 487, FBI Rancher 490) — только члены больницы. Координаты: `vehicles/hospital.ts`.
-
-Крыша ↔ парковка: `org/hospital-roof.ts`.
-
----
-
-## Мэрия
-
-`org_id = 3`, `gov: true`. Цвет `0xffff00ff` (ник и чат). Спавн в интерьере мэрии `3`: `357.3111, 162.1018, 1025.7964`. 10 рангов, каталог: `org/meriya.ts`.
-
-`/r`, `/d`, `/gov` (ранг 10), кадры рангов **9–10** — как у армии и больницы.
-
-Транспорт у здания (Washington 421 ×4, Landstalker 400 ×4, Stretch 409, Maverick 487) — белый цвет **1**, только члены мэрии. Координаты: `vehicles/meriya.ts`.
-
-Склад в интерьере (пикап **19134**, `357.6911, 150.9142, 1025.7891`): броня 100, дубинка 3, Desert Eagle 24 (50 патр.). Только члены мэрии. `org/meriya-locker.ts`.
-
-Служебный вход (пикап **19132**): парковка `1413.03, -1790.49, 15.44` ↔ интерьер `368.42, 194.10, 1008.38`. Крыша: интерьер `350.13, 178.06, 1014.19` ↔ крыша `1445.25, -1803.03, 33.43`. Только члены мэрии. `org/meriya-doors.ts`.
-
----
-
-## Гос. органы 4–8
-
-Все `gov: true`, `illegal: false`. `/r`, `/d`, `/gov` (ранг 10), кадры **9–10**. Спавн на улице, кроме областной полиции (interior **6**), LSPD (interior **10**) и FBI (interior **3**). Общий хелпер: `org/define.ts`.
-
-| id | Имя | Цвет | Файл |
-|---|---|---|---|
-| 4 | Областная полиция | `0x2641feff` | `org/police.ts` |
-| 5 | LSPD | `0x2641feff` | `org/lspd.ts` |
-| 6 | FBI | `0x000080ff` | `org/fbi.ts` |
-| 7 | Автошкола | `0xfff3b0ff` | `org/autoschool.ts` |
-| 8 | Радиоцентр | `0xff8c00ff` | `org/radio.ts` |
-
-Интерьер Радиоцентр: `maps/radio.txt`, VW **8**, interior **0** (кастомный маппинг в небе). Спавн сотрудников: `1429.54, 1071.88, 1058.79`.
-
-Входы (пикап **19132**). Улица `1786.60, -1300.62, 13.56` — диалог **36**: **Ofis** (любой) / **Krysha** (только `org_id = 8`). Интерьер `1433.64, 1056.58, 1058.78` — **Ulica** (любой) / **Krysha** (сотрудники). Крыша `1831.16, -1301.14, 131.73` — **Ulica** / **Ofis** (любой, спуск). Телепорты: офис `1431.72, 1056.67, 1058.78`, улица `1786.61, -1297.97, 13.38`, крыша `1829.10, -1301.09, 131.73`. `org/radio-doors.ts`.
-
-Фотоаппарат (пикап **367**, `1411.84, 1062.79, 1058.91`, VW **8**): только сотрудники, оружие **43**. `org/radio-locker.ts`.
-
-Транспорт Радиоцентр (News Chopper 488 на крыше, Newsvan 582 ×4 у HQ) — цвета **1/152**, только `org_id = 8`. Чужому: двери закрыты. `vehicles/radio.ts`.
-
-`/ad` — любой, диалог **37**, **$500** наличными. Мут блокирует. Одно объявление в очереди. Сотрудникам: `Поступило новое объявление от Name[id]. Введите /edit.` `/edit` (диалоги **38–39**) только у стола `1424.46, 1056.62` (радиус 5 м, VW **8**) или в транспорте Радиоцентра. Принять — в эфир не раньше чем через 3 мин, пауза 3 мин между объявлениями. Отклонить — причина игроку и всем сотрудникам. Эфир: `LS | текст. | Отправил(а) Name[id]` зелёным, вторая строка темнее. `commands/ads.ts`.
-
-Шлагбаум Радиоцентр (модель **968**, `ry` 90→0) у `1739.45, -1309.92, 13.50`. Crouch. Только `org_id = 8`. Стойка 966 уже в `maps/radio.txt`. `org/radio.ts` + `org/gates.ts`.
-
-Вход Автошкола (пикап **19132**, любой): улица `739.04, -1418.46, 13.52` → interior **3** `-2028.73, -105.08, 1035.17`. Выход: `-2026.92, -103.71, 1035.17` → улица `739.00, -1415.03, 13.52`. Парковка: `739.07, -1428.91, 13.90` ↔ `-2029.75, -117.98, 1035.17`. GPS: **Автошкола** `738.83, -1412.74, 13.53`. Иконка (слот 10, тип **55**) в радиусе ~300 м: `741.35, -1417.58, 14.20`. Спавн сотрудников: interior **3** `-2024.38, -114.57, 1035.17`. `org/autoschool-doors.ts`, `org/autoschool-map.ts`.
-
-`/selllic [id]` — любой ранг Автошкола, пешком у стойки `-2031.86, -116.98, 1035.17` (interior **3**, радиус 8 м). Покупатель рядом (10 м, тот же VW/interior). Список только тех лицензий, которых нет; цена наличными в диапазоне: авто $5000–50000, мото $3000–30000, полёты $20000–150000, вода $10000–80000, оружие $15000–100000. Покупатель видит `Сотрудник Name_Surname предлагает вам купить лицензию … за $N` и **Согласиться** / **Отказаться**. TTL 60 с. `commands/selllic.ts`.
-
-Экзамен на авто/мото: красный чекпоинт в interior **3** `-2026.75, -114.34, 1035.17`. Выбор транспорта → краткие ПДД → тест 5 вопросов за **$500** наличными (нужны все верные, иначе `N/5`). После теории — 10 минут, выйти на парковку и сесть в Premier (426) или Wayfarer (586) **автошколы**. Маршрут 29 race-checkpoint со стрелкой; на финише высадка, респавн машины, лицензия в БД. `modules/autoschool/`.
-
-Ранги полиции (4 и 5) общие: `org/police-ranks.ts`.
-
-Транспорт областной полиции у участка Dillimore (Police LS 596 ×7, Ranger 599 ×2, Cheetah 415, Maverick 497, HPV1000 523 ×5) — цвета из спавна, только `org_id = 4`. LSPD сесть не может. `vehicles/police.ts`.
-
-Транспорт LSPD у участка LS (596 ×11, SWAT 601 ×2, Ranger 599 ×3, Enforcer 427 ×2, Cheetah 415 ×2, HPV1000 523 ×6, Maverick 497) — те же цвета, только `org_id = 5`. Областная полиция сесть не может. `vehicles/lspd.ts`.
-
-Транспорт FBI (FBI Rancher 490 ×7, Cheetah 415 ×2, Sultan 560 ×2, Maverick 487) — цвет 0/0, только `org_id = 6`. `vehicles/fbi.ts`.
-
-Транспорт Автошкола у здания (Premier 426 ×5, Wayfarer 586 ×5) — цвет **124**, только `org_id = 7`. После сдачи теории экзамена ученик тоже может сесть в нужный тип. Чужому: двери закрыты. `vehicles/autoschool.ts`.
-
-Иконка FBI (слот 9, тип 30) в радиусе ~300 м: `606.91, -1462.48, 14.44`. GPS: **FBI** `617.45, -1458.59, 14.43`. `org/fbi-map.ts`.
-
-Вход FBI (пикап **19132**, только `org_id = 6`): `607.14, -1458.50, 14.38` ↔ interior **3** `238.68, 140.52, 1003.02`. Выход: `238.59, 139.00, 1003.02` → улица `610.28, -1458.62, 14.38`. `org/fbi-doors.ts`.
-
-Спавн сотрудников FBI в интерьере: `268.09, 188.48, 1008.17`.
-
-Оружейка FBI (пикап **19134**, диалог **24**, только `org_id = 6`): тот же набор, что у полиции, плюс Sniper Rifle **34**, скин SWAT **285** временный. `org/fbi-locker.ts`.
-
-Шлагбаум (модель 968, поднимается поворотом `ry` 90→0) и ворота (19912, вниз как у больницы) у LSPD. Crouch. Открывают **LSPD, областная полиция, FBI**. `org/lspd.ts` + `org/gates.ts`.
-
-Иконка на карте (слот 7, тип 30) в радиусе ~300 м: `632.74, -566.99, 16.34`. GPS: **Областная полиция** `635.69, -571.67, 16.34`.
-
-Иконка LSPD (слот 8, тип 30) в радиусе ~300 м: `1552.90, -1673.35, 16.20`. GPS: **LSPD** `1543.19, -1675.81, 13.56`. `org/lspd-map.ts`.
-
-Вход с улицы (пикап **19132**, любой): `1555.19, -1675.58, 16.20` ↔ interior **10** `246.07, 108.97, 1003.22`. Выход: `246.39, 107.46, 1003.22` → улица `1552.69, -1675.57, 16.20`. `org/lspd-doors.ts`.
-
-Спавн сотрудников LSPD в интерьере: `274.08, 125.26, 1004.62`.
-
-Служебный гараж (LSPD / областная полиция / FBI): интерьер `214.20, 120.77, 999.02` ↔ парковка `1524.75, -1677.83, 5.89`.
-
-Оружейка LSPD (пикап **19134**, диалог **23**, только `org_id = 5`): в аммунации (интерьер **6**, VW **5**) `312.41, -165.58`; лейбл «Патроны: N» из `warehouses`; набор оружия прежний + SWAT **285**. `org/lspd-locker.ts`.
-
-Вход с улицы (пикап **19132**, любой): `626.97, -571.77, 17.92` ↔ interior **6** `246.76, 62.45, 1003.64`. Выход на улицу: `631.64, -571.75, 16.34`.
-
-Служебная парковка (LSPD / областная полиция / FBI): улица `611.07, -583.50, 18.21` ↔ интерьер `242.48, 66.38, 1003.64`.
-
-Крыша (LSPD / областная полиция / FBI): `621.26, -569.20, 26.14` ↔ интерьер `246.40, 88.01, 1003.64`. `org/police-doors.ts`.
-
-Оружейка в интерьере (пикап **19134**, диалог **22**, только `org_id = 4`): броня, дубинка, Deagle, Shotgun, MP5, M4, временный скин SWAT **285** (сбрасывается смертью/релогом). `org/police-locker.ts`.
-
----
-
-## Банды
-
-Пять illegal-органов. Ник и гангзоны — цветом органа. `/f` — общий `Color.radio`. Спавн **в доме** HQ.
-
-| id | Имя | Цвет | HQ |
-|---|---|---|---|
-| 9 | Grove Street | `0x009900aa` | interior 2 VW 9 `2449.47, -1690.28, 1013.51` |
-| 10 | The Ballas | `0xcc00ffaa` | interior 4 VW 10 `224.96, 1158.23, 1082.61` |
-| 11 | Los Santos Vagos | `0xffcd00aa` | interior 5 VW 11 `323.83, 1127.13, 1083.88` |
-| 12 | The Rifa | `0x6666ffaa` | interior 6 VW 12 `-60.69, 1364.61, 1080.22` |
-| 13 | Varios Los Aztecas | `0x00b4e1aa` | interior 2 VW 13 `231.23, 1246.63, 1082.14` |
-
-10 рангов у каждой. Каталог: `org/gangs.ts`.
-
-Входы HQ (пикап **19132**, любой). Свои VW. `org/gang-doors.ts`.
-
-| Банда | Улица ↔ дом |
-|---|---|
-| Grove | `2514.07, -1691.37` ↔ int 2 VW 9 `2468.77, -1698.32` |
-| Ballas | `2022.87, -1120.26` ↔ int 4 VW 10 `221.87, 1140.55` |
-| Vagos | `2756.28, -1182.81` ↔ int 5 VW 11 `318.62, 1114.64` |
-| Rifa | `2787.07, -1926.13` ↔ int 6 VW 12 `-68.84, 1351.37` |
-| Aztecas | `2185.82, -1815.23` ↔ int 2 VW 13 `226.46, 1240.00` |
-
-### Кадры
-
-Ранги **9–10**: `/invite [id]`, `/uninvite [id]`, `/rang [id] [+/-]` (ранг цели 1–9). Инвайт — диалог **21**, 60 с, паспорт обязателен. Себя инвайтить нельзя. Принять можно только в радиусе **10 м**, тот же interior и VW.
-
-### Рации
-
-| Команда | Кто |
-|---|---|
-| `/r` | орган с `illegal: false` и без `mafia`. Банде и мафии — тишина |
-| `/f` | `illegal` (банды) или `mafia`. Гражданскому / гос. — тишина |
-| `/d` | `gov: true` — общий департамент |
-| `/gov` | `gov` и ранг **10** — новость всем |
-
-### Транспорт банд
-
-Только своя банда. Респавн 100 с. `vehicles/gangs.ts`.
-
-| Банда | Состав |
-|---|---|
-| Grove | 5 × Greenwood 492, цвет 86 |
-| Ballas | 7 × Virgo 491, цвет 147 |
-| Aztecas | 5 × Remington 534 + 2 × Blade 536, цвет 165 |
-| Vagos | 1 × Oceanic 467 (6/1) + 4 × Hermes 474 (6/6) |
-| Rifa | 4 × Stallion 439 + 4 × Tahoma 566, цвет 198 |
-
----
-
-## Мафии
-
-Три семьи. Не гос. (`gov: false`) и не банды (`illegal: false`, `mafia: true`). Ник цветом семьи, `/f` — общий `Color.radio`. Капта нет. `/r` `/d` `/gov` — тишина. Кадры рангов **9–10** те же: `/invite` `/uninvite` `/rang`. Каталог: `org/mafias.ts`.
-
-| id | Имя | Цвет | HQ |
-|---|---|---|---|
-| 14 | La Cosa Nostra | `0xff8000ff` | interior 5 VW 14 `1291.59, -833.19, 1085.63` |
-| 15 | Yakuza | `0xcc0000ff` | interior 5 VW 15 `1291.59, -833.19, 1085.63` |
-| 16 | Russkaya mafiya | `0x1a5c6eff` | interior 5 VW 16 `1291.59, -833.19, 1085.63` |
-
-Женский скин на все ранги: LCN **263**, Yakuza **56**, русская **169**.
-
-Ворота LCN (модель **19912**, вниз `60.60`→`55.01`) у `1282.35, -2050.72`. Crouch. Только `org_id = 14`. `org/mafias.ts` + `org/gates.ts`.
-
-У Yakuza три ворот 19912, открываются вниз (crouch). Только члены семьи. `org/mafias.ts` + `org/gates.ts`.
-
-Шлагбаум русской мафии (модель **968**, `ry` −90→0) у `965.55, -942.07, 40.17`. Crouch. Только `org_id = 16`. Стойка 966 уже в `maps/rmMap.txt`. `org/mafias.ts` + `org/gates.ts`.
-
-Транспорт Yakuza у HQ (Stretch 409, Maverick 487, Huntley 579 ×2, Sultan 560 ×4, FCR-900 521 ×4) — цвет **6**, только `org_id = 15`. Чужому: двери закрыты. `vehicles/mafias.ts`.
-
-Транспорт LCN у HQ (Maverick 487, Huntley 579 ×4, Sultan 560 ×4, Stretch 409, FCR-900 521 ×5) — цвет **145**, только `org_id = 14`. Чужому: двери закрыты. `vehicles/mafias.ts`.
-
-Транспорт русской мафии у HQ (FCR-900 521 ×6, Sultan 560 ×4, Maverick 487, Huntley 579 ×5, Stretch 409) — цвет **0**, только `org_id = 16`. Чужому: двери закрыты. `vehicles/mafias.ts`.
-
-GPS: **LCN** `1288.81, -2056.62, 58.63`, **Yakuza** `664.94, -1315.21, 13.45`, **Russkaya mafiya** `962.19, -946.55, 40.29`.
-
-Входы (пикап **19132**, любой) в interior **5** `1299.02, -793.97, 1084.01`, выход `1298.89, -796.61, 1084.01`. VW: LCN **14**, Yakuza **15**, русская **16**. `org/mafia-doors.ts`.
-
-- LCN: улица `1122.71, -2036.99, 69.89` ↔ `1125.11, -2037.00, 69.88`
-- Yakuza: улица `678.36, -1281.72, 13.63` ↔ `675.76, -1281.69, 13.63`
-- Russkaya mafiya: улица `952.56, -909.24, 45.77` ↔ `952.60, -912.13, 45.77`
-
----
-
-## Гангзоны и капт
-
-104 клетки на востоке LS, рисуются цветом владельца. Закрытые чёрные зоны карты — отдельно, не каптятся.
-
-Старт владельцев из seed. Старые id дампа 1–5 при миграции: Aztecas 13, Ballas 10, Vagos 11, Grove 9 (5 тоже Vagos). У Rifa стартовых клеток нет.
-
-Клетки **спавна банд** каптить нельзя (id 7, 25, 67, 74, 90 + клетка, в которую попадает HQ).
-
-### `/capture`
-
-Ранг банды **8+**. Стоять на **чужой** клетке, улица, interior 0, живой (не труп/спек).
-
-- Одновременно один капт на сервер, **420 с**.
-- В сети должен быть хотя бы один член **защищающей** банды.
-- Очко: киллер и жертва оба на **этой** клетке, атака ↔ защита. Тимкилл, суицид, третья банда, другая клетка — нет. Убийство из машины **считается**.
-- Ничья или меньше у атаки — зона остаётся. Строго больше — `org_id` в БД, цвет клетки.
-- Смерть по-прежнему в больницу.
-- Textdraw (время, имена, счёт) и GPS-метка — только двум бандам. Клетка мигает цветом атаки.
-
-Имя района в чате — `zones/district.ts` (zone.inc), по центру клетки.
-
-Админского вкл/выкл каптов нет. `/gzcolor` на клетке во время её капта запрещён.
-
----
-
-## Чат и регистрация
-
-Обычный чат: `Name_Surname[ID] skazal/skazala: text`. Ник цветом органа, текст белый. Гражданский — серый чат без тега цвета.
-
-Регистрация скина: камера Pro-Laps, textdraw `<<<` `SELECT` `>>>`, списки бомжей/хиллбилли по полу (`auth/skins.ts`). Персонаж смотрит в камеру. Стрелки — звук **1083**. SELECT без звука.
-
----
-
-## Команды игрока
-
-К v1 добавлено:
-
-| Команда | Что делает |
-|---|---|
-| `/report` | связь с админами (также из `/mn`) |
-| `/limit [kmh]` | ограничитель этой машины |
-| `/invite` `/uninvite` `/rang` | кадры органа, ранг 9–10 |
-| `/r` `/f` `/d` `/gov` | рации, см. Банды / Мафии |
-| `/capture` | захват гангзоны, ранг банды 8+ |
-| `/time` | часы; если есть мут или срок — оставшееся время; label `Posmotrel(a) na chasy.` |
-| `/lic` | свои лицензии; `/lic [id]` — показать рядом (5 м) |
-| `/selllic [id]` | сотрудник Автошкола продаёт лицензию у стойки |
-| `/ad` | подать объявление ($500 наличными), очередь Радиоцентр |
-| `/edit` | сотрудник Радиоцентр правит объявление в офисе или в своём транспорте |
-
-`/stats` и `/pass`: банк, законопослушность, орган. Диалог `/stats` в той же стилистике, что `/pass` и `/lic`. `/lic`: авто, мото, полёты, вода, оружие (по умолчанию нет).
-
----
-
-## Диалоги
-
-Не занимать занятые id.
-
-| ID | Окно |
-|---|---|
-| 1–12 | как в v1 (auth … makeleader) |
-| 13–19 | банк |
-| 20 | репорт |
-| 21 | инвайт в орган |
-| 22 | оружейка областной полиции |
-| 23 | оружейка LSPD |
-| 24 | оружейка FBI |
-| 25 | оружейка тюрьмы |
-| 26 | пульт тюрьмы `/pult` |
-| 27 | двор тюрьмы открыть/закрыть |
-| 28 | лицензии `/lic` |
-| 29 | `/selllic` список лицензий |
-| 30 | `/selllic` цена |
-| 31 | `/selllic` подтверждение покупателя |
-| 32 | экзамен: авто/мото |
-| 33 | экзамен: правила ПДД |
-| 34 | экзамен: вопрос |
-| 35 | экзамен: результат теста |
-| 36 | Радиоцентр: офис / улица / крыша |
-| 37 | `/ad` текст объявления |
-| 38 | `/edit` правка объявления |
-| 39 | `/edit` причина отклонения |
-| 40 | уведомление о бане |
-| 41 | `/tpint` список интерьеров |
-
----
-
-## Звуки
-
-`playGameSound` = pawn `PlayerPlaySound`. Слышит только тот игрок.
-
-| ID | Когда |
-|---|---|
-| 1083 | стрелки выбора скина |
-| 1085 | игроку при `/ans` |
-| 4604 | водителю при фарах |
-| 6400 | игроку при payday |
-
----
-
-## Куда править
-
-| Задача | Файл |
-|---|---|
-| Скутера / общий спавн машин | `vehicles/index.ts`, `vehicles/spawn.ts` |
-| Лицензии на транспорт | `vehicles/drive-license.ts`, `vehicles/access.ts` |
-| Армейский транспорт | `vehicles/army.ts`, `vehicles/access.ts` |
-| Больница орган / машины | `org/hospital.ts`, `vehicles/hospital.ts` |
-| Мэрия | `org/meriya.ts`, `vehicles/meriya.ts`, `org/meriya-locker.ts`, `org/meriya-doors.ts` |
-| Полиция / LSPD / FBI / автошкола / радио | `org/police.ts`, `org/lspd.ts`, `org/fbi.ts`, `org/autoschool.ts`, `org/radio.ts` |
-| Интерьер Радиоцентр | `maps/radio.txt` |
-| Входы Радиоцентр | `org/radio-doors.ts` |
-| Фотоаппарат Радиоцентр | `org/radio-locker.ts` |
-| Шлагбаум Радиоцентр | `org/radio.ts`, `org/gates.ts` |
-| Вход Автошкола | `org/autoschool-doors.ts` |
-| Иконка Автошкола | `org/autoschool-map.ts` |
-| Машины областной полиции | `vehicles/police.ts` |
-| Машины LSPD | `vehicles/lspd.ts` |
-| Машины FBI | `vehicles/fbi.ts` |
-| Машины Автошкола | `vehicles/autoschool.ts` |
-| Машины Радиоцентр | `vehicles/radio.ts` |
-| Объявления `/ad` `/edit` | `commands/ads.ts` |
-| Бан `/ban` `/unban` | `admin/ban.ts`, `auth/ban.ts` |
-| `/tpint` интерьеры | `admin/tpint.ts`, `admin/interiors.ts` |
-| Машины у тюрьмы | `vehicles/prison.ts` |
-| Иконка FBI | `org/fbi-map.ts` |
-| Вход FBI | `org/fbi-doors.ts` |
-| Оружейка FBI | `org/fbi-locker.ts` |
-| Шлагбаум / ворота LSPD | `org/lspd.ts`, `org/gates.ts` |
-| Иконка областной полиции | `org/police-map.ts` |
-| Иконка LSPD | `org/lspd-map.ts` |
-| Вход LSPD | `org/lspd-doors.ts` |
-| Вход областной полиции | `org/police-doors.ts` |
-| Оружейка областной полиции | `org/police-locker.ts` |
-| Оружейка LSPD | `org/lspd-locker.ts` |
-| Банды | `org/gangs.ts`, `vehicles/gangs.ts` |
-| Мафии | `org/mafias.ts` |
-| Машины мафий | `vehicles/mafias.ts` |
-| Ворота LCN | `org/mafias.ts`, `org/gates.ts` |
-| Ворота Yakuza | `org/mafias.ts`, `org/gates.ts` |
-| Шлагбаум русской мафии | `org/mafias.ts`, `org/gates.ts` |
-| Входы мафий | `org/mafia-doors.ts` |
-| Входы банд | `org/gang-doors.ts` |
-| Инвайт / ранг | `commands/org-staff.ts` |
-| Гангзоны | `zones/turf.ts`, `zones/repository.ts`, `sql/schema.sql` |
-| Капт | `zones/capture.ts`, `zones/capture-hud.ts`, `commands/capture.ts` |
-| `/gzcolor` | `admin/gzcolor.ts` + `admin/catalog.ts` |
-| Районы SA | `zones/district.ts` |
-| Двигатель / фары | `vehicles/spawn.ts` |
-| `/limit` | `vehicles/limit.ts`, `commands/limit.ts` |
-| Спидометр | `hud/speedo.ts` |
-| Банк | `modules/bank/` |
-| `/time` | `commands/time.ts` |
-| `/ans` | `admin/ans.ts` + `admin/catalog.ts` |
-| Мут | `admin/mute.ts`, `chat/mute.ts` |
-| Payday / закон | `payday/index.ts`, `auth/session.ts` |
-| Сейф-зоны | `zones/safe.ts` |
-| Тюрьма (иконка / вход) | `prison/index.ts` |
-| Срок / камеры | `prison/sentence.ts` |
-| `/jail` `/unjail` | `admin/jail.ts` + `admin/catalog.ts` |
-| Оружейка тюрьмы | `prison/prison-locker.ts` |
-| Пульт тюрьмы `/pult` | `prison/control.ts` |
-| Схема БД | `sql/schema.sql` + `auth/repository.ts` |
-| Лицензии `/lic` | `auth/licenses.ts`, `commands/lic.ts` |
-| Продажа лицензий `/selllic` | `commands/selllic.ts` |
-| Экзамен авто/мото | `modules/autoschool/` |
+Use `vehicles/` for vehicle spawning/access, `modules/bank/` for banking, `payday/index.ts` for payday, `prison/` and `admin/jail.ts` for jail, `admin/ans.ts` and `admin/mute.ts` for moderation, `auth/licenses.ts` plus `commands/lic.ts` and `commands/selllic.ts` for licenses, `org/` and `vehicles/` for organizations, `zones/` plus `commands/capture.ts` for territories, and `sql/schema.sql` plus `auth/repository.ts` for persistence.

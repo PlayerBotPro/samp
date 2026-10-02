@@ -53,7 +53,7 @@ export function checkWeapons(player: Player): void {
       return;
     }
 
-    // Клиент стрелял - патронов стало меньше: подтянуть ожидаемое вниз.
+    // Client fired — ammo decreased: lower expected amount.
     if (expected.id > 0 && weaponId === expected.id && ammo >= 0 && ammo < expected.ammo) {
       expected.ammo = ammo;
     }

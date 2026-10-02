@@ -1,6 +1,6 @@
 import { ObjectMp, omp, type Vehicle } from "@omp-node/core";
 
-/** Мигалка на крышу (калибровка Washington 415 в 0,0,0). */
+/** Roof light bar (Washington 415 calibration at 0,0,0). */
 const LIGHT_BAR_MODEL = 19419;
 const DRAW_DISTANCE = 300;
 const OFFSET_X = 0;
@@ -28,7 +28,7 @@ function destroyBar(vehicleIdValue: number): void {
   try {
     object.destroy();
   } catch {
-    // Уже уничтожен.
+    // Already destroyed.
   }
 
   barsByVehicle.delete(vehicleIdValue);

@@ -2,13 +2,13 @@ import { defineGovOrg, defineRanks } from "./define";
 import type { OrgGateDef } from "./types";
 
 export const ORG_RADIO_ID = 8;
-/** Кастомный интерьер Радиоцентра. Улица и крыша остаются VW 0. */
+/** Custom Radio Center interior. Street and roof remain in VW 0. */
 export const RADIO_WORLD = 8;
 export const RADIO_INTERIOR = 0;
 
 export const RADIOCENTR = defineGovOrg(
   ORG_RADIO_ID,
-  "Радиоцентр",
+  "Radio Center",
   0xff8c00ff,
   {
     x: 1429.5406,
@@ -19,16 +19,16 @@ export const RADIOCENTR = defineGovOrg(
     world: RADIO_WORLD,
   },
   defineRanks([
-    { title: "Помощник редакции", male: 250, female: 93, pay: 1700 },
-    { title: "Верстальщик новостей", male: 250, female: 93, pay: 2200 },
-    { title: "Радиотехник", male: 60, female: 93, pay: 2800 },
-    { title: "Журналист", male: 60, female: 93, pay: 3500 },
-    { title: "Старший журналист", male: 170, female: 211, pay: 4300 },
-    { title: "Корректор", male: 188, female: 211, pay: 5200 },
-    { title: "Помощник редактора", male: 188, female: 211, pay: 6300 },
-    { title: "Редактор", male: 187, female: 211, pay: 7600 },
-    { title: "Главный редактор", male: 227, female: 211, pay: 9100 },
-    { title: "Директор радиоцентра", male: 228, female: 150, pay: 11000 },
+    { title: "Editorial Assistant", male: 250, female: 93, pay: 1700 },
+    { title: "News Layout Artist", male: 250, female: 93, pay: 2200 },
+    { title: "Radio Technician", male: 60, female: 93, pay: 2800 },
+    { title: "Journalist", male: 60, female: 93, pay: 3500 },
+    { title: "Senior Journalist", male: 170, female: 211, pay: 4300 },
+    { title: "Proofreader", male: 188, female: 211, pay: 5200 },
+    { title: "Assistant Editor", male: 188, female: 211, pay: 6300 },
+    { title: "Editor", male: 187, female: 211, pay: 7600 },
+    { title: "Editor-in-Chief", male: 227, female: 211, pay: 9100 },
+    { title: "Radio Center Director", male: 228, female: 150, pay: 11000 },
   ])
 );
 
@@ -45,6 +45,6 @@ export const RADIO_GATES: OrgGateDef[] = [
     ryOpen: 0,
     rz: 11.4037,
     radius: 14,
-    denyMessage: "Вы не состоите в радиоцентре.",
+    denyMessage: "You are not a member of the Radio Center.",
   },
 ];

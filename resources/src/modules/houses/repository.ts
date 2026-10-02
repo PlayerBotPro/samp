@@ -496,7 +496,7 @@ export async function forfeitExpiredHouses(): Promise<number[]> {
     return forfeited;
   } catch {
     await conn.rollback();
-    throw new Error("не удалось изъять просроченные дома");
+    throw new Error("failed to repossess overdue houses");
   } finally {
     conn.release();
   }
@@ -529,7 +529,7 @@ async function migrateHousesTable(): Promise<void> {
         "ALTER TABLE houses ADD UNIQUE KEY uq_houses_owner_id (owner_id)"
       );
     } catch {
-      // Уже есть дубликаты owner_id — индекс добавит админ вручную.
+      // Duplicate owner_id values already exist — an admin will add the index manually.
     }
   }
 }
@@ -567,12 +567,12 @@ async function seedHouses(): Promise<void> {
 function loadHousesSeedSql(): string {
   const seedPath = join(process.cwd(), "sql", "houses_seed.sql");
   if (!existsSync(seedPath)) {
-    throw new Error("sql/houses_seed.sql не найден");
+    throw new Error("sql/houses_seed.sql not found");
   }
 
   const sql = readFileSync(seedPath, "utf8").trim();
   if (!sql.toUpperCase().startsWith("INSERT INTO HOUSES")) {
-    throw new Error("seed houses повреждён");
+    throw new Error("houses seed is corrupted");
   }
 
   return sql;

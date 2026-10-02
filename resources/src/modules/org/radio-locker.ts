@@ -15,7 +15,7 @@ const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
 const WEAPON_CAMERA = 43;
 const CAMERA_AMMO = 36;
-const DENY = "Вы не состоите в радиоцентре.";
+const DENY = "You are not a member of the radio station.";
 
 const POINT = {
   x: 1411.8359,
@@ -28,7 +28,7 @@ const inside = new Set<number>();
 export function bindRadioLocker(): void {
   new Pickup(PICKUP_MODEL, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, RADIO_WORLD);
   new TextLabel(
-    "Фотоаппарат",
+    "Camera",
     Color.info,
     POINT.x,
     POINT.y,
@@ -86,7 +86,7 @@ function tickLocker(): void {
       inside.add(id);
       tryTake(player);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -98,7 +98,7 @@ function tryTake(player: Player): void {
   }
 
   if (account.hospitalized) {
-    tell(player, Color.error, "Сначала пройдите лечение в больнице.");
+    tell(player, Color.error, "Complete treatment at the hospital first.");
     return;
   }
 
@@ -111,18 +111,18 @@ function tryTake(player: Player): void {
   try {
     grantWeapon(player, WEAPON_CAMERA, CAMERA_AMMO);
   } catch {
-    tell(player, Color.error, "Не удалось выдать фотоаппарат.");
+    tell(player, Color.error, "Failed to issue a camera.");
     return;
   }
 
-  tell(player, Color.info, "Вы взяли фотоаппарат.");
+  tell(player, Color.info, "You took a camera.");
 }
 
 function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, text);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

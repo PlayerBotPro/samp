@@ -26,7 +26,7 @@ export const GHETTO_DEALER_MENU_DIALOG_ID = 63;
 export const GHETTO_DEALER_BUY_DIALOG_ID = 64;
 
 const DEALER_SKIN = 28;
-const DEALER_NAME = "Смоки";
+const DEALER_NAME = "Smokey";
 const KEY_WALK = 1024;
 const PLAYER_STATE_ONFOOT = 1;
 const DIALOG_STYLE_LIST = 2;
@@ -73,11 +73,11 @@ function spawnDealer(): void {
   actor.setInvulnerable(true);
   dealerActor = actor;
   applyDealerAnimation(actor);
-  // Первый вызов часто только грузит библиотеку — повтор через тик.
+  // The first call often only loads the library — retry on the next tick.
   setTimeout(() => applyDealerAnimation(actor), 250);
 
   new TextLabel(
-    `${DEALER_NAME}\nБарыга`,
+    `${DEALER_NAME}\nDealer`,
     Color.info,
     DEALER.x,
     DEALER.y,
@@ -88,13 +88,13 @@ function spawnDealer(): void {
   );
 }
 
-/** У игрока должна быть загружена библиотека DEALER, иначе анимацию актора не видно. */
+/** The player must have the DEALER library loaded or the actor animation is invisible. */
 function preloadDealerLibrary(player: Player): void {
   try {
     player.applyAnimation("DEALER", "DEALER_IDLE", 4.1, false, false, false, false, 1, ANIM_SYNC_ALL);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Слот ещё не готов / библиотека подтянется на стриме.
+    // Slot not ready yet / library will load while streaming.
   }
 }
 
@@ -103,7 +103,7 @@ function applyDealerAnimation(actor: Actor): void {
     // Actor API: (animName, animLib, ...)
     actor.applyAnimation("DEALER_IDLE", "DEALER", 4.1, true, false, false, false, 0);
   } catch {
-    // Актор ещё не готов.
+    // Actor not ready yet.
   }
 }
 
@@ -195,12 +195,12 @@ function showMenu(player: Player): void {
       GHETTO_DEALER_MENU_DIALOG_ID,
       DIALOG_STYLE_LIST,
       DEALER_NAME,
-      `Купить наркотики\nФорма армии ($${FORM_PRICE})`,
-      "Выбрать",
-      "Отмена"
+      `Buy drugs\nArmy uniform ($${FORM_PRICE})`,
+      "Select",
+      "Cancel"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open dialog.");
   }
 }
 
@@ -229,7 +229,7 @@ function buyArmyForm(player: Player): void {
   }
 
   if (!isNearDealer(player)) {
-    player.sendClientMessage(Color.error, "Подойдите ближе к барыге.");
+    player.sendClientMessage(Color.error, "Move closer to the dealer.");
     return;
   }
 
@@ -244,26 +244,26 @@ function buyArmyForm(player: Player): void {
   }
 
   if (account.jailSeconds > 0) {
-    player.sendClientMessage(Color.error, "В тюрьме форма недоступна.");
+    player.sendClientMessage(Color.error, "The uniform is unavailable in prison.");
     return;
   }
 
   if (isArmyDisguised(player)) {
-    player.sendClientMessage(Color.error, `${DEALER_NAME}: ты уже в форме.`);
+    player.sendClientMessage(Color.error, `${DEALER_NAME}: you are already in uniform.`);
     return;
   }
 
   if (account.money < FORM_PRICE) {
     player.sendClientMessage(
       Color.error,
-      `Недостаточно денег. Нужно $${FORM_PRICE}.`
+      `Insufficient funds. You need $${FORM_PRICE}.`
     );
     return;
   }
 
-  // Сначала форма — иначе при сбое выдачи деньги уже списаны.
+  // Give the uniform first — otherwise money would already be deducted if it fails.
   if (!startArmyDisguise(player)) {
-    player.sendClientMessage(Color.error, "Не удалось выдать форму.");
+    player.sendClientMessage(Color.error, "Failed to issue the uniform.");
     return;
   }
 
@@ -275,16 +275,16 @@ function buyArmyForm(player: Player): void {
   }
 
   void saveUserMoney(account.id, nextMoney, account.bank).catch(() => {
-    // Кэш уже обновлён.
+    // Cache already updated.
   });
 
   player.sendClientMessage(
     Color.info,
-    `${DEALER_NAME}: держи форму за $${FORM_PRICE}. Ворота армии откроются.`
+    `${DEALER_NAME}: here's your uniform for $${FORM_PRICE}. The Army gates will open.`
   );
   player.sendClientMessage(
     Color.gray,
-    "После смерти или выхода форма снимется."
+    "The uniform will be removed after death or disconnecting."
   );
 }
 
@@ -294,13 +294,13 @@ function showBuyDialog(player: Player): void {
       player,
       GHETTO_DEALER_BUY_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Покупка наркотиков",
-      `Сколько штук купить?\nЦена за 1 шт.: $${DRUG_PRICE}`,
-      "Купить",
-      "Отмена"
+      "Buy drugs",
+      `How many units would you like to buy?\nPrice per unit: $${DRUG_PRICE}`,
+      "Buy",
+      "Cancel"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Не удалось открыть диалог.");
+    player.sendClientMessage(Color.error, "Failed to open dialog.");
   }
 }
 
@@ -314,7 +314,7 @@ function onBuyResponse(player: Player, accepted: boolean, rawInput: string): voi
   }
 
   if (!isNearDealer(player)) {
-    player.sendClientMessage(Color.error, "Подойдите ближе к барыге.");
+    player.sendClientMessage(Color.error, "Move closer to the dealer.");
     return;
   }
 
@@ -330,33 +330,33 @@ function onBuyResponse(player: Player, accepted: boolean, rawInput: string): voi
 
   const amount = Math.floor(Number(rawInput.trim().replace(",", ".")));
   if (!Number.isFinite(amount) || amount <= 0 || !Number.isSafeInteger(amount)) {
-    player.sendClientMessage(Color.error, "Введите целое число больше 0.");
+    player.sendClientMessage(Color.error, "Enter an integer greater than 0.");
     showBuyDialog(player);
     return;
   }
 
   if (amount > MAX_BUY) {
-    player.sendClientMessage(Color.error, `За один раз можно купить не больше ${MAX_BUY} шт.`);
+    player.sendClientMessage(Color.error, `You can buy no more than ${MAX_BUY} units at once.`);
     showBuyDialog(player);
     return;
   }
 
   const total = amount * DRUG_PRICE;
   if (!Number.isSafeInteger(total) || total <= 0) {
-    player.sendClientMessage(Color.error, "Слишком большое количество.");
+    player.sendClientMessage(Color.error, "Quantity is too large.");
     showBuyDialog(player);
     return;
   }
 
   if (account.money < total) {
-    player.sendClientMessage(Color.error, `Недостаточно денег. Нужно $${total}.`);
+    player.sendClientMessage(Color.error, `Insufficient funds. You need $${total}.`);
     showBuyDialog(player);
     return;
   }
 
   const nextDrugs = account.drugs + amount;
   if (!Number.isSafeInteger(nextDrugs) || nextDrugs < account.drugs) {
-    player.sendClientMessage(Color.error, "Слишком большое количество.");
+    player.sendClientMessage(Color.error, "Quantity is too large.");
     showBuyDialog(player);
     return;
   }
@@ -372,14 +372,14 @@ function onBuyResponse(player: Player, accepted: boolean, rawInput: string): voi
     saveUserMoney(account.id, nextMoney, account.bank),
     saveUserInventory(account.id, nextDrugs, account.ammo, account.metal),
   ]).catch(() => {
-    // Кэш уже обновлён.
+    // Cache already updated.
   });
 
   player.sendClientMessage(
     Color.info,
-    `${DEALER_NAME}: держи, ${amount} шт. за $${total}.`
+    `${DEALER_NAME}: here are ${amount} units for $${total}.`
   );
-  player.sendClientMessage(Color.white, `Наркотики: ${nextDrugs} шт.`);
+  player.sendClientMessage(Color.white, `Drugs: ${nextDrugs} units.`);
 }
 
 function denyOutsider(player: Player): void {
@@ -395,7 +395,7 @@ function denyOutsider(player: Player): void {
   }
 
   lastDenyAt.set(id, now);
-  player.sendClientMessage(Color.gray, `${DEALER_NAME}: Я работаю только с местными.`);
+  player.sendClientMessage(Color.gray, `${DEALER_NAME}: I only deal with locals.`);
 }
 
 function isGhettoGangMember(player: Player): boolean {

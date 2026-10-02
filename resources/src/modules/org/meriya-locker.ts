@@ -17,7 +17,7 @@ const MAX_ARMOR = 100;
 const WEAPON_NIGHTSTICK = 3;
 const WEAPON_DEAGLE = 24;
 const DEAGLE_AMMO = 50;
-const DENY = "Вы не состоите в мэрии.";
+const DENY = "You are not a member of City Hall.";
 
 const POINT = {
   x: -806.9103,
@@ -30,7 +30,7 @@ const inside = new Set<number>();
 export function bindMeriyaLocker(): void {
   new Pickup(PICKUP_MODEL, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, MERIYA_WORLD);
   new TextLabel(
-    "Склад мэрии\nБроня, дубинка, Deagle",
+    "City Hall Warehouse\nArmor, baton, Deagle",
     Color.info,
     POINT.x,
     POINT.y,
@@ -88,7 +88,7 @@ function tickLocker(): void {
       inside.add(id);
       tryTake(player);
     } catch {
-      // Слот пустой или игрок уже вышел.
+      // Slot is empty or player has already disconnected.
     }
   });
 }
@@ -100,7 +100,7 @@ function tryTake(player: Player): void {
   }
 
   if (account.hospitalized) {
-    tell(player, Color.error, "Сначала пройдите лечение в больнице.");
+    tell(player, Color.error, "Complete treatment at the hospital first.");
     return;
   }
 
@@ -115,18 +115,18 @@ function tryTake(player: Player): void {
     grantWeapon(player, WEAPON_NIGHTSTICK, 1);
     grantWeapon(player, WEAPON_DEAGLE, DEAGLE_AMMO);
   } catch {
-    tell(player, Color.error, "Не удалось выдать снаряжение.");
+    tell(player, Color.error, "Failed to issue equipment.");
     return;
   }
 
-  tell(player, Color.info, "Вы взяли бронежилет, дубинку и Desert Eagle.");
+  tell(player, Color.info, "You took body armor, a baton, and a Desert Eagle.");
 }
 
 function tell(player: Player, color: number, text: string): void {
   try {
     player.sendClientMessage(color, text);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 

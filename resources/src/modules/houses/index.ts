@@ -18,7 +18,7 @@ export const housesModule: GameModule = {
   name: "houses",
   async start() {
     if (!isDatabaseReady()) {
-      omp.log(`[${SERVER_TAG}] дома: нет БД`);
+      omp.log(`[${SERVER_TAG}] houses: no database`);
       return;
     }
 
@@ -30,10 +30,10 @@ export const housesModule: GameModule = {
       bindHouseMenuDialogs();
       bindHouseSellDialog();
       startHouseRentScheduler();
-      omp.log(`[${SERVER_TAG}] дома: загружено ${listHouses().length}`);
+      omp.log(`[${SERVER_TAG}] houses: loaded ${listHouses().length}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] дома: ошибка загрузки — ${message}`);
+      omp.log(`[${SERVER_TAG}] houses: load error — ${message}`);
     }
 
     omp.on("playerSpawn", (player) => {

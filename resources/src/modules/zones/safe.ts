@@ -18,7 +18,7 @@ type Rect = {
   maxY: number;
 };
 
-/** Невидимые сейф-зоны: без GangZone, без текста, без иконки. */
+/** Invisible safe zones: no GangZone, text, or icon. */
 const SAFE_ZONES: readonly Rect[] = [
   { minX: 1684, minY: -1954.5, maxX: 1816, maxY: -1819.5 },
   { minX: 1393, minY: -1763.5, maxX: 1565, maxY: -1721.5 },
@@ -155,7 +155,7 @@ function rememberVitals(player: Player): void {
       armor: Math.max(0, player.getArmor()),
     });
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -186,7 +186,7 @@ function restoreVitals(player: Player, amount: number): void {
       trustHealth(player, next);
     }
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -206,7 +206,7 @@ function playTired(player: Player): void {
   try {
     player.applyAnimation("FAT", "IDLE_tired", 4.1, false, false, false, false, 0, ANIM_SYNC_ALL);
   } catch {
-    // Анимация не проигралась.
+    // Animation did not play.
   }
 }
 
@@ -215,6 +215,6 @@ function preloadTired(player: Player): void {
     player.applyAnimation("FAT", "IDLE_tired", 4.1, false, false, false, false, 1, ANIM_SYNC_ALL);
     player.clearAnimations(ANIM_SYNC_ALL);
   } catch {
-    // Подтянется при первом ударе.
+    // It will load on the first hit.
   }
 }

@@ -8,7 +8,7 @@ export const ORG_VAGOS_ID = 11;
 export const ORG_RIFA_ID = 12;
 export const ORG_AZTECAS_ID = 13;
 
-/** Дома банд — ванильные интерьеры, у каждой свой VW (= org id). */
+/** Gang houses — vanilla interiors, each with its own VW (= org id). */
 export const GROVE_WORLD = 9;
 export const BALLAS_WORLD = 10;
 export const VAGOS_WORLD = 11;
@@ -61,7 +61,7 @@ function defineGang(
   };
 
   if (org.ranks.length !== MAX_ORG_RANK) {
-    throw new Error(`${name}: нужно 10 рангов`);
+    throw new Error(`${name}: 10 ranks required`);
   }
 
   return org;

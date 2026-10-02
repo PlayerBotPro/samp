@@ -65,7 +65,7 @@ function tell(player: Player, color: number, text: string): void {
       player.sendClientMessage(color, clipClientMessage(text));
     }
   } catch {
-    // Слот пустой.
+    // Slot is empty.
   }
 }
 
@@ -154,7 +154,7 @@ function sendToSides(current: CaptureState, color: number, text: string): void {
 }
 
 function scoreLine(orgId: number, kills: number): string {
-  const name = getOrganization(orgId)?.name ?? "Банда";
+  const name = getOrganization(orgId)?.name ?? "Gang";
   return `${name}: ~r~${kills}`;
 }
 
@@ -197,7 +197,7 @@ function showCaptureIcon(player: Player, current: CaptureState): void {
       MAPICON_GLOBAL
     );
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 }
 
@@ -205,7 +205,7 @@ function hideCaptureIcon(player: Player): void {
   try {
     player.removeMapIcon(MAP_ICON_SLOT);
   } catch {
-    // Иконки не было.
+    // Icon did not exist.
   }
 }
 
@@ -213,7 +213,7 @@ function flashTurf(turf: LiveTurf, color: number): void {
   try {
     turf.zone.flashForAll(color);
   } catch {
-    // Зона уже уничтожена.
+    // Zone already destroyed.
   }
 }
 
@@ -222,7 +222,7 @@ function restoreTurf(turf: LiveTurf): void {
     turf.zone.stopFlashForAll();
     turf.zone.showForAll(turfColor(turf.orgId));
   } catch {
-    // Зона уже уничтожена.
+    // Zone already destroyed.
   }
 }
 
@@ -249,7 +249,7 @@ export function refreshCaptureView(player: Player): void {
       turf.zone.showForPlayer(player, turfColor(turf.orgId));
       turf.zone.flashForPlayer(player, turfColor(state.attackerId));
     } catch {
-      // Зона уже уничтожена.
+      // Zone already destroyed.
     }
   }
 
@@ -287,8 +287,8 @@ async function finishCapture(current: CaptureState): Promise<void> {
   clearInterval(current.timer);
 
   const turf = getTurf(current.zoneId);
-  const attackerName = getOrganization(current.attackerId)?.name ?? "Банда";
-  const defenderName = getOrganization(current.defenderId)?.name ?? "Банда";
+  const attackerName = getOrganization(current.attackerId)?.name ?? "Gang";
+  const defenderName = getOrganization(current.defenderId)?.name ?? "Gang";
   let transferred = false;
 
   try {
@@ -308,18 +308,18 @@ async function finishCapture(current: CaptureState): Promise<void> {
       sendToSides(
         current,
         NEWS_COLOR,
-        `${attackerName} захватили территорию у банды ${defenderName} в районе ${current.district}`
+        `${attackerName} captured territory from ${defenderName} in ${current.district}`
       );
     } else {
       sendToSides(
         current,
         NEWS_COLOR,
-        `Попытка ${attackerName} захватить территорию у ${defenderName} провалилась`
+        `${attackerName}'s attempt to capture territory from ${defenderName} failed`
       );
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] капт: ${message}`);
+    omp.log(`[${SERVER_TAG}] capture: ${message}`);
     if (!transferred && turf) {
       restoreTurf(turf);
     }
@@ -354,8 +354,8 @@ function beginCapture(
 ): void {
   const gen = ++generation;
   const district = districtNameAt((turf.minX + turf.maxX) / 2, (turf.minY + turf.maxY) / 2);
-  const attackerName = getOrganization(attackerId)?.name ?? "Банда";
-  const defenderName = getOrganization(defenderId)?.name ?? "Банда";
+  const attackerName = getOrganization(attackerId)?.name ?? "Gang";
+  const defenderName = getOrganization(defenderId)?.name ?? "Gang";
 
   const current: CaptureState = {
     gen,
@@ -380,13 +380,13 @@ function beginCapture(
   sendToSides(
     current,
     NEWS_COLOR,
-    `${attackerName} начали захват территории банды ${defenderName} в районе ${district}`
+    `${attackerName} started capturing ${defenderName}'s territory in ${district}`
   );
-  sendToGang(attackerId, GANG_HINT_COLOR, `${rankTitle} ${playerChatName(player)} инициировал захват`);
+  sendToGang(attackerId, GANG_HINT_COLOR, `${rankTitle} ${playerChatName(player)} initiated a capture`);
   sendToSides(
     current,
     GPS_HINT_COLOR,
-    "Место отмечено на GPS. Отправляйтесь туда и поддержите свою банду"
+    "The location is marked on GPS. Go there and support your gang"
   );
 }
 
@@ -402,12 +402,12 @@ export function tryStartCapture(player: Player): void {
   }
 
   if (membership.rank.id < CAPTURE_MIN_RANK) {
-    tell(player, 0xb4b5b7ff, "Захват доступен с 8 ранга.");
+    tell(player, 0xb4b5b7ff, "Captures are available from rank 8.");
     return;
   }
 
   if (ending) {
-    tell(player, 0xb4b5b7ff, "Уже идёт захват одной из зон. Дождитесь окончания!");
+    tell(player, 0xb4b5b7ff, "A zone capture is already underway. Wait for it to end!");
     return;
   }
 
@@ -416,28 +416,28 @@ export function tryStartCapture(player: Player): void {
     tell(
       player,
       0xb4b5b7ff,
-      "Вы должны находиться на территории банды, которую хотите захватить."
+      "You must be on the gang territory you want to capture."
     );
     return;
   }
 
   if (turf.orgId === membership.org.id) {
-    tell(player, 0xb4b5b7ff, "Эта территория принадлежит вашей банде.");
+    tell(player, 0xb4b5b7ff, "This territory belongs to your gang.");
     return;
   }
 
   if (state) {
-    tell(player, 0xb4b5b7ff, "Уже идёт захват одной из зон. Дождитесь окончания!");
+    tell(player, 0xb4b5b7ff, "A zone capture is already underway. Wait for it to end!");
     return;
   }
 
   if (turf.spawnProtected) {
-    tell(player, 0xb4b5b7ff, "Нельзя начать захват территории спавна банды!");
+    tell(player, 0xb4b5b7ff, "You cannot capture a gang spawn territory!");
     return;
   }
 
   if (!isGangOrgId(turf.orgId)) {
-    tell(player, 0xb4b5b7ff, "Эта территория не принадлежит банде.");
+    tell(player, 0xb4b5b7ff, "This territory does not belong to a gang.");
     return;
   }
 
@@ -445,7 +445,7 @@ export function tryStartCapture(player: Player): void {
     tell(
       player,
       0xb4b5b7ff,
-      "В сети нет членов банды, которая владеет этой территорией."
+      "No members of the gang that owns this territory are online."
     );
     return;
   }
@@ -492,7 +492,7 @@ function scoreCaptureKill(victim: Player, killer: Player): void {
 
 export function startCapture(): void {
   if (!startCaptureHud()) {
-    omp.log(`[${SERVER_TAG}] текстрау каптов не создан`);
+    omp.log(`[${SERVER_TAG}] capture TextDraw was not created`);
   }
 
   omp.on("playerDeath", (player, killer) => {

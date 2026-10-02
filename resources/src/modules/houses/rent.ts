@@ -47,19 +47,19 @@ export function notifyHouseRentReminder(player: Player): void {
     if (daysLeft === 0) {
       player.sendClientMessage(
         Color.error,
-        "Сегодня последний день оплаты дома. Иначе государство заберёт его завтра."
+        "Today is the last day to pay for the house. Otherwise, the state will seize it tomorrow."
       );
-      player.sendClientMessage(Color.gray, "Оплатите жильё в банке.");
+      player.sendClientMessage(Color.gray, "Pay for housing at the bank.");
       return;
     }
 
     player.sendClientMessage(
       Color.tryOk,
-      `До оплаты дома №${house.id} осталось ${daysLeft} ${rentDaysLeftLabel(daysLeft)}.`
+      `${daysLeft} ${rentDaysLeftLabel(daysLeft)} remain to pay for house #${house.id}.`
     );
-    player.sendClientMessage(Color.gray, "Оплатите жильё в банке.");
+    player.sendClientMessage(Color.gray, "Pay for housing at the bank.");
   } catch {
-    // Игрок уже вышел.
+    // The player has already disconnected.
   }
 }
 
@@ -96,7 +96,7 @@ async function runRentForfeiture(source: "startup" | "midnight"): Promise<void> 
     houseIds = await forfeitExpiredHouses();
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] аренда домов (${source}): ${message}`);
+    omp.log(`[${SERVER_TAG}] house rent (${source}): ${message}`);
     return;
   }
 
@@ -104,7 +104,7 @@ async function runRentForfeiture(source: "startup" | "midnight"): Promise<void> 
     return;
   }
 
-  omp.log(`[${SERVER_TAG}] аренда домов (${source}): изъято ${houseIds.length}`);
+  omp.log(`[${SERVER_TAG}] house rent (${source}): seized ${houseIds.length}`);
 
   for (const houseId of houseIds) {
     applyForfeitedHouse(houseId);
@@ -118,15 +118,15 @@ type VacateHouseMessages = {
 
 export function applyForfeitedHouse(houseId: number): void {
   applyHouseVacated(houseId, {
-    insideMessage: `Дом №${houseId} изъят государством за неуплату.`,
-    ownerMessage: `Дом №${houseId} изъят государством за неуплату. Компенсация не выплачивается.`,
+    insideMessage: `House #${houseId} was seized by the state for nonpayment.`,
+    ownerMessage: `House #${houseId} was seized by the state for nonpayment. No compensation is paid.`,
   });
 }
 
 export function applyAdminVacatedHouse(houseId: number): void {
   applyHouseVacated(houseId, {
-    insideMessage: `Дом №${houseId} освобождён администрацией.`,
-    ownerMessage: `Ваш дом №${houseId} продан государству администратором.`,
+    insideMessage: `House #${houseId} was released by an administrator.`,
+    ownerMessage: `An administrator sold your house #${houseId} to the state.`,
   });
 }
 
@@ -190,7 +190,7 @@ function evictPlayersFromHouse(
       refreshStreamForPlayer(player);
       player.sendClientMessage(Color.error, message);
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
   });
 }
@@ -214,7 +214,7 @@ function notifyHouseOwner(ownerId: number, houseId: number, message: string): vo
     try {
       player.sendClientMessage(Color.error, message);
     } catch {
-      // Игрок уже вышел.
+      // The player has already disconnected.
     }
   });
 }

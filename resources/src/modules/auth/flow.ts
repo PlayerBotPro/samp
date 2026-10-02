@@ -125,25 +125,25 @@ export function spawnIntoWorld(player: Player, skin: number): void {
   try {
     writeSpawnInfo(player, useSkin, spawnPoint);
   } catch {
-    // Игрок уже вышел.
+    // Player has already disconnected.
   }
 
   try {
     player.setCameraBehind();
   } catch {
-    // Камера выставится на спавне.
+    // Camera will be set on spawn.
   }
 
   try {
     player.toggleSpectating(false);
   } catch {
-    // Спек уже выключен.
+    // Spectate is already disabled.
   }
 
   try {
     player.toggleControllable(true);
   } catch {
-    // Управление включится на спавне.
+    // Controls will be enabled on spawn.
   }
 
   closeSkinPicker(player);
@@ -162,7 +162,7 @@ export function spawnIntoWorld(player: Player, skin: number): void {
       refreshStreamForPlayer(player);
       player.setCameraBehind();
     } catch {
-      // Спавн уже произошёл при выходе из спека.
+      // Spawn already occurred when leaving spectate.
     }
   }, 80);
 }
@@ -208,7 +208,7 @@ export function holdAtAuth(player: Player): void {
     try {
       player.toggleSpectating(true);
     } catch {
-      // Слот не готов.
+      // Slot is not ready.
     }
   }
 
@@ -235,11 +235,11 @@ export function holdAtAuth(player: Player): void {
 function welcome(player: Player, name: string): void {
   player.sendClientMessage(
     Color.info,
-    `Добро пожаловать на ${SERVER_NAME}, ${name}.`
+    `Welcome to ${SERVER_NAME}, ${name}.`
   );
   player.sendClientMessage(
     Color.white,
-    `[${SERVER_TAG}] Локальный чат, /s /w /me /do /try /todo /b. Напиши /help.`
+    `[${SERVER_TAG}] Local chat, /s /w /me /do /try /todo /b. Type /help.`
   );
 }
 
@@ -260,7 +260,7 @@ function newRegister(name: string): Extract<Pending, { kind: "register" }> {
 export async function beginAuth(player: Player, attempt = 0): Promise<void> {
   if (playerId(player) === null) {
     if (attempt >= 4) {
-      kickLater(player, "Не удалось начать вход. Перезайди.");
+      kickLater(player, "Could not start login. Reconnect.");
       return;
     }
 
@@ -278,14 +278,14 @@ export async function beginAuth(player: Player, attempt = 0): Promise<void> {
     try {
       player.toggleSpectating(true);
     } catch {
-      // Слот не готов.
+      // Slot is not ready.
     }
   }
 
   refreshAuthViewSoon(player);
 
   if (!isDatabaseReady()) {
-    kickLater(player, "База данных недоступна. Попробуй позже.");
+    kickLater(player, "Database is unavailable. Try again later.");
     return;
   }
 
@@ -295,10 +295,10 @@ export async function beginAuth(player: Player, attempt = 0): Promise<void> {
   }
 
   const name = playerName(player);
-  if (name === "Неизвестный" || !isRoleplayName(name)) {
+  if (name === "Unknown" || !isRoleplayName(name)) {
     kickLater(
       player,
-      "Ник должен быть в формате Name_Surname, например John_Doe."
+      "Nickname must use Name_Surname format, for example John_Doe."
     );
     return;
   }
@@ -319,9 +319,9 @@ export async function beginAuth(player: Player, attempt = 0): Promise<void> {
     showRulesDialog(player);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] ошибка входа ${name}: ${message}`);
+    omp.log(`[${SERVER_TAG}] login error for ${name}: ${message}`);
     if (isPlayerActive(player)) {
-      kickLater(player, "Не удалось проверить аккаунт. Попробуй позже.");
+      kickLater(player, "Could not verify account. Try again later.");
     }
   }
 }
@@ -424,7 +424,7 @@ function showRegisterStep(player: Player, state: Extract<Pending, { kind: "regis
     case "confirm":
       showRegisterConfirmDialog(
         player,
-        `Ник: ${state.name}\nПочта: ${state.email}\nПол: ${state.gender ? genderLabel(state.gender) : "-"}\nДата рождения: ${formatBirthDate(state.birthDate)}\nСкин: ${state.skinLabel} (${state.skin})\n\nЗарегистрировать персонажа?`
+        `Nickname: ${state.name}\nEmail: ${state.email}\nGender: ${state.gender ? genderLabel(state.gender) : "-"}\nDate of birth: ${formatBirthDate(state.birthDate)}\nSkin: ${state.skinLabel} (${state.skin})\n\nRegister this character?`
       );
       break;
   }
@@ -446,8 +446,8 @@ function goBack(player: Player, state: Extract<Pending, { kind: "register" }>): 
     kickLater(
       player,
       state.step === "rules"
-        ? "Ты не принял правила сервера."
-        : "Регистрация отменена."
+        ? "You did not accept the server rules."
+        : "Registration cancelled."
     );
     clearPending(player);
     return;
@@ -461,7 +461,7 @@ function goBack(player: Player, state: Extract<Pending, { kind: "register" }>): 
     try {
       prepareAuthView(player);
     } catch {
-      // Камера авторизации не обязательна.
+      // Login camera is optional.
     }
   }
   showRegisterStep(player, state);
@@ -490,7 +490,7 @@ async function finishLogin(player: Player, name: string, password: string): Prom
         await saveUserBan(row.id, resolved.untilUnix, banReason);
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        omp.log(`[${SERVER_TAG}] не удалось сохранить бан ${name}: ${message}`);
+        omp.log(`[${SERVER_TAG}] failed to save ban for ${name}: ${message}`);
       }
     }
 
@@ -502,7 +502,7 @@ async function finishLogin(player: Player, name: string, password: string): Prom
   if (resolved.untilUnix != null) {
     void clearUserBan(row.id).catch((error: unknown) => {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] не удалось очистить истёкший бан ${name}: ${message}`);
+      omp.log(`[${SERVER_TAG}] failed to clear expired ban for ${name}: ${message}`);
     });
   }
 
@@ -518,10 +518,10 @@ async function finishLogin(player: Player, name: string, password: string): Prom
   if (ip) {
     void saveUserLastIp(account.id, ip).catch((error: unknown) => {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] не удалось сохранить last_ip ${account.name}: ${message}`);
+      omp.log(`[${SERVER_TAG}] failed to save last_ip for ${account.name}: ${message}`);
     });
   }
-  omp.log(`[${SERVER_TAG}] ${account.name} авторизовался`);
+  omp.log(`[${SERVER_TAG}] ${account.name} logged in`);
 }
 
 async function finishRegister(
@@ -542,11 +542,11 @@ async function finishRegister(
     try {
       prepareAuthView(player);
     } catch {
-      // Камера авторизации не обязательна.
+      // Login camera is optional.
     }
     state.step = "email";
     setPending(player, state);
-    showEmailDialog(player, state.name, "Эта почта уже занята.");
+    showEmailDialog(player, state.name, "This email is already in use.");
     return;
   }
 
@@ -559,7 +559,7 @@ async function finishRegister(
     try {
       prepareAuthView(player);
     } catch {
-      // Камера авторизации не обязательна.
+      // Login camera is optional.
     }
     state.step = "gender";
     setPending(player, state);
@@ -600,8 +600,8 @@ async function finishRegister(
   applyScore(player, account.level);
   applyWantedLevel(player, account.wantedLevel);
   welcome(player, account.name);
-  player.sendClientMessage(Color.gray, "Персонаж создан. /help — список команд.");
-  omp.log(`[${SERVER_TAG}] ${account.name} зарегистрировался`);
+  player.sendClientMessage(Color.gray, "Character created. /help — command list.");
+  omp.log(`[${SERVER_TAG}] ${account.name} registered`);
 }
 
 async function handleLogin(
@@ -611,13 +611,13 @@ async function handleLogin(
   input: string
 ): Promise<void> {
   if (!ok) {
-    kickLater(player, "Авторизация отменена.");
+    kickLater(player, "Login cancelled.");
     clearPending(player);
     return;
   }
 
   if (!input) {
-    showLoginDialog(player, state.name, "Введи пароль.");
+    showLoginDialog(player, state.name, "Enter your password.");
     return;
   }
 
@@ -631,7 +631,7 @@ async function handleLogin(
     if (error instanceof Error && error.message === "bad-password") {
       state.attempts += 1;
       if (state.attempts >= LOGIN_ATTEMPTS) {
-        kickLater(player, "Слишком много попыток. Перезайди.");
+        kickLater(player, "Too many attempts. Reconnect.");
         clearPending(player);
         return;
       }
@@ -640,14 +640,14 @@ async function handleLogin(
       showLoginDialog(
         player,
         state.name,
-        `Неверный пароль. Осталось попыток: ${LOGIN_ATTEMPTS - state.attempts}.`
+        `Incorrect password. Attempts remaining: ${LOGIN_ATTEMPTS - state.attempts}.`
       );
       return;
     }
 
     const message = error instanceof Error ? error.message : String(error);
-    omp.log(`[${SERVER_TAG}] ошибка авторизации ${state.name}: ${message}`);
-    kickLater(player, "Ошибка авторизации. Попробуй позже.");
+    omp.log(`[${SERVER_TAG}] authorization error for ${state.name}: ${message}`);
+    kickLater(player, "Login error. Try again later.");
     clearPending(player);
   }
 }
@@ -690,13 +690,13 @@ async function handleRegister(
           if (!isSamePlayer(player, id, state.name)) {
             return;
           }
-          showEmailDialog(player, state.name, "Эта почта уже занята.");
+          showEmailDialog(player, state.name, "This email is already in use.");
           return;
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        omp.log(`[${SERVER_TAG}] ошибка проверки почты: ${message}`);
-        kickLater(player, "Не удалось проверить почту. Попробуй позже.");
+        omp.log(`[${SERVER_TAG}] email verification error: ${message}`);
+        kickLater(player, "Could not verify email. Try again later.");
         clearPending(player);
         return;
       }
@@ -728,7 +728,7 @@ async function handleRegister(
 
     case "passwordConfirm": {
       if (input !== state.password) {
-        showPasswordConfirmDialog(player, "Пароли не совпадают.");
+        showPasswordConfirmDialog(player, "Passwords do not match.");
         return;
       }
 
@@ -807,17 +807,17 @@ async function handleRegister(
           try {
             prepareAuthView(player);
           } catch {
-            // Камера авторизации не обязательна.
+            // Login camera is optional.
           }
           state.step = "email";
           setPending(player, state);
-          showEmailDialog(player, state.name, "Эта почта или ник уже заняты.");
+          showEmailDialog(player, state.name, "This email or nickname is already in use.");
           return;
         }
 
         const message = error instanceof Error ? error.message : String(error);
-        omp.log(`[${SERVER_TAG}] ошибка регистрации ${state.name}: ${message}`);
-        kickLater(player, "Не удалось создать персонажа. Попробуй позже.");
+        omp.log(`[${SERVER_TAG}] registration error for ${state.name}: ${message}`);
+        kickLater(player, "Could not create character. Try again later.");
         clearPending(player);
       }
     }

@@ -37,7 +37,7 @@ export const warehouseModule: GameModule = {
   name: "warehouse",
   async start() {
     if (!isDatabaseReady()) {
-      omp.log(`[${SERVER_TAG}] склады: нет БД`);
+      omp.log(`[${SERVER_TAG}] warehouses: no database`);
       return;
     }
 
@@ -46,10 +46,10 @@ export const warehouseModule: GameModule = {
       startMafiaWarehouseDisplays();
       startGangWarehouseDisplays();
       bindOrgWarehouseInteract();
-      omp.log(`[${SERVER_TAG}] склады: загружено ${listWarehouses().length}`);
+      omp.log(`[${SERVER_TAG}] warehouses: loaded ${listWarehouses().length}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      omp.log(`[${SERVER_TAG}] склады: ошибка загрузки — ${message}`);
+      omp.log(`[${SERVER_TAG}] warehouses: load error — ${message}`);
     }
   },
 };
