@@ -11,7 +11,7 @@ import { setInsideHouse } from "./session";
 import { houseVirtualWorld } from "./world";
 
 export function houseLockStatusLabel(isLocked: boolean): string {
-  return isLocked ? "Locked" : "Open";
+  return isLocked ? "已锁定" : "已开放";
 }
 
 export function isHouseOwner(userId: number, house: HouseRecord): boolean {
@@ -66,21 +66,21 @@ export function tryEnterHouse(player: Player, houseId: number): void {
 
   const house = getHouse(houseId);
   if (!house || house.ownerId === null) {
-    player.sendClientMessage(Color.error, "This house is vacant.");
+    player.sendClientMessage(Color.error, "此房屋空置。");
     return;
   }
 
   if (!isNearHouseEntrance(player, houseId)) {
-    player.sendClientMessage(Color.error, "Move closer to the house pickup.");
+    player.sendClientMessage(Color.error, "请靠近房屋拾取点。");
     return;
   }
 
   if (!canEnterHouse(account.id, house)) {
-    player.sendClientMessage(Color.error, "The house is locked.");
+    player.sendClientMessage(Color.error, "房屋已锁定。");
     return;
   }
 
   if (!teleportToHouseInterior(player, house)) {
-    player.sendClientMessage(Color.error, "Could not enter the house.");
+    player.sendClientMessage(Color.error, "无法进入房屋。");
   }
 }

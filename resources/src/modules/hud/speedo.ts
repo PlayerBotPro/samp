@@ -8,7 +8,7 @@ const UPDATE_MS = 500;
 const SPEED_FACTOR = 120.666667;
 
 /** Static: fuel and letters except M. Dynamic: speed, body HP, engine. */
-const STATIC_FUEL = "Fuel 100";
+const STATIC_FUEL = "燃油100";
 
 type SpeedoDraws = {
   speed: TextDraw;
@@ -137,10 +137,10 @@ function hideFor(player: Player, id: number): void {
 }
 
 function statusLine(engineOn: boolean, lightsOn: boolean, limitKmh: number | null): string {
-  const motor = engineOn ? "~g~M" : "~w~M";
-  const lights = lightsOn ? "~g~L" : "~w~L";
-  const limiter = limitKmh ? `~r~${limitKmh}` : "~w~max";
-  return `~g~Open    ${limiter}   ~w~E ~w~S   ${motor} ${lights} ~w~B`;
+  const motor = engineOn ? "~g~发动机" : "~w~发动机";
+  const lights = lightsOn ? "~g~车灯" : "~w~车灯";
+  const limiter = limitKmh ? `~r~${limitKmh}` : "~w~不限";
+  return `~g~已解锁    ${limiter}   ~w~E ~w~S   ${motor} ${lights} ~w~B`;
 }
 
 function driverVehicle(player: Player): Vehicle | null {
@@ -202,7 +202,7 @@ function updateSpeed(player: Player, id: number): void {
   }
 
   try {
-    hud.speed.setString(`${vehicleSpeedKmh(vehicle)} km/h`);
+    hud.speed.setString(`${vehicleSpeedKmh(vehicle)}公里/小时`);
     hud.health.setString(`${vehicleHealth(vehicle)}`);
     hud.status.setString(
       statusLine(isEngineOn(vehicle), isLightsOn(vehicle), getVehicleLimit(vehicle))

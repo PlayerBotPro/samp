@@ -16,7 +16,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "LSPD, county police, and FBI personnel can open this.";
+const DENY = "洛圣都警察局、郡警察局和联邦调查局成员可打开此处。";
 
 type LspdDoor = {
   pickup: { x: number; y: number; z: number; interior: number };
@@ -36,7 +36,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: LSPD_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "LSPD\nEntrance",
+    label: "洛圣都警察局\n入口",
     staffOnly: false,
   },
   {
@@ -49,7 +49,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Exit to street",
+    label: "返回街道",
     staffOnly: false,
   },
   {
@@ -62,7 +62,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Garage\nStaff exit",
+    label: "车库\n员工出口",
     staffOnly: true,
   },
   {
@@ -75,7 +75,7 @@ const DOORS: readonly LspdDoor[] = [
       interior: LSPD_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Garage\nStaff entrance",
+    label: "车库\n员工入口",
     staffOnly: true,
   },
 ];
@@ -152,7 +152,7 @@ function tryUse(player: Player, door: LspdDoor): void {
   if (door.staffOnly) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "You need treatment. Take a bed: /hospital.");
+      deny(player, "你需要治疗，请使用/hospital占用病床。");
       return;
     }
 

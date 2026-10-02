@@ -88,7 +88,7 @@ function spawnInFront(player: Player): { x: number; y: number; z: number; angle:
 export function bindAdminVeh(): void {
   registerCommand(
     "veh",
-    "Create a vehicle in front of you",
+    "在面前生成车辆",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -98,19 +98,19 @@ export function bindAdminVeh(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /veh [id] [color1] [color2] (400-611, colors 0-255)"
+          "用法：/veh [车型ID] [颜色1] [颜色2]（车型400-611，颜色0-255）"
         );
         return;
       }
 
       if (!canSpawn(player)) {
-        player.sendClientMessage(Color.error, "You cannot create a vehicle now.");
+        player.sendClientMessage(Color.error, "现在无法生成车辆。");
         return;
       }
 
       const spot = spawnInFront(player);
       if (!spot) {
-        player.sendClientMessage(Color.error, "Failed to create the vehicle.");
+        player.sendClientMessage(Color.error, "无法生成车辆。");
         return;
       }
 
@@ -127,7 +127,7 @@ export function bindAdminVeh(): void {
       });
 
       if (!vehicle) {
-        player.sendClientMessage(Color.error, "Failed to create the vehicle.");
+        player.sendClientMessage(Color.error, "无法生成车辆。");
         return;
       }
 
@@ -139,7 +139,7 @@ export function bindAdminVeh(): void {
 
       player.sendClientMessage(
         Color.info,
-        `Vehicle created: ${parsed.model} (${parsed.color1}, ${parsed.color2}).`
+        `已生成车辆：${parsed.model}（${parsed.color1}，${parsed.color2}）。`
       );
     },
     true
@@ -147,7 +147,7 @@ export function bindAdminVeh(): void {
 
   registerCommand(
     "delveh",
-    "Delete the vehicle you are in",
+    "删除当前乘坐的车辆",
     (player) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -156,18 +156,18 @@ export function bindAdminVeh(): void {
       let vehicle;
       try {
         if (!player.isInAnyVehicle()) {
-          player.sendClientMessage(Color.error, "You must be in a vehicle.");
+          player.sendClientMessage(Color.error, "你必须在车辆内。");
           return;
         }
 
         vehicle = omp.vehicles.at(player.getVehicleID());
       } catch {
-        player.sendClientMessage(Color.error, "You must be in a vehicle.");
+        player.sendClientMessage(Color.error, "你必须在车辆内。");
         return;
       }
 
       if (!vehicle) {
-        player.sendClientMessage(Color.error, "You must be in a vehicle.");
+        player.sendClientMessage(Color.error, "你必须在车辆内。");
         return;
       }
 
@@ -177,11 +177,11 @@ export function bindAdminVeh(): void {
       try {
         vehicle.destroy();
       } catch {
-        player.sendClientMessage(Color.error, "Failed to delete the vehicle.");
+        player.sendClientMessage(Color.error, "无法删除车辆。");
         return;
       }
 
-      player.sendClientMessage(Color.info, "Vehicle deleted.");
+      player.sendClientMessage(Color.info, "车辆已删除。");
     },
     true
   );

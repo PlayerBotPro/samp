@@ -55,7 +55,7 @@ function findTarget(slot: number): Player | null {
 export function bindAdminSetlevel(): void {
   registerCommand(
     "setlevel",
-    "Set player level",
+    "设置玩家等级",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -65,19 +65,19 @@ export function bindAdminSetlevel(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          `Usage: /setlevel [id] [lvl] (${MIN_PLAYER_LEVEL}-${MAX_LEVEL})`
+          `用法：/setlevel [玩家ID] [等级]（${MIN_PLAYER_LEVEL}-${MAX_LEVEL}）`
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (!getAccount(target)) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
@@ -94,7 +94,7 @@ async function applyLevel(admin: Player, target: Player, level: number): Promise
   }
 
   if (pending.has(account.id)) {
-    admin.sendClientMessage(Color.error, "This player's level is already being changed. Please wait.");
+    admin.sendClientMessage(Color.error, "正在调整该玩家的等级，请稍候。");
     return;
   }
 
@@ -110,7 +110,7 @@ async function applyLevel(admin: Player, target: Player, level: number): Promise
     if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
       admin.sendClientMessage(
         Color.info,
-        `You set level ${level}. The player disconnected; the level was saved.`
+        `已设为${level}级。玩家已断线，等级已保存。`
       );
       return;
     }
@@ -129,17 +129,17 @@ async function applyLevel(admin: Player, target: Player, level: number): Promise
 
     admin.sendClientMessage(
       Color.info,
-      `You set ${targetTag}'s level to ${level}. Experience: 0/${need}.`
+      `你将${targetTag}的等级设为${level}级，经验：0/${need}。`
     );
 
     if (isPlayerActive(target)) {
       target.sendClientMessage(
         Color.info,
-        `Administrator ${adminTag} set your level to ${level}. Experience: 0/${need}.`
+        `管理员${adminTag}将你的等级设为${level}级，经验：0/${need}。`
       );
     }
   } catch {
-    admin.sendClientMessage(Color.error, "Failed to save the level.");
+    admin.sendClientMessage(Color.error, "无法保存等级。");
   } finally {
     pending.delete(account.id);
   }

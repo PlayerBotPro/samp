@@ -18,20 +18,20 @@ type WatchLabel = {
 
 const labels = new Map<number, WatchLabel>();
 
-registerCommand("time", "View time, mute and sentence", (player) => {
+registerCommand("time", "查看时间、禁言和刑期", (player) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Log into your account first.");
+    player.sendClientMessage(Color.error, "请先登录账号。");
     return;
   }
 
-  player.sendClientMessage(Color.info, `Time: ${formatClock()}.`);
+  player.sendClientMessage(Color.info, `时间：${formatClock()}。`);
 
   const muteLeft = remainingMuteMs(player);
   if (muteLeft !== null) {
     player.sendClientMessage(
       Color.error,
-      `You are muted. Remaining: ${formatMuteLeft(muteLeft)}.`
+      `你已被禁言，剩余时间：${formatMuteLeft(muteLeft)}。`
     );
   }
 
@@ -39,12 +39,12 @@ registerCommand("time", "View time, mute and sentence", (player) => {
     const left = getAccount(player)?.jailSeconds ?? 0;
     player.sendClientMessage(
       Color.error,
-      `You are in prison. Remaining: ${formatMuteLeft(left * 1000)}.`
+      `你正在服刑，剩余时间：${formatMuteLeft(left * 1000)}。`
     );
   }
 
-  const verb = byGender(account.gender, "Looked", "Looked");
-  showWatchLabel(player, `${verb} at their watch.`);
+  const verb = byGender(account.gender, "看", "看");
+  showWatchLabel(player, `${verb}了看手表。`);
 });
 
 export function bindTimeLabels(): void {

@@ -13,7 +13,7 @@ export function normalizeEmail(raw: string): string {
 
 export function emailError(email: string): string | null {
   if (email.length < 6 || email.length > 255 || !EMAIL_RE.test(email)) {
-    return "Enter an email like name@example.com";
+    return "请输入邮箱，例如name@example.com";
   }
 
   return null;
@@ -21,11 +21,11 @@ export function emailError(email: string): string | null {
 
 export function passwordError(password: string): string | null {
   if (password.length < 6 || password.length > 32) {
-    return "Password: 6 to 32 characters";
+    return "密码长度须为6至32个字符";
   }
 
   if (/\s/.test(password)) {
-    return "Password must not contain spaces";
+    return "密码不能包含空格";
   }
 
   return null;
@@ -34,7 +34,7 @@ export function passwordError(password: string): string | null {
 export function parseBirthDate(raw: string): { iso: string } | { error: string } {
   const match = raw.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
   if (!match) {
-    return { error: "Date must be in DD.MM.YYYY format, e.g. 15.04.1998" };
+    return { error: "日期须使用日.月.年格式，例如15.04.1998" };
   }
 
   const day = Number(match[1]);
@@ -47,16 +47,16 @@ export function parseBirthDate(raw: string): { iso: string } | { error: string }
     date.getMonth() !== month - 1 ||
     date.getDate() !== day
   ) {
-    return { error: "This date does not exist" };
+    return { error: "此日期不存在" };
   }
 
   const age = ageOn(date, new Date());
   if (age < MIN_AGE) {
-    return { error: `Registration is available from age ${MIN_AGE}` };
+    return { error: `年满${MIN_AGE}岁才可注册` };
   }
 
   if (age > MAX_AGE) {
-    return { error: "Check your date of birth" };
+    return { error: "请检查出生日期" };
   }
 
   const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;

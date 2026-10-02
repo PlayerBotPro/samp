@@ -70,7 +70,7 @@ function payPlayer(player: Player, clock: string): void {
   const need = expForNextLevel(next.level);
   playPaydaySound(player);
   tell(player, Color.info, clock);
-  tell(player, Color.white, `Experience points ${next.exp}/${need}`);
+  tell(player, Color.white, `经验值${next.exp}/${need}`);
 
   const salary = orgPaydayPay(account);
   if (salary) {
@@ -85,8 +85,8 @@ function payPlayer(player: Player, clock: string): void {
       player,
       Color.tryOk,
       credited > 0
-        ? `${salary.orgName} salary (${salary.rankTitle}): $${credited} deposited to your bank account.`
-        : `Salary not credited: your bank account is full.`
+        ? `${salary.orgName}工资（${salary.rankTitle}）：$${credited}已存入银行账户。`
+        : `工资未到账：银行账户余额已达上限。`
     );
   }
 
@@ -94,7 +94,7 @@ function payPlayer(player: Player, clock: string): void {
     tell(
       player,
       Color.tryOk,
-      `Congratulations, your game level has increased to ${next.level}.`
+      `恭喜，你的游戏等级提升至${next.level}级。`
     );
   }
 }

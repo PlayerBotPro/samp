@@ -3,10 +3,10 @@ import { CHAT_MAX_LENGTH, CHAT_RADIUS, sanitizeChatText, sendNearby } from "../.
 import { playerName } from "../../shared/player";
 import { registerCommand } from "./registry";
 
-registerCommand("me", "Third-person action or emotion", (player, args) => {
+registerCommand("me", "第三人称动作或情绪", (player, args) => {
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Usage: /me [action]");
+    player.sendClientMessage(Color.error, "用法：/me [动作]");
     return;
   }
 

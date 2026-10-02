@@ -129,7 +129,7 @@ function spawnPickups(): void {
     ARMY_FACTORY_WORLD
   );
   new TextLabel(
-    "Ammunition Workshop\nLocker Room",
+    "弹药车间\n更衣室",
     Color.info,
     HIRE_POINT.x,
     HIRE_POINT.y,
@@ -149,7 +149,7 @@ function spawnPickups(): void {
       ARMY_FACTORY_WORLD
     );
     new TextLabel(
-      "Blanks\nCasings",
+      "毛坯\n弹壳",
       Color.info,
       point.x,
       point.y,
@@ -170,7 +170,7 @@ function spawnPickups(): void {
       ARMY_FACTORY_WORLD
     );
     new TextLabel(
-      "Machine\nAmmunition Assembly",
+      "机器\n弹药组装",
       Color.info,
       bench.pickup.x,
       bench.pickup.y,
@@ -191,7 +191,7 @@ function spawnPickups(): void {
       ARMY_FACTORY_WORLD
     );
     new TextLabel(
-      "Warehouse\nFinished Ammunition",
+      "仓库\n成品弹药",
       Color.info,
       point.x,
       point.y,
@@ -319,7 +319,7 @@ function onHirePickup(player: Player, job: Job | undefined): void {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (membership?.org.id !== ORG_ARMY_ID) {
-    player.sendClientMessage(Color.error, "Workshop work is only available to Army personnel.");
+    player.sendClientMessage(Color.error, "仅军队成员可在车间工作。");
     return;
   }
 
@@ -328,12 +328,12 @@ function onHirePickup(player: Player, job: Job | undefined): void {
 
 function onBlankPickup(player: Player, job: Job | undefined): void {
   if (!job) {
-    player.sendClientMessage(Color.error, "Start your shift at the locker room first.");
+    player.sendClientMessage(Color.error, "请先在更衣室开始工作。");
     return;
   }
 
   if (job.phase === "blank") {
-    player.sendClientMessage(Color.error, "You already have a casing blank.");
+    player.sendClientMessage(Color.error, "你已有弹壳毛坯。");
     return;
   }
 
@@ -341,8 +341,8 @@ function onBlankPickup(player: Player, job: Job | undefined): void {
     player.sendClientMessage(
       Color.error,
       job.phase === "product"
-        ? "Deliver the finished ammunition to the warehouse first."
-        : "Wait for the assembly to finish."
+        ? "请先将成品弹药送至仓库。"
+        : "请等待组装完成。"
     );
     return;
   }
@@ -351,7 +351,7 @@ function onBlankPickup(player: Player, job: Job | undefined): void {
   giveCarry(player, BLANK_ATTACH_MODEL);
   player.sendClientMessage(
     Color.info,
-    "You took a casing blank. Take it to an assembly machine."
+    "你领取了弹壳毛坯，请送到组装机器处。"
   );
 }
 
@@ -361,7 +361,7 @@ function onBenchPickup(
   benchIndex: number
 ): void {
   if (!job) {
-    player.sendClientMessage(Color.error, "Start your shift at the locker room first.");
+    player.sendClientMessage(Color.error, "请先在更衣室开始工作。");
     return;
   }
 
@@ -373,8 +373,8 @@ function onBenchPickup(
     player.sendClientMessage(
       Color.error,
       job.phase === "product"
-        ? "The ammunition is assembled - take it to the warehouse."
-        : "Take a casing blank from a yellow pickup."
+        ? "弹药已组装完成，请送至仓库。"
+        : "请从黄色拾取点领取弹壳毛坯。"
     );
     return;
   }
@@ -389,7 +389,7 @@ function onBenchPickup(
 
 function onStockPickup(player: Player, job: Job | undefined): void {
   if (!job) {
-    player.sendClientMessage(Color.error, "Start your shift at the locker room first.");
+    player.sendClientMessage(Color.error, "请先在更衣室开始工作。");
     return;
   }
 
@@ -397,8 +397,8 @@ function onStockPickup(player: Player, job: Job | undefined): void {
     player.sendClientMessage(
       Color.error,
       job.phase === "blank"
-        ? "Assemble the ammunition on a machine first."
-        : "You do not have finished ammunition."
+        ? "请先在机器上组装弹药。"
+        : "你没有成品弹药。"
     );
     return;
   }
@@ -413,7 +413,7 @@ function onStockPickup(player: Player, job: Job | undefined): void {
 
   player.sendClientMessage(
     Color.info,
-    `Batch delivered to the Army warehouse (+${AMMO_PER_BOX} ammunition). Batches completed: ${job.delivered}.`
+    `已将本批弹药送至军队仓库（+${AMMO_PER_BOX}弹药），已完成${job.delivered}批。`
   );
 }
 
@@ -481,7 +481,7 @@ function startCraft(
     cancelCraft(player, job, true);
     job.phase = "blank";
     giveCarry(player, BLANK_ATTACH_MODEL);
-    player.sendClientMessage(Color.error, "The machine is unavailable; try again.");
+    player.sendClientMessage(Color.error, "机器不可用，请重试。");
     return;
   }
 
@@ -526,7 +526,7 @@ function finishCraft(player: Player, expectedId: number): void {
     job.defects += 1;
     player.sendClientMessage(
       Color.error,
-      "Defect: the casings cracked. Take a new blank."
+      "次品：弹壳破裂，请领取新的毛坯。"
     );
     return;
   }
@@ -535,7 +535,7 @@ function finishCraft(player: Player, expectedId: number): void {
   giveCarry(player, BLANK_ATTACH_MODEL);
   player.sendClientMessage(
     Color.info,
-    "Ammunition assembled. Take the box to the finished-goods warehouse."
+    "弹药组装完成，请将箱子送到成品仓库。"
   );
 }
 
@@ -555,33 +555,33 @@ function hire(player: Player): void {
   }
 
   if (account.hospitalized) {
-    player.sendClientMessage(Color.error, "Finish treatment first.");
+    player.sendClientMessage(Color.error, "请先完成治疗。");
     return;
   }
 
   if (isJailed(player)) {
-    player.sendClientMessage(Color.error, "You cannot work in prison.");
+    player.sendClientMessage(Color.error, "监禁期间无法工作。");
     return;
   }
 
   if (isMinerOnShift(player) || isLoaderOnShift(player)) {
-    player.sendClientMessage(Color.error, "Finish your other job first.");
+    player.sendClientMessage(Color.error, "请先结束其他工作。");
     return;
   }
 
   if (getExam(player)) {
-    player.sendClientMessage(Color.error, "Finish your driving-school exam first.");
+    player.sendClientMessage(Color.error, "请先完成驾校考试。");
     return;
   }
 
   const membership = getMembership(account);
   if (membership?.org.id !== ORG_ARMY_ID) {
-    player.sendClientMessage(Color.error, "Workshop work is only available to Army personnel.");
+    player.sendClientMessage(Color.error, "仅军队成员可在车间工作。");
     return;
   }
 
   if (!isInFactoryOnFoot(player) || !near(player.getPos(), HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Move closer to the workshop locker room.");
+    player.sendClientMessage(Color.error, "请靠近车间更衣室。");
     return;
   }
 
@@ -604,11 +604,11 @@ function hire(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    "Ammunition workshop shift started. Take a casing blank and assemble a batch at a machine."
+    "弹药车间工作已开始，请领取弹壳毛坯并在机器上组装。"
   );
   player.sendClientMessage(
     Color.info,
-    "Deliver finished ammunition to the warehouse. End the shift at the locker room."
+    "请将成品弹药送至仓库，在更衣室结束工作。"
   );
 }
 
@@ -629,7 +629,7 @@ function finishShift(
         !isInFactoryOnFoot(player) ||
         !near(player.getPos(), HIRE_POINT, PICKUP_RADIUS + 0.8)
       ) {
-        player.sendClientMessage(Color.error, "Move closer to the workshop locker room.");
+        player.sendClientMessage(Color.error, "请靠近车间更衣室。");
         return;
       }
     } catch {
@@ -663,8 +663,8 @@ function finishShift(
     player.sendClientMessage(
       Color.info,
       salary > 0
-        ? `You left the factory. Shift closed. Pay: $${salary}.`
-        : "You left the factory. Shift closed."
+        ? `你离开了工厂，工作已结束，报酬：$${salary}。`
+        : "你离开了工厂，工作已结束。"
     );
     return;
   }
@@ -672,10 +672,10 @@ function finishShift(
   if (delivered > 0 || defects > 0) {
     player.sendClientMessage(
       Color.info,
-      `Shift ended. Batches: ${delivered}, defects: ${defects}. Pay: $${salary}.`
+      `工作结束。批次：${delivered}，次品：${defects}，报酬：$${salary}。`
     );
   } else {
-    player.sendClientMessage(Color.info, "Shift ended. You earned nothing.");
+    player.sendClientMessage(Color.info, "工作结束，没有获得报酬。");
   }
 }
 
@@ -695,7 +695,7 @@ function abortShift(player: Player, notify: boolean): void {
   if (notify && isPlayerActive(player)) {
     player.sendClientMessage(
       Color.error,
-      "Shift interrupted. Unpaid wages were forfeited."
+      "工作中断，未领取的工资已作废。"
     );
   }
 }
@@ -822,13 +822,13 @@ function showHireDialog(player: Player): void {
       player,
       ARMY_FACTORY_HIRE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Ammunition Workshop",
-      "Change clothes and start a shift in the ammunition workshop?",
-      "Yes",
-      "No"
+      "弹药车间",
+      "换上工作服并开始在弹药车间工作？",
+      "是",
+      "否"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -839,13 +839,13 @@ function showQuitDialog(player: Player, job: Job): void {
       player,
       ARMY_FACTORY_QUIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Ammunition Workshop",
-      `End shift and collect pay?\nBatches: ${job.delivered}, defects: ${job.defects}, payable: $${salary}`,
-      "Yes",
-      "No"
+      "弹药车间",
+      `结束工作并领取工资？\n批次：${job.delivered}，次品：${job.defects}，可领取：$${salary}`,
+      "是",
+      "否"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 

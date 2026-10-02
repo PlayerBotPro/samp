@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@omp-node/core": "^0.4.4",
+    "iconv-lite": "^0.7.3",
     "mysql2": "^3.24.4"
   },
   "devDependencies": {
+    "@types/iconv-lite": "^0.0.1",
     "@types/node": "^22.20.2",
     "esbuild": "^0.28.2",
     "typescript": "^7.0.2"

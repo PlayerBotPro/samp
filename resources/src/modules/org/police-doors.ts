@@ -22,8 +22,8 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "LSPD, county police, and FBI personnel can open this.";
-const DENY_AMMUNATION = "County police and FBI personnel can enter the ammunation.";
+const DENY = "洛圣都警察局、郡警察局和联邦调查局成员可打开此处。";
+const DENY_AMMUNATION = "郡警察局和联邦调查局成员可进入武器店。";
 const AMMUNATION_ALLOWED = [ORG_POLICE_ID, ORG_FBI_ID] as const;
 
 type DestKey = "office" | "parking" | "ammunation" | "roof";
@@ -102,7 +102,7 @@ const DOORS: readonly PoliceDoor[] = [
       interior: POLICE_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "County Police\nEntrance",
+    label: "郡警察局\n入口",
     staffOnly: false,
   },
   {
@@ -122,14 +122,14 @@ const DOORS: readonly PoliceDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Exit to street",
+    label: "返回街道",
     staffOnly: false,
   },
   {
     kind: "parkingIn",
     pickup: { x: 611.0726, y: -583.5037, z: 18.2109, interior: 0, world: STREET_WORLD },
     dest: OFFICE_FROM_PARKING,
-    label: "Parking\nStaff entrance",
+    label: "停车场\n员工入口",
     staffOnly: true,
   },
   {
@@ -142,17 +142,17 @@ const DOORS: readonly PoliceDoor[] = [
       world: STREET_WORLD,
     },
     dest: PARKING_STREET,
-    label: "Parking\nStaff exit",
+    label: "停车场\n员工出口",
     staffOnly: true,
   },
   {
     kind: "roofMenu",
     pickup: { x: 621.258, y: -569.2031, z: 26.1432, interior: 0, world: STREET_WORLD },
-    label: "Police\nRoof",
+    label: "警察局\n屋顶",
     staffOnly: true,
     options: [
-      { key: "office", label: "1. Office" },
-      { key: "ammunation", label: "2. Ammunation" },
+      { key: "office", label: "1. 办公室" },
+      { key: "ammunation", label: "2. 武器店" },
     ],
   },
   {
@@ -164,11 +164,11 @@ const DOORS: readonly PoliceDoor[] = [
       interior: POLICE_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Roof\nAmmunation",
+    label: "屋顶\n武器店",
     staffOnly: true,
     options: [
-      { key: "roof", label: "1. Roof" },
-      { key: "ammunation", label: "2. Ammunation" },
+      { key: "roof", label: "1. 屋顶" },
+      { key: "ammunation", label: "2. 武器店" },
     ],
   },
   {
@@ -180,12 +180,12 @@ const DOORS: readonly PoliceDoor[] = [
       interior: AMMUNATION_INTERIOR,
       world: ORG_POLICE_ID,
     },
-    label: "Exit",
-    dialogTitle: "Exit",
+    label: "退出",
+    dialogTitle: "退出",
     staffOnly: false,
     options: [
-      { key: "roof", label: "1. Roof" },
-      { key: "office", label: "2. Office" },
+      { key: "roof", label: "1. 屋顶" },
+      { key: "office", label: "2. 办公室" },
     ],
   },
 ];
@@ -340,14 +340,14 @@ function openMenu(player: Player, door: PoliceDoor): void {
       player,
       POLICE_SERVICE_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      door.dialogTitle ?? "Staff exit",
+      door.dialogTitle ?? "员工出口",
       door.options.map((option) => option.label).join("\n"),
-      "Select",
-      "Cancel"
+      "选择",
+      "取消"
     );
   } catch {
     pending.delete(id);
-    deny(player, "Failed to open the menu.");
+    deny(player, "无法打开菜单。");
   }
 }
 
@@ -355,7 +355,7 @@ function canUseStaffDoor(player: Player, tellDeny: boolean): boolean {
   const account = getAccount(player);
   if (account?.hospitalized) {
     if (tellDeny) {
-      deny(player, "You need treatment. Take a bed: /hospital.");
+      deny(player, "你需要治疗，请使用/hospital占用病床。");
     }
     return false;
   }

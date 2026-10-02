@@ -2,9 +2,9 @@ import type { Player } from "@omp-node/core";
 
 export function playerName(player: Player): string {
   try {
-    return player.getName().name || "Unknown";
+    return player.getName().name || "未知";
   } catch {
-    return "Unknown";
+    return "未知";
   }
 }
 

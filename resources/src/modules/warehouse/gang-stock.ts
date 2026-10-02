@@ -91,12 +91,12 @@ function stockLabelText(orgId: number): string {
   const ammo = wh?.ammo ?? 0;
   const metal = wh?.metal ?? 0;
   const drugs = wh?.drugs ?? 0;
-  const status = wh && !wh.isLocked ? "Warehouse open" : "Warehouse locked";
+  const status = wh && !wh.isLocked ? "仓库已开放" : "仓库已锁定";
 
   return (
-    `Ammunition: ${ammo}\n` +
-    `Metal: ${metal}\n` +
-    `Drugs: ${drugs}\n\n` +
+    `弹药：${ammo}\n` +
+    `金属：${metal}\n` +
+    `毒品：${drugs}\n\n` +
     status
   );
 }

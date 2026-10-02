@@ -67,61 +67,61 @@ function defineMafia(
 
 export const LCN = defineMafia(
   ORG_LCN_ID,
-  "La Cosa Nostra",
+  "科萨诺斯特拉",
   0xff8000ff,
   mafiaHqSpawn(LCN_WORLD),
   263,
   [
-    { title: "Novizio", male: 119 },
-    { title: "Associato", male: 119 },
-    { title: "Picciotto", male: 43 },
-    { title: "Uomo d'Onore", male: 290 },
-    { title: "Soldato", male: 127 },
-    { title: "Capodecina", male: 127 },
-    { title: "Capo", male: 113 },
-    { title: "Consigliere", male: 113 },
-    { title: "Sottocapo", male: 223 },
-    { title: "Don", male: 223 },
+    { title: "新人", male: 119 },
+    { title: "关联成员", male: 119 },
+    { title: "跑腿", male: 43 },
+    { title: "荣誉成员", male: 290 },
+    { title: "士兵", male: 127 },
+    { title: "十人队长", male: 127 },
+    { title: "头目", male: 113 },
+    { title: "顾问", male: 113 },
+    { title: "副首领", male: 223 },
+    { title: "教父", male: 223 },
   ]
 );
 
 export const YAKUZA = defineMafia(
   ORG_YAKUZA_ID,
-  "Yakuza",
+  "山口组",
   0xcc0000ff,
   mafiaHqSpawn(YAKUZA_WORLD),
   56,
   [
-    { title: "Vakasyu", male: 121 },
-    { title: "Syatey", male: 122 },
-    { title: "Kobun", male: 123 },
-    { title: "Syameygasira", male: 117 },
-    { title: "Vakagasira", male: 118 },
-    { title: "So-honbute", male: 124 },
-    { title: "Sayko-Komon", male: 208 },
-    { title: "Kambu", male: 120 },
-    { title: "Oyadzi", male: 186 },
-    { title: "Kumityo", male: 294 },
+    { title: "若众", male: 121 },
+    { title: "舍弟", male: 122 },
+    { title: "子分", male: 123 },
+    { title: "舍弟头", male: 117 },
+    { title: "若头", male: 118 },
+    { title: "总本部成员", male: 124 },
+    { title: "最高顾问", male: 208 },
+    { title: "干部", male: 120 },
+    { title: "亲父", male: 186 },
+    { title: "组长", male: 294 },
   ]
 );
 
 export const RUSSIAN_MAFIA = defineMafia(
   ORG_RUSSIAN_MAFIA_ID,
-  "Russian Mafia",
+  "俄罗斯黑手党",
   0x1a5c6eff,
   mafiaHqSpawn(RUSSIAN_MAFIA_WORLD),
   169,
   [
-    { title: "Runner", male: 112 },
-    { title: "Hood", male: 112 },
-    { title: "Brother", male: 272 },
-    { title: "Enforcer", male: 272 },
-    { title: "Authority", male: 126 },
-    { title: "Deputy Brigadier", male: 125 },
-    { title: "Brigadier", male: 111 },
-    { title: "Overseer", male: 98 },
-    { title: "Made Man", male: 46 },
-    { title: "Thief-in-Law", male: 46 },
+    { title: "跑步女子", male: 112 },
+    { title: "混混", male: 112 },
+    { title: "兄弟", male: 272 },
+    { title: "打手", male: 272 },
+    { title: "权威成员", male: 126 },
+    { title: "副队长", male: 125 },
+    { title: "队长", male: 111 },
+    { title: "监督者", male: 98 },
+    { title: "正式成员", male: 46 },
+    { title: "律贼", male: 46 },
   ]
 );
 
@@ -139,7 +139,7 @@ export const LCN_GATES: OrgGateDef[] = [
     ry: 0,
     rz: 90,
     radius: 14,
-    denyMessage: "You are not a member of La Cosa Nostra.",
+    denyMessage: "你不是科萨诺斯特拉成员。",
   },
 ];
 
@@ -149,7 +149,7 @@ const YAKUZA_GATE = {
   rx: 0,
   ry: 0,
   radius: 14,
-  denyMessage: "You are not a member of Yakuza.",
+  denyMessage: "你不是山口组成员。",
 } as const;
 
 export const YAKUZA_GATES: OrgGateDef[] = [
@@ -192,6 +192,6 @@ export const RUSSIAN_MAFIA_GATES: OrgGateDef[] = [
     ryOpen: 0,
     rz: 0.7162,
     radius: 14,
-    denyMessage: "You are not a member of the Russian Mafia.",
+    denyMessage: "你不是俄罗斯黑手党成员。",
   },
 ];

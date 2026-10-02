@@ -235,11 +235,11 @@ export function holdAtAuth(player: Player): void {
 function welcome(player: Player, name: string): void {
   player.sendClientMessage(
     Color.info,
-    `Welcome to ${SERVER_NAME}, ${name}.`
+    `${name}，欢迎来到${SERVER_NAME}。`
   );
   player.sendClientMessage(
     Color.white,
-    `[${SERVER_TAG}] Local chat, /s /w /me /do /try /todo /b. Type /help.`
+    `[${SERVER_TAG}] 本地聊天：/s /w /me /do /try /todo /b。输入/help查看帮助。`
   );
 }
 
@@ -260,7 +260,7 @@ function newRegister(name: string): Extract<Pending, { kind: "register" }> {
 export async function beginAuth(player: Player, attempt = 0): Promise<void> {
   if (playerId(player) === null) {
     if (attempt >= 4) {
-      kickLater(player, "Could not start login. Reconnect.");
+      kickLater(player, "无法开始登录，请重新连接。");
       return;
     }
 
@@ -285,7 +285,7 @@ export async function beginAuth(player: Player, attempt = 0): Promise<void> {
   refreshAuthViewSoon(player);
 
   if (!isDatabaseReady()) {
-    kickLater(player, "Database is unavailable. Try again later.");
+    kickLater(player, "数据库不可用，请稍后重试。");
     return;
   }
 
@@ -295,10 +295,10 @@ export async function beginAuth(player: Player, attempt = 0): Promise<void> {
   }
 
   const name = playerName(player);
-  if (name === "Unknown" || !isRoleplayName(name)) {
+  if (name === "未知" || !isRoleplayName(name)) {
     kickLater(
       player,
-      "Nickname must use Name_Surname format, for example John_Doe."
+      "昵称必须使用Name_Surname格式，例如John_Doe。"
     );
     return;
   }
@@ -321,7 +321,7 @@ export async function beginAuth(player: Player, attempt = 0): Promise<void> {
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] login error for ${name}: ${message}`);
     if (isPlayerActive(player)) {
-      kickLater(player, "Could not verify account. Try again later.");
+      kickLater(player, "无法验证账号，请稍后重试。");
     }
   }
 }
@@ -424,7 +424,7 @@ function showRegisterStep(player: Player, state: Extract<Pending, { kind: "regis
     case "confirm":
       showRegisterConfirmDialog(
         player,
-        `Nickname: ${state.name}\nEmail: ${state.email}\nGender: ${state.gender ? genderLabel(state.gender) : "-"}\nDate of birth: ${formatBirthDate(state.birthDate)}\nSkin: ${state.skinLabel} (${state.skin})\n\nRegister this character?`
+        `昵称：${state.name}\n邮箱：${state.email}\n性别：${state.gender ? genderLabel(state.gender) : "-"}\n出生日期：${formatBirthDate(state.birthDate)}\n外观：${state.skinLabel}（${state.skin}）\n\n注册此角色？`
       );
       break;
   }
@@ -446,8 +446,8 @@ function goBack(player: Player, state: Extract<Pending, { kind: "register" }>): 
     kickLater(
       player,
       state.step === "rules"
-        ? "You did not accept the server rules."
-        : "Registration cancelled."
+        ? "你未接受服务器规则。"
+        : "注册已取消。"
     );
     clearPending(player);
     return;
@@ -546,7 +546,7 @@ async function finishRegister(
     }
     state.step = "email";
     setPending(player, state);
-    showEmailDialog(player, state.name, "This email is already in use.");
+    showEmailDialog(player, state.name, "此邮箱已被使用。");
     return;
   }
 
@@ -600,7 +600,7 @@ async function finishRegister(
   applyScore(player, account.level);
   applyWantedLevel(player, account.wantedLevel);
   welcome(player, account.name);
-  player.sendClientMessage(Color.gray, "Character created. /help - command list.");
+  player.sendClientMessage(Color.gray, "角色创建成功，输入/help查看命令列表。");
   omp.log(`[${SERVER_TAG}] ${account.name} registered`);
 }
 
@@ -611,13 +611,13 @@ async function handleLogin(
   input: string
 ): Promise<void> {
   if (!ok) {
-    kickLater(player, "Login cancelled.");
+    kickLater(player, "登录已取消。");
     clearPending(player);
     return;
   }
 
   if (!input) {
-    showLoginDialog(player, state.name, "Enter your password.");
+    showLoginDialog(player, state.name, "请输入密码。");
     return;
   }
 
@@ -631,7 +631,7 @@ async function handleLogin(
     if (error instanceof Error && error.message === "bad-password") {
       state.attempts += 1;
       if (state.attempts >= LOGIN_ATTEMPTS) {
-        kickLater(player, "Too many attempts. Reconnect.");
+        kickLater(player, "尝试次数过多，请重新连接。");
         clearPending(player);
         return;
       }
@@ -640,14 +640,14 @@ async function handleLogin(
       showLoginDialog(
         player,
         state.name,
-        `Incorrect password. Attempts remaining: ${LOGIN_ATTEMPTS - state.attempts}.`
+        `密码错误，剩余尝试次数：${LOGIN_ATTEMPTS - state.attempts}。`
       );
       return;
     }
 
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] authorization error for ${state.name}: ${message}`);
-    kickLater(player, "Login error. Try again later.");
+    kickLater(player, "登录出错，请稍后重试。");
     clearPending(player);
   }
 }
@@ -690,13 +690,13 @@ async function handleRegister(
           if (!isSamePlayer(player, id, state.name)) {
             return;
           }
-          showEmailDialog(player, state.name, "This email is already in use.");
+          showEmailDialog(player, state.name, "此邮箱已被使用。");
           return;
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         omp.log(`[${SERVER_TAG}] email verification error: ${message}`);
-        kickLater(player, "Could not verify email. Try again later.");
+        kickLater(player, "无法验证邮箱，请稍后重试。");
         clearPending(player);
         return;
       }
@@ -728,7 +728,7 @@ async function handleRegister(
 
     case "passwordConfirm": {
       if (input !== state.password) {
-        showPasswordConfirmDialog(player, "Passwords do not match.");
+        showPasswordConfirmDialog(player, "两次输入的密码不一致。");
         return;
       }
 
@@ -811,13 +811,13 @@ async function handleRegister(
           }
           state.step = "email";
           setPending(player, state);
-          showEmailDialog(player, state.name, "This email or nickname is already in use.");
+          showEmailDialog(player, state.name, "此邮箱或昵称已被使用。");
           return;
         }
 
         const message = error instanceof Error ? error.message : String(error);
         omp.log(`[${SERVER_TAG}] registration error for ${state.name}: ${message}`);
-        kickLater(player, "Could not create character. Try again later.");
+        kickLater(player, "无法创建角色，请稍后重试。");
         clearPending(player);
       }
     }

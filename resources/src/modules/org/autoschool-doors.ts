@@ -39,7 +39,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: AUTOSCHOOL_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Driving School\nEntrance",
+    label: "驾校\n入口",
   },
   {
     pickup: {
@@ -57,7 +57,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Exit to Street",
+    label: "返回街道",
   },
   {
     pickup: {
@@ -75,7 +75,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: AUTOSCHOOL_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Driving School\nParking",
+    label: "驾校\n停车场",
   },
   {
     pickup: {
@@ -93,7 +93,7 @@ const DOORS: readonly SchoolDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Parking",
+    label: "停车场",
   },
 ];
 
@@ -165,7 +165,7 @@ function tickSchoolDoors(): void {
 function tryUse(player: Player, door: SchoolDoor): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "You need treatment. Take a bed: /hospital.");
+    deny(player, "你需要治疗，请使用/hospital占用病床。");
     return;
   }
 

@@ -73,12 +73,12 @@ function expireInvite(slot: number, accountId: number): void {
   pendingInvite.delete(slot);
   const target = findTarget(slot);
   if (target && getAccount(target)?.id === accountId) {
-    tell(target, Color.error, "Invitation expired.");
+    tell(target, Color.error, "邀请已过期。");
   }
 
   const inviter = findTarget(pending.inviterSlot);
   if (inviter && getAccount(inviter)?.id === pending.inviterAccountId) {
-    tell(inviter, Color.error, "Invitation expired.");
+    tell(inviter, Color.error, "邀请已过期。");
   }
 }
 
@@ -130,7 +130,7 @@ function samePlayer(a: Player, b: Player): boolean {
 function requireStaff(player: Player) {
   const staff = staffOf(player);
   if (!staff) {
-    tell(player, Color.error, "This command is available from organization rank 9.");
+    tell(player, Color.error, "此命令需要组织职位9级以上。");
     return null;
   }
   return staff;
@@ -145,12 +145,12 @@ function requireOtherTarget(actor: Player, args: string, usage: string): Player 
 
   const target = findTarget(slot);
   if (!target) {
-    tell(actor, Color.error, "Player not found.");
+    tell(actor, Color.error, "未找到玩家。");
     return null;
   }
 
   if (samePlayer(actor, target)) {
-    tell(actor, Color.error, "You cannot use this on yourself.");
+    tell(actor, Color.error, "不能对自己使用此命令。");
     return null;
   }
 
@@ -204,35 +204,35 @@ function parseRankDelta(args: string): { slot: number; delta: 1 | -1 } | null {
   return null;
 }
 
-registerCommand("invite", "Invite to an organization", (player, args) => {
+registerCommand("invite", "邀请加入组织", (player, args) => {
   const staff = requireStaff(player);
   if (!staff) {
     return;
   }
 
-  const target = requireOtherTarget(player, args, "Usage: /invite [id]");
+  const target = requireOtherTarget(player, args, "用法：/invite [玩家ID]");
   if (!target) {
     return;
   }
 
   const targetAccount = getAccount(target);
   if (!targetAccount) {
-    tell(player, Color.error, "Player not found.");
+    tell(player, Color.error, "未找到玩家。");
     return;
   }
 
   if (!targetAccount.passport) {
-    tell(player, Color.error, "The player does not have a passport.");
+    tell(player, Color.error, "玩家没有护照。");
     return;
   }
 
   if (targetAccount.orgId !== ORG_NONE || getMembership(targetAccount)) {
-    tell(player, Color.error, "The player is already in an organization.");
+    tell(player, Color.error, "玩家已加入组织。");
     return;
   }
 
   if (!arePlayersNearby(player, target, INVITE_RADIUS)) {
-    tell(player, Color.error, "Player is too far away.");
+    tell(player, Color.error, "玩家距离太远。");
     return;
   }
 
@@ -247,33 +247,33 @@ registerCommand("invite", "Invite to an organization", (player, args) => {
     const oldInviter = previous ? findTarget(previous.inviterSlot) : null;
     clearInvite(target);
     if (oldInviter && previous && getAccount(oldInviter)?.id === previous.inviterAccountId) {
-      tell(oldInviter, Color.info, `Invitation for ${playerChatName(target)} cancelled.`);
+      tell(oldInviter, Color.info, `已取消向${playerChatName(target)}发出的邀请。`);
     }
   }
 
   const rank = getOrgRank(staff.membership.org, MIN_ORG_RANK);
   if (!rank) {
-    tell(player, Color.error, "Failed to send the invitation.");
+    tell(player, Color.error, "无法发送邀请。");
     return;
   }
 
   const body =
-    `You are invited to join ${staff.membership.org.name}.\n` +
-    `Position: ${rank.title}.\n\n` +
-    `Accept the invitation?`;
+    `你收到加入${staff.membership.org.name}的邀请。\n` +
+    `职位：${rank.title}。\n\n` +
+    `接受邀请？`;
 
   try {
     Dialog.show(
       target,
       ORG_INVITE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Invitation",
+      "邀请",
       body,
-      "Accept",
-      "Decline"
+      "接受",
+      "拒绝"
     );
   } catch {
-    tell(player, Color.error, "Failed to send the invitation.");
+    tell(player, Color.error, "无法发送邀请。");
     return;
   }
 
@@ -288,10 +288,10 @@ registerCommand("invite", "Invite to an organization", (player, args) => {
     }, INVITE_TTL_MS),
   });
 
-  tell(player, Color.info, `You sent an invitation to ${playerChatName(target)}.`);
+  tell(player, Color.info, `你向${playerChatName(target)}发送了邀请。`);
 });
 
-registerCommand("uninvite", "Dismiss from an organization", (player, args) => {
+registerCommand("uninvite", "将成员移出组织", (player, args) => {
   const staff = requireStaff(player);
   if (!staff) {
     return;
@@ -306,11 +306,11 @@ registerCommand("uninvite", "Dismiss from an organization", (player, args) => {
   );
 
   if (!idPart || !reason) {
-    tell(player, Color.error, "Usage: /uninvite [id] [reason]");
+    tell(player, Color.error, "用法：/uninvite [玩家ID] [原因]");
     return;
   }
 
-  const target = requireOtherTarget(player, idPart, "Usage: /uninvite [id] [reason]");
+  const target = requireOtherTarget(player, idPart, "用法：/uninvite [玩家ID] [原因]");
   if (!target) {
     return;
   }
@@ -318,37 +318,37 @@ registerCommand("uninvite", "Dismiss from an organization", (player, args) => {
   const targetAccount = getAccount(target);
   const targetOrg = targetAccount ? getMembership(targetAccount) : null;
   if (!targetAccount || !targetOrg || targetOrg.org.id !== staff.membership.org.id) {
-    tell(player, Color.error, "The player is not in your organization.");
+    tell(player, Color.error, "玩家不是你的组织成员。");
     return;
   }
 
   if (!canManage(targetOrg.rank.id)) {
-    tell(player, Color.error, "You cannot dismiss this player.");
+    tell(player, Color.error, "不能移除此玩家。");
     return;
   }
 
   void (async () => {
     const actor = staffOf(player);
     if (!actor || actor.membership.org.id !== staff.membership.org.id) {
-      tell(player, Color.error, "This command is available from organization rank 9.");
+      tell(player, Color.error, "此命令需要组织职位9级以上。");
       return;
     }
 
     const liveAccount = getAccount(target);
     const liveOrg = liveAccount ? getMembership(liveAccount) : null;
     if (!liveAccount || !liveOrg || liveOrg.org.id !== actor.membership.org.id) {
-      tell(player, Color.error, "The player is not in your organization.");
+      tell(player, Color.error, "玩家不是你的组织成员。");
       return;
     }
 
     if (!canManage(liveOrg.rank.id)) {
-      tell(player, Color.error, "You cannot dismiss this player.");
+      tell(player, Color.error, "不能移除此玩家。");
       return;
     }
 
     const ok = await setOrg(target, ORG_NONE, 0);
     if (!ok) {
-      tell(player, Color.error, "Failed to save to the database.");
+      tell(player, Color.error, "无法保存至数据库。");
       return;
     }
 
@@ -357,17 +357,17 @@ registerCommand("uninvite", "Dismiss from an organization", (player, args) => {
     tell(
       player,
       Color.info,
-      clipClientMessage(`You dismissed ${tag} from ${orgName}. Reason: ${reason}`)
+      clipClientMessage(`你将${tag}移出了${orgName}，原因：${reason}`)
     );
     tell(
       target,
       Color.info,
-      clipClientMessage(`You were dismissed from ${orgName}. Reason: ${reason}`)
+      clipClientMessage(`你被移出了${orgName}，原因：${reason}`)
     );
   })();
 });
 
-registerCommand("rang", "Change organization rank", (player, args) => {
+registerCommand("rang", "更改组织职位等级", (player, args) => {
   const staff = requireStaff(player);
   if (!staff) {
     return;
@@ -375,79 +375,79 @@ registerCommand("rang", "Change organization rank", (player, args) => {
 
   const parsed = parseRankDelta(args);
   if (!parsed) {
-    tell(player, Color.error, "Usage: /rang [id] [+/-]");
+    tell(player, Color.error, "用法：/rang [玩家ID] [+/-]");
     return;
   }
 
   const target = findTarget(parsed.slot);
   if (!target) {
-    tell(player, Color.error, "Player not found.");
+    tell(player, Color.error, "未找到玩家。");
     return;
   }
 
   if (samePlayer(player, target)) {
-    tell(player, Color.error, "You cannot use this on yourself.");
+    tell(player, Color.error, "不能对自己使用此命令。");
     return;
   }
 
   const targetAccount = getAccount(target);
   const targetOrg = targetAccount ? getMembership(targetAccount) : null;
   if (!targetAccount || !targetOrg || targetOrg.org.id !== staff.membership.org.id) {
-    tell(player, Color.error, "The player is not in your organization.");
+    tell(player, Color.error, "玩家不是你的组织成员。");
     return;
   }
 
   if (!canManage(targetOrg.rank.id)) {
-    tell(player, Color.error, "You cannot change this player's rank.");
+    tell(player, Color.error, "不能更改此玩家的职位等级。");
     return;
   }
 
   const next = targetOrg.rank.id + parsed.delta;
   if (next < MIN_ORG_RANK || next > MANAGE_MAX_RANK) {
-    tell(player, Color.error, "Player rank must be between 1 and 9.");
+    tell(player, Color.error, "玩家职位等级必须在1至9之间。");
     return;
   }
 
   const nextRank = getOrgRank(targetOrg.org, next);
   if (!nextRank) {
-    tell(player, Color.error, "Failed to change rank.");
+    tell(player, Color.error, "无法更改职位等级。");
     return;
   }
 
   void (async () => {
     const actor = staffOf(player);
     if (!actor || actor.membership.org.id !== staff.membership.org.id) {
-      tell(player, Color.error, "This command is available from organization rank 9.");
+      tell(player, Color.error, "此命令需要组织职位9级以上。");
       return;
     }
 
     const liveAccount = getAccount(target);
     const liveOrg = liveAccount ? getMembership(liveAccount) : null;
     if (!liveAccount || !liveOrg || liveOrg.org.id !== actor.membership.org.id) {
-      tell(player, Color.error, "The player is not in your organization.");
+      tell(player, Color.error, "玩家不是你的组织成员。");
       return;
     }
 
     if (!canManage(liveOrg.rank.id)) {
-      tell(player, Color.error, "You cannot change this player's rank.");
+      tell(player, Color.error, "不能更改此玩家的职位等级。");
       return;
     }
 
     const liveNext = liveOrg.rank.id + parsed.delta;
     if (liveNext < MIN_ORG_RANK || liveNext > MANAGE_MAX_RANK) {
-      tell(player, Color.error, "Player rank must be between 1 and 9.");
+      tell(player, Color.error, "玩家职位等级必须在1至9之间。");
       return;
     }
 
     const liveNextRank = getOrgRank(liveOrg.org, liveNext);
     if (!liveNextRank) {
-      tell(player, Color.error, "Failed to change rank.");
+      tell(player, Color.error, "无法更改职位等级。");
       return;
     }
 
     const ok = await setOrg(target, liveOrg.org.id, liveNextRank.id);
     if (!ok) {
-      tell(player, Color.error, "Failed to save to the database.");
+      tell(player, Color.error, "无法保存至数据库。");
       return;
     }
 
@@ -457,15 +457,15 @@ registerCommand("rang", "Change organization rank", (player, args) => {
       player,
       Color.info,
       verbUp
-        ? `You promoted ${tag}: ${liveNextRank.title} (${liveNextRank.id}).`
-        : `You demoted ${tag}: ${liveNextRank.title} (${liveNextRank.id}).`
+        ? `你晋升了${tag}：${liveNextRank.title}（${liveNextRank.id}）。`
+        : `你降职了${tag}：${liveNextRank.title}（${liveNextRank.id}）。`
     );
     tell(
       target,
       Color.info,
       verbUp
-        ? `You were promoted: ${liveNextRank.title} (${liveNextRank.id}).`
-        : `You were demoted: ${liveNextRank.title} (${liveNextRank.id}).`
+        ? `你被晋升为${liveNextRank.title}（${liveNextRank.id}）。`
+        : `你被降职为${liveNextRank.title}（${liveNextRank.id}）。`
     );
   })();
 });
@@ -486,7 +486,7 @@ export function bindOrgStaff(): void {
     }
 
     if (!pending) {
-      tell(player, Color.error, "The invitation is no longer valid.");
+      tell(player, Color.error, "邀请已失效。");
       return;
     }
 
@@ -503,63 +503,63 @@ export function bindOrgStaff(): void {
     const accepted = Number(response) !== 0;
     const verb = byGender(
       getAccount(player)?.gender ?? null,
-      accepted ? "accepted" : "declined",
-      accepted ? "accepted" : "declined"
+      accepted ? "接受" : "拒绝",
+      accepted ? "接受" : "拒绝"
     );
 
     if (!accepted) {
-      tell(player, Color.info, "You declined the invitation.");
+      tell(player, Color.info, "你拒绝了邀请。");
       if (inviterOk && inviter) {
-        tell(inviter, Color.info, `${targetTag} ${verb} the invitation.`);
+        tell(inviter, Color.info, `${targetTag}${verb}了邀请。`);
       }
       return;
     }
 
     const live = getAccount(player);
     if (!live || !org || !rank) {
-      tell(player, Color.error, "The invitation is no longer valid.");
+      tell(player, Color.error, "邀请已失效。");
       return;
     }
 
     if (!live.passport) {
-      tell(player, Color.error, "You do not have a passport.");
+      tell(player, Color.error, "你没有护照。");
       if (inviterOk && inviter) {
-        tell(inviter, Color.error, `${targetTag} cannot join: no passport.`);
+        tell(inviter, Color.error, `${targetTag}无法加入：没有护照。`);
       }
       return;
     }
 
     if (live.orgId !== ORG_NONE || getMembership(live)) {
-      tell(player, Color.error, "You are already in an organization.");
+      tell(player, Color.error, "你已加入组织。");
       if (inviterOk && inviter) {
-        tell(inviter, Color.error, `${targetTag} is already in an organization.`);
+        tell(inviter, Color.error, `${targetTag}已加入组织。`);
       }
       return;
     }
 
     if (!inviterOk || !inviter) {
-      tell(player, Color.error, "The invitation is no longer valid.");
+      tell(player, Color.error, "邀请已失效。");
       return;
     }
 
     if (!arePlayersNearby(player, inviter, INVITE_RADIUS)) {
-      tell(player, Color.error, "You are too far away from the inviter.");
-      tell(inviter, Color.error, `${targetTag} could not accept: too far away.`);
+      tell(player, Color.error, "你距离邀请人太远。");
+      tell(inviter, Color.error, `${targetTag}无法接受邀请：距离太远。`);
       return;
     }
 
     void (async () => {
       if (!arePlayersNearby(player, inviter, INVITE_RADIUS)) {
-        tell(player, Color.error, "You are too far away from the inviter.");
-        tell(inviter, Color.error, `${targetTag} could not accept: too far away.`);
+        tell(player, Color.error, "你距离邀请人太远。");
+        tell(inviter, Color.error, `${targetTag}无法接受邀请：距离太远。`);
         return;
       }
 
       const ok = await setOrg(player, pending.orgId, pending.orgRank);
       if (!ok) {
-        tell(player, Color.error, "Failed to save to the database.");
+        tell(player, Color.error, "无法保存至数据库。");
         if (inviterOk && inviter) {
-          tell(inviter, Color.error, "Failed to accept the player.");
+          tell(inviter, Color.error, "无法接纳此玩家。");
         }
         return;
       }
@@ -567,10 +567,10 @@ export function bindOrgStaff(): void {
       tell(
         player,
         Color.info,
-        `You joined ${org.name}. Position: ${rank.title}.`
+        `你加入了${org.name}，职位：${rank.title}。`
       );
       if (inviterOk && inviter) {
-        tell(inviter, Color.info, `${targetTag} ${verb} the invitation to ${org.name}.`);
+        tell(inviter, Color.info, `${targetTag}${verb}了加入${org.name}的邀请。`);
       }
     })();
   });

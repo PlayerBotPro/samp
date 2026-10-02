@@ -35,7 +35,7 @@ export function startHouseExits(): void {
       world
     );
     new TextLabel(
-      "Exit",
+      "退出",
       Color.info,
       house.interiorX,
       house.interiorY,
@@ -161,7 +161,7 @@ function tryExitHouse(player: Player): void {
     placeAt(player, exit);
     refreshStreamForPlayer(player);
   } catch {
-    player.sendClientMessage(Color.error, "Failed to leave the house.");
+    player.sendClientMessage(Color.error, "无法离开房屋。");
   }
 }
 

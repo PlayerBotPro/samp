@@ -6,13 +6,13 @@ import { getAccount } from "../auth/session";
 import { MAX_ORG_RANK, getMembership } from "../org";
 import { registerCommand } from "./registry";
 
-registerCommand("gov", "Government news", (player, args) => {
+registerCommand("gov", "政府新闻", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership || !membership.org.gov) {
     player.sendClientMessage(
       Color.error,
-      "You are not a member of a government organization."
+      "你不是政府组织成员。"
     );
     return;
   }
@@ -20,18 +20,18 @@ registerCommand("gov", "Government news", (player, args) => {
   if (membership.rank.id !== MAX_ORG_RANK) {
     player.sendClientMessage(
       Color.error,
-      "Government news are only available to the organization leader."
+      "只有组织首领可以发布政府新闻。"
     );
     return;
   }
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Usage: /gov [text]");
+    player.sendClientMessage(Color.error, "用法：/gov [内容]");
     return;
   }
 
-  const line = clipClientMessage(`Government news ${playerChatName(player)}: ${text}`);
+  const line = clipClientMessage(`政府新闻 ${playerChatName(player)}：${text}`);
 
   omp.players.forEach((other) => {
     if (!isPlayerActive(other)) {

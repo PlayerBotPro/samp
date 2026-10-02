@@ -23,7 +23,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY_ROOF = "Only Radio Center personnel can access the roof.";
+const DENY_ROOF = "只有电台成员可以进入屋顶。";
 
 type DoorKind = "street" | "interior" | "roof";
 
@@ -86,10 +86,10 @@ const DOORS: readonly RadioDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Radio Center\nEntrance",
+    label: "电台\n入口",
     options: [
-      { key: "office", label: "Office" },
-      { key: "roof", label: "Roof" },
+      { key: "office", label: "办公室" },
+      { key: "roof", label: "屋顶" },
     ],
   },
   {
@@ -101,10 +101,10 @@ const DOORS: readonly RadioDoor[] = [
       interior: RADIO_INTERIOR,
       world: RADIO_WORLD,
     },
-    label: "Radio Center\nExit",
+    label: "电台\n出口",
     options: [
-      { key: "street", label: "Street" },
-      { key: "roof", label: "Roof" },
+      { key: "street", label: "街道" },
+      { key: "roof", label: "屋顶" },
     ],
   },
   {
@@ -116,10 +116,10 @@ const DOORS: readonly RadioDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Radio Center\nRoof",
+    label: "电台\n屋顶",
     options: [
-      { key: "street", label: "Street" },
-      { key: "office", label: "Office" },
+      { key: "street", label: "街道" },
+      { key: "office", label: "办公室" },
     ],
   },
 ];
@@ -238,7 +238,7 @@ function tickRadioDoors(): void {
 function openMenu(player: Player, door: RadioDoor): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "You need treatment. Take a bed: /hospital.");
+    deny(player, "你需要治疗，请使用/hospital占用病床。");
     return;
   }
 
@@ -253,21 +253,21 @@ function openMenu(player: Player, door: RadioDoor): void {
       player,
       RADIO_DOOR_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Radio Center",
+      "电台",
       door.options.map((option) => option.label).join("\n"),
-      "Select",
-      "Cancel"
+      "选择",
+      "取消"
     );
   } catch {
     pending.delete(id);
-    deny(player, "Failed to open the menu.");
+    deny(player, "无法打开菜单。");
   }
 }
 
 function tryUse(player: Player, destKey: "office" | "street" | "roof"): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "You need treatment. Take a bed: /hospital.");
+    deny(player, "你需要治疗，请使用/hospital占用病床。");
     return;
   }
 

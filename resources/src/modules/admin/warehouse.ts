@@ -35,7 +35,7 @@ const AMMO_ONLY_IDS = new Set<number>([
 export function bindAdminWarehouse(): void {
   registerCommand(
     "warehouse",
-    "Organization warehouse status",
+    "组织仓库状态",
     (player) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -63,13 +63,13 @@ function showWarehouseList(player: Player): void {
       player,
       WAREHOUSE_LIST_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Warehouses",
+      "仓库",
       lines.join("\n"),
-      "Select",
-      "Cancel"
+      "选择",
+      "取消"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the warehouse list.");
+    player.sendClientMessage(Color.error, "无法打开仓库列表。");
   }
 }
 
@@ -101,11 +101,11 @@ function showWarehouseInfo(player: Player, orgId: number): void {
       DIALOG_STYLE_MSGBOX,
       warehouseName(orgId),
       formatWarehouseInfo(record),
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the warehouse.");
+    player.sendClientMessage(Color.error, "无法打开仓库。");
   }
 }
 
@@ -113,22 +113,22 @@ function formatWarehouseInfo(record: WarehouseRecord): string {
   const lines: string[] = [];
 
   if (record.orgId === WAREHOUSE_MINE_ID) {
-    lines.push(`Metal: ${record.metal}`);
+    lines.push(`金属：${record.metal}`);
   } else if (record.orgId === ORG_HOSPITAL_ID) {
-    lines.push(`Medical supplies: ${record.meds}`);
+    lines.push(`医疗物资：${record.meds}`);
   } else if (AMMO_ONLY_IDS.has(record.orgId)) {
-    lines.push(`Ammunition: ${record.ammo}`);
+    lines.push(`弹药：${record.ammo}`);
   } else if (warehouseUsesLock(record.orgId)) {
-    lines.push(`Ammunition: ${record.ammo}`);
-    lines.push(`Metal: ${record.metal}`);
-    lines.push(`Drugs: ${record.drugs}`);
+    lines.push(`弹药：${record.ammo}`);
+    lines.push(`金属：${record.metal}`);
+    lines.push(`毒品：${record.drugs}`);
     lines.push("");
-    lines.push(record.isLocked ? "Warehouse is locked" : "Warehouse is open");
+    lines.push(record.isLocked ? "仓库已锁定" : "仓库已开放");
   } else {
-    lines.push(`Ammunition: ${record.ammo}`);
-    lines.push(`Medical supplies: ${record.meds}`);
-    lines.push(`Metal: ${record.metal}`);
-    lines.push(`Drugs: ${record.drugs}`);
+    lines.push(`弹药：${record.ammo}`);
+    lines.push(`医疗物资：${record.meds}`);
+    lines.push(`金属：${record.metal}`);
+    lines.push(`毒品：${record.drugs}`);
   }
 
   return lines.join("\n");
@@ -136,10 +136,10 @@ function formatWarehouseInfo(record: WarehouseRecord): string {
 
 function warehouseName(orgId: number): string {
   if (orgId === WAREHOUSE_MINE_ID) {
-    return "Mine";
+    return "矿场";
   }
 
-  return getOrganization(orgId)?.name ?? `Warehouse #${orgId}`;
+  return getOrganization(orgId)?.name ?? `${orgId}号仓库`;
 }
 
 function pickWarehouseId(listItem: number, inputText: string): number | null {

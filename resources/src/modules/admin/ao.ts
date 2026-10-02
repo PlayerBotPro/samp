@@ -22,7 +22,7 @@ function broadcastAll(color: number, text: string): void {
 export function bindAdminAo(): void {
   registerCommand(
     "ao",
-    "Announcement to all players",
+    "向全体玩家发布公告",
     (player, args) => {
       if (!hasAdminAccess(player, 3)) {
         return;
@@ -30,13 +30,13 @@ export function bindAdminAo(): void {
 
       const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
       if (!text) {
-        player.sendClientMessage(Color.error, "Usage: /ao [text]");
+        player.sendClientMessage(Color.error, "用法：/ao [内容]");
         return;
       }
 
       broadcastAll(
         Color.info,
-        `Administrator ${playerChatName(player)}: ${text}`
+        `管理员${playerChatName(player)}：${text}`
       );
     },
     true

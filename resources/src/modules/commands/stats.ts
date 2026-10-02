@@ -14,14 +14,14 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-registerCommand("stats", "Character statistics", (player) => {
+registerCommand("stats", "角色统计", (player) => {
   showStatsDialog(player);
 });
 
 export function showStatsDialog(player: Player): void {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Log in first.");
+    player.sendClientMessage(Color.error, "请先登录。");
     return;
   }
 
@@ -38,29 +38,29 @@ export function showStatsDialog(player: Player): void {
   const membership = getMembership(account);
   const rank = membership
     ? `${membership.rank.title} (${membership.rank.id})`
-    : "None";
+    : "无";
   const body = [
-    statsRow("Name", account.name),
-    statsRow("Residence", residenceLabel(account.id)),
-    statsRow("Gender", genderLabel(account.gender)),
-    statsRow("Level", String(account.level)),
-    statsRow("Experience", `${account.exp}/${expForNextLevel(account.level)}`),
-    statsRow("Lawfulness", String(account.lawfulness)),
-    statsRow("Skin", String(resolvePlayerSkin(account))),
-    statsRow("Date of birth", formatBirthDate(account.birthDate)),
-    statsRow("Email", account.email),
-    statsRow("Cash", `$${account.money}`),
-    statsRow("Bank", `$${account.bank}`),
-    statsRow("Donation balance", String(account.donate)),
-    statsRow("Drugs", `${account.drugs} pcs.`),
-    statsRow("Ammunition", `${account.ammo} pcs.`),
-    statsRow("Metal", `${account.metal} pcs.`),
-    statsRow("Wanted level", String(account.wantedLevel)),
-    statsRow("Military ID", account.militaryId ? "Yes" : "No"),
-    statsRow("Medical card", account.medcard ? "Yes" : "No"),
-    statsRow("Health", String(health)),
-    statsRow("Organization", membership?.org.name ?? "None"),
-    statsRow("Position", rank),
+    statsRow("姓名", account.name),
+    statsRow("住所", residenceLabel(account.id)),
+    statsRow("性别", genderLabel(account.gender)),
+    statsRow("等级", String(account.level)),
+    statsRow("经验", `${account.exp}/${expForNextLevel(account.level)}`),
+    statsRow("守法度", String(account.lawfulness)),
+    statsRow("外观", String(resolvePlayerSkin(account))),
+    statsRow("出生日期", formatBirthDate(account.birthDate)),
+    statsRow("邮箱", account.email),
+    statsRow("现金", `$${account.money}`),
+    statsRow("银行", `$${account.bank}`),
+    statsRow("捐赠余额", String(account.donate)),
+    statsRow("毒品", `${account.drugs}份`),
+    statsRow("弹药", `${account.ammo}份`),
+    statsRow("金属", `${account.metal}份`),
+    statsRow("通缉等级", String(account.wantedLevel)),
+    statsRow("军人证", account.militaryId ? "是" : "否"),
+    statsRow("医疗卡", account.medcard ? "是" : "否"),
+    statsRow("生命值", String(health)),
+    statsRow("组织", membership?.org.name ?? "无"),
+    statsRow("职位", rank),
   ].join("\n");
 
   try {
@@ -68,13 +68,13 @@ export function showStatsDialog(player: Player): void {
       player,
       STATS_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}${account.name}'s Statistics`,
+      `${TITLE}${account.name}的统计`,
       body,
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Unable to open statistics.");
+    player.sendClientMessage(Color.error, "无法打开统计。");
   }
 }
 

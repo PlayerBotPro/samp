@@ -12,27 +12,27 @@ import { getMembership } from "../org";
 import { registerCommand } from "./registry";
 
 const BUBBLE_MS = 3000;
-const BUBBLE_TEXT = "Department message.";
+const BUBBLE_TEXT = "部门消息。";
 
-registerCommand("d", "Department radio", (player, args) => {
+registerCommand("d", "部门无线电", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership || !membership.org.gov) {
     player.sendClientMessage(
       Color.error,
-      "You are not a member of a government organization."
+      "你不是政府组织成员。"
     );
     return;
   }
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Usage: /d [text]");
+    player.sendClientMessage(Color.error, "用法：/d [内容]");
     return;
   }
 
   const line = clipClientMessage(
-    `[D] ${membership.org.name} - ${membership.rank.title} ${playerChatName(player)}: ${text}`
+    `[部门] ${membership.org.name} - ${membership.rank.title} ${playerChatName(player)}：${text}`
   );
 
   omp.players.forEach((other) => {

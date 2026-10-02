@@ -45,7 +45,7 @@ export function bindHouseMenuDialogs(): void {
 
       const house = findOwnedHouseAtInterior(player);
       if (!house || house.ownerId !== account.id) {
-        player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
+        player.sendClientMessage(Color.error, "房屋菜单只能在自己的房屋内使用。");
         return;
       }
 
@@ -94,14 +94,14 @@ export function bindHouseMenuDialogs(): void {
 export function showHouseMenu(player: Player): void {
   const house = findOwnedHouseAtInterior(player);
   if (!house) {
-    player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
+    player.sendClientMessage(Color.error, "房屋菜单只能在自己的房屋内使用。");
     return;
   }
 
   const items = [
-    `Status (${houseLockStatusLabel(house.isLocked)})`,
-    "Medkit",
-    "Information",
+    `状态（${houseLockStatusLabel(house.isLocked)}）`,
+    "急救箱",
+    "信息",
   ];
 
   try {
@@ -109,13 +109,13 @@ export function showHouseMenu(player: Player): void {
       player,
       HOUSE_MENU_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      `${MENU_TITLE}House menu`,
+      `${MENU_TITLE}房屋菜单`,
       items.join("\n"),
-      "Select",
-      "Close"
+      "选择",
+      "关闭"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Could not open the house menu.");
+    player.sendClientMessage(Color.error, "无法打开房屋菜单。");
   }
 }
 
@@ -127,7 +127,7 @@ async function toggleHouseLock(player: Player, houseId: number): Promise<void> {
 
   const house = findOwnedHouseAtInterior(player);
   if (!house || house.id !== houseId || house.ownerId !== account.id) {
-    player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
+    player.sendClientMessage(Color.error, "房屋菜单只能在自己的房屋内使用。");
     return;
   }
 
@@ -149,14 +149,14 @@ async function toggleHouseLock(player: Player, houseId: number): Promise<void> {
   }
 
   if (!saved) {
-    player.sendClientMessage(Color.error, "Could not change house status.");
+    player.sendClientMessage(Color.error, "无法更改房屋状态。");
     return;
   }
 
   setHouseLock(houseId, nextLocked);
   player.sendClientMessage(
     Color.info,
-    nextLocked ? "The house is locked." : "The house is open."
+    nextLocked ? "房屋已锁定。" : "房屋已开放。"
   );
   showHouseMenu(player);
 }
@@ -173,12 +173,12 @@ async function openMedkitFlow(player: Player, houseId: number): Promise<void> {
   }
 
   if (!findOwnedHouseAtInterior(player)) {
-    player.sendClientMessage(Color.error, "The house menu is available only inside your house.");
+    player.sendClientMessage(Color.error, "房屋菜单只能在自己的房屋内使用。");
     return;
   }
 
   if (house.hasMedkit) {
-    player.sendClientMessage(Color.info, "The house already has a medkit.");
+    player.sendClientMessage(Color.info, "房屋已有急救箱。");
     showHouseMenu(player);
     return;
   }
@@ -189,14 +189,14 @@ async function openMedkitFlow(player: Player, houseId: number): Promise<void> {
       player,
       HOUSE_MEDKIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Medkit",
-      `Buy a medkit for $${MEDKIT_PRICE}?`,
-      "Buy",
-      "Cancel"
+      "急救箱",
+      `花$${MEDKIT_PRICE}购买急救箱？`,
+      "购买",
+      "取消"
     );
   } catch {
     pendingMedkitHouse.delete(account.id);
-    player.sendClientMessage(Color.error, "Could not open the medkit purchase.");
+    player.sendClientMessage(Color.error, "无法打开急救箱购买界面。");
   }
 }
 
@@ -212,18 +212,18 @@ async function buyMedkit(player: Player, houseId: number): Promise<void> {
   }
 
   if (!findOwnedHouseAtInterior(player)) {
-    player.sendClientMessage(Color.error, "Purchase is available only inside your house.");
+    player.sendClientMessage(Color.error, "只能在自己的房屋内购买。");
     return;
   }
 
   if (house.hasMedkit) {
-    player.sendClientMessage(Color.info, "The house already has a medkit.");
+    player.sendClientMessage(Color.info, "房屋已有急救箱。");
     return;
   }
 
   const cash = Math.max(0, Math.floor(account.money));
   if (cash < MEDKIT_PRICE) {
-    player.sendClientMessage(Color.error, "Not enough cash.");
+    player.sendClientMessage(Color.error, "现金不足。");
     return;
   }
 
@@ -239,22 +239,22 @@ async function buyMedkit(player: Player, houseId: number): Promise<void> {
     buyingMedkit.delete(account.id);
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] house medkit ${houseId} (${account.name}): ${message}`);
-    player.sendClientMessage(Color.error, "Purchase failed. Try again.");
+    player.sendClientMessage(Color.error, "购买失败，请重试。");
     return;
   }
   buyingMedkit.delete(account.id);
 
   if (!result.ok) {
     if (result.reason === "exists") {
-      player.sendClientMessage(Color.info, "The house already has a medkit.");
+      player.sendClientMessage(Color.info, "房屋已有急救箱。");
       setHouseMedkit(houseId, true);
       return;
     }
     if (result.reason === "funds") {
-      player.sendClientMessage(Color.error, "Not enough cash.");
+      player.sendClientMessage(Color.error, "现金不足。");
       return;
     }
-    player.sendClientMessage(Color.error, "Purchase failed. Try again.");
+    player.sendClientMessage(Color.error, "购买失败，请重试。");
     return;
   }
 
@@ -274,7 +274,7 @@ async function buyMedkit(player: Player, houseId: number): Promise<void> {
     omp.log(`[${SERVER_TAG}] could not save money for ${account.name}: ${message}`);
   });
 
-  player.sendClientMessage(Color.info, `Medkit purchased for $${MEDKIT_PRICE}.`);
+  player.sendClientMessage(Color.info, `已花$${MEDKIT_PRICE}购买急救箱。`);
   showHouseMenu(player);
 }
 
@@ -286,9 +286,9 @@ function showHouseInfoDialog(player: Player, house: ReturnType<typeof findOwnedH
   const daysLeft = rentDaysRemaining(house.rentPaidUntil);
   const rentLines = buildRentInfoLines(house.rentPaidUntil, daysLeft);
   const body = [
-    `${MENU_LABEL}House number:\t\t${MENU_VALUE}${house.id}`,
-    `${MENU_LABEL}Class:\t\t\t${MENU_VALUE}${houseClassLabel(house.classId)}`,
-    `${MENU_LABEL}State price:\t${MENU_VALUE}$${house.price}`,
+    `${MENU_LABEL}房屋编号：\t\t${MENU_VALUE}${house.id}`,
+    `${MENU_LABEL}档次：\t\t\t${MENU_VALUE}${houseClassLabel(house.classId)}`,
+    `${MENU_LABEL}政府售价：\t${MENU_VALUE}$${house.price}`,
     ...rentLines,
   ].join("\n");
 
@@ -297,13 +297,13 @@ function showHouseInfoDialog(player: Player, house: ReturnType<typeof findOwnedH
       player,
       HOUSE_INFO_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${MENU_TITLE}House information`,
+      `${MENU_TITLE}房屋信息`,
       body,
-      "Back",
+      "返回",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Could not open house information.");
+    player.sendClientMessage(Color.error, "无法打开房屋信息。");
   }
 }
 
@@ -312,11 +312,11 @@ function buildRentInfoLines(
   daysLeft: number | null
 ): string[] {
   if (rentPaidUntil === null) {
-    return [`${MENU_LABEL}Payment:\t\t${MENU_VALUE}unpaid`];
+    return [`${MENU_LABEL}缴费状态：\t\t${MENU_VALUE}未缴费`];
   }
 
   const lines = [
-    `${MENU_LABEL}Paid through:\t\t${MENU_VALUE}${formatRentDate(rentPaidUntil)}`,
+    `${MENU_LABEL}已缴费至：\t\t${MENU_VALUE}${formatRentDate(rentPaidUntil)}`,
   ];
 
   if (daysLeft === null) {
@@ -324,12 +324,12 @@ function buildRentInfoLines(
   }
 
   if (daysLeft === 0) {
-    lines.push(`${MENU_LABEL}Deadline:\t\t\t${MENU_VALUE}today is the last day`);
+    lines.push(`${MENU_LABEL}截止日期：\t\t\t${MENU_VALUE}今天是最后一天`);
     return lines;
   }
 
   lines.push(
-    `${MENU_LABEL}Remaining:\t\t${MENU_VALUE}${daysLeft} ${rentDaysLeftLabel(daysLeft)}`
+    `${MENU_LABEL}剩余时间：\t\t${MENU_VALUE}${daysLeft}${rentDaysLeftLabel(daysLeft)}`
   );
   return lines;
 }

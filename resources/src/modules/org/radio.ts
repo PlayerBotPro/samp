@@ -8,7 +8,7 @@ export const RADIO_INTERIOR = 0;
 
 export const RADIOCENTR = defineGovOrg(
   ORG_RADIO_ID,
-  "Radio Center",
+  "电台",
   0xff8c00ff,
   {
     x: 1429.5406,
@@ -19,16 +19,16 @@ export const RADIOCENTR = defineGovOrg(
     world: RADIO_WORLD,
   },
   defineRanks([
-    { title: "Editorial Assistant", male: 250, female: 93, pay: 1700 },
-    { title: "News Layout Artist", male: 250, female: 93, pay: 2200 },
-    { title: "Radio Technician", male: 60, female: 93, pay: 2800 },
-    { title: "Journalist", male: 60, female: 93, pay: 3500 },
-    { title: "Senior Journalist", male: 170, female: 211, pay: 4300 },
-    { title: "Proofreader", male: 188, female: 211, pay: 5200 },
-    { title: "Assistant Editor", male: 188, female: 211, pay: 6300 },
-    { title: "Editor", male: 187, female: 211, pay: 7600 },
-    { title: "Editor-in-Chief", male: 227, female: 211, pay: 9100 },
-    { title: "Radio Center Director", male: 228, female: 150, pay: 11000 },
+    { title: "编辑助理", male: 250, female: 93, pay: 1700 },
+    { title: "新闻排版员", male: 250, female: 93, pay: 2200 },
+    { title: "广播技术员", male: 60, female: 93, pay: 2800 },
+    { title: "记者", male: 60, female: 93, pay: 3500 },
+    { title: "高级记者", male: 170, female: 211, pay: 4300 },
+    { title: "校对员", male: 188, female: 211, pay: 5200 },
+    { title: "副编辑", male: 188, female: 211, pay: 6300 },
+    { title: "编辑", male: 187, female: 211, pay: 7600 },
+    { title: "总编辑", male: 227, female: 211, pay: 9100 },
+    { title: "电台台长", male: 228, female: 150, pay: 11000 },
   ])
 );
 
@@ -45,6 +45,6 @@ export const RADIO_GATES: OrgGateDef[] = [
     ryOpen: 0,
     rz: 11.4037,
     radius: 14,
-    denyMessage: "You are not a member of the Radio Center.",
+    denyMessage: "你不是电台成员。",
   },
 ];

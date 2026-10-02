@@ -30,7 +30,7 @@ function kickSoon(player: Player): void {
 export function bindAdminKick(): void {
   registerCommand(
     "kick",
-    "Kick a player",
+    "踢出玩家",
     (player, args) => {
       if (!canUseKick(player)) {
         return;
@@ -47,7 +47,7 @@ export function bindAdminKick(): void {
       if (!idPart) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /kick [id] [reason (optional)]"
+          "用法：/kick [玩家ID] [原因（可选）]"
         );
         return;
       }
@@ -56,32 +56,32 @@ export function bindAdminKick(): void {
       if (!Number.isInteger(slot) || slot < 0) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /kick [id] [reason (optional)]"
+          "用法：/kick [玩家ID] [原因（可选）]"
         );
         return;
       }
 
       const target = omp.players.at(slot);
       if (!target || !isPlayerActive(target)) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       try {
         if (target.isNPC()) {
-          player.sendClientMessage(Color.error, "Player not found.");
+          player.sendClientMessage(Color.error, "未找到玩家。");
           return;
         }
       } catch {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       const adminTag = playerChatName(player);
       const targetTag = playerChatName(target);
       const line = reason
-        ? `Administrator ${adminTag} kicked player ${targetTag}. Reason: ${reason}.`
-        : `Administrator ${adminTag} kicked player ${targetTag}.`;
+        ? `管理员${adminTag}踢出了玩家${targetTag}。原因：${reason}。`
+        : `管理员${adminTag}踢出了玩家${targetTag}。`;
       broadcastAll(Color.error, line);
       kickSoon(target);
     },

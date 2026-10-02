@@ -69,7 +69,7 @@ function broadcastAll(color: number, text: string): void {
 export function bindAdminMute(): void {
   registerCommand(
     "mute",
-    "Mute a player",
+    "禁言玩家",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -79,25 +79,25 @@ export function bindAdminMute(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /mute [id] [minutes] [reason (optional)]"
+          "用法：/mute [玩家ID] [分钟数] [原因（可选）]"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (account.adminLevel >= 1) {
-        player.sendClientMessage(Color.error, "You cannot mute an administrator.");
+        player.sendClientMessage(Color.error, "不能禁言管理员。");
         return;
       }
 
@@ -131,14 +131,14 @@ async function applyMute(
       patchAccount(target, { mutedUntil: previous });
       watchMute(target);
     }
-    admin.sendClientMessage(Color.error, "Failed to save the mute.");
+    admin.sendClientMessage(Color.error, "无法保存禁言。");
     return;
   }
 
   const adminTag = playerChatName(admin);
   const targetTag = playerChatName(target);
   const line = reason
-    ? `Administrator ${adminTag} muted player ${targetTag}. Reason: ${reason}.`
-    : `Administrator ${adminTag} muted player ${targetTag}.`;
+    ? `管理员${adminTag}禁言了玩家${targetTag}。原因：${reason}。`
+    : `管理员${adminTag}禁言了玩家${targetTag}。`;
   broadcastAll(Color.error, line);
 }

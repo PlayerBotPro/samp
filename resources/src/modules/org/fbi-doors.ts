@@ -20,7 +20,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "You are not a member of the FBI.";
+const DENY = "你不是联邦调查局成员。";
 
 type DestKey = "interior" | "roof" | "ammunation" | "street";
 
@@ -79,7 +79,7 @@ const DOORS: readonly FbiDoor[] = [
       interior: FBI_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "FBI\nStaff entrance",
+    label: "联邦调查局\n员工入口",
     staffOnly: true,
   },
   {
@@ -99,7 +99,7 @@ const DOORS: readonly FbiDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Exit to street",
+    label: "返回街道",
     staffOnly: true,
   },
   {
@@ -111,11 +111,11 @@ const DOORS: readonly FbiDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "FBI\nRoof",
+    label: "联邦调查局\n屋顶",
     staffOnly: true,
     options: [
-      { key: "interior", label: "1. Office" },
-      { key: "ammunation", label: "2. Ammunation" },
+      { key: "interior", label: "1. 办公室" },
+      { key: "ammunation", label: "2. 武器店" },
     ],
   },
   {
@@ -127,11 +127,11 @@ const DOORS: readonly FbiDoor[] = [
       interior: FBI_INTERIOR,
       world: STREET_WORLD,
     },
-    label: "Roof\nAmmunation",
+    label: "屋顶\n武器店",
     staffOnly: true,
     options: [
-      { key: "roof", label: "1. Roof" },
-      { key: "ammunation", label: "2. Ammunation" },
+      { key: "roof", label: "1. 屋顶" },
+      { key: "ammunation", label: "2. 武器店" },
     ],
   },
   {
@@ -143,12 +143,12 @@ const DOORS: readonly FbiDoor[] = [
       interior: AMMUNATION_INTERIOR,
       world: ORG_FBI_ID,
     },
-    label: "Exit",
-    dialogTitle: "Exit",
+    label: "退出",
+    dialogTitle: "退出",
     staffOnly: false,
     options: [
-      { key: "roof", label: "1. Roof" },
-      { key: "interior", label: "2. Office" },
+      { key: "roof", label: "1. 屋顶" },
+      { key: "interior", label: "2. 办公室" },
     ],
   },
 ];
@@ -299,14 +299,14 @@ function openMenu(player: Player, door: FbiDoor): void {
       player,
       FBI_SERVICE_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      door.dialogTitle ?? "Staff exit",
+      door.dialogTitle ?? "员工出口",
       door.options.map((option) => option.label).join("\n"),
-      "Select",
-      "Cancel"
+      "选择",
+      "取消"
     );
   } catch {
     pending.delete(id);
-    deny(player, "Failed to open the menu.");
+    deny(player, "无法打开菜单。");
   }
 }
 
@@ -314,7 +314,7 @@ function canUseFbiDoor(player: Player, tellDeny: boolean): boolean {
   const account = getAccount(player);
   if (account?.hospitalized) {
     if (tellDeny) {
-      deny(player, "You need treatment. Take a bed: /hospital.");
+      deny(player, "你需要治疗，请使用/hospital占用病床。");
     }
     return false;
   }

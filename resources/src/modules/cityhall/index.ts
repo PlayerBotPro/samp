@@ -93,7 +93,7 @@ export const cityHallModule: GameModule = {
     );
 
     new TextLabel(
-      "City Hall\nEntrance",
+      "市政厅\n入口",
       Color.info,
       STREET_PICKUP.x,
       STREET_PICKUP.y,
@@ -103,7 +103,7 @@ export const cityHallModule: GameModule = {
       false
     );
     new TextLabel(
-      "Exit to street",
+      "返回街道",
       Color.info,
       INTERIOR_PICKUP.x,
       INTERIOR_PICKUP.y,
@@ -123,7 +123,7 @@ export const cityHallModule: GameModule = {
     );
 
     new TextLabel(
-      "Get passport",
+      "领取护照",
       Color.info,
       PASSPORT_PICKUP.x,
       PASSPORT_PICKUP.y,
@@ -160,7 +160,7 @@ function spawnPassportClerk(): void {
   actor.setInvulnerable(true);
 
   new TextLabel(
-    "Passport clerk\nDocument issuance",
+    "护照办理员\n证件签发",
     Color.info,
     PASSPORT_CLERK.x,
     PASSPORT_CLERK.y,
@@ -338,7 +338,7 @@ function tryGivePassport(player: Player): void {
   lastPassportMsgAt.set(id, now);
 
   if (account.passport) {
-    player.sendClientMessage(Color.gray, "You already have a passport.");
+    player.sendClientMessage(Color.gray, "你已有护照。");
     return;
   }
 
@@ -348,9 +348,9 @@ function tryGivePassport(player: Player): void {
     omp.log(`[${SERVER_TAG}] failed to save passport for ${account.name}: ${message}`);
   });
 
-  player.sendClientMessage(Color.info, "You received a Los Santos passport.");
+  player.sendClientMessage(Color.info, "你领取了洛圣都护照。");
   player.sendClientMessage(
     Color.gray,
-    "/pass - view, /pass [id] - show another player."
+    "/pass查看护照，/pass [玩家ID]向其他玩家出示护照。"
   );
 }

@@ -17,7 +17,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Access is restricted to City Hall and FBI personnel.";
+const DENY = "仅限市政厅和联邦调查局成员进入。";
 
 /** Staff entrance / parking / roof. */
 const STAFF_ORGS: ReadonlySet<number> = new Set([ORG_MERIYA_ID, ORG_FBI_ID]);
@@ -45,7 +45,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: MERIYA_CUSTOM_INTERIOR,
       world: MERIYA_WORLD,
     },
-    label: "City Hall\nStaff entrance",
+    label: "市政厅\n员工入口",
   },
   {
     pickup: {
@@ -63,7 +63,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Parking\nStaff exit",
+    label: "停车场\n员工出口",
   },
   {
     pickup: {
@@ -81,7 +81,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "City Hall\nRoof",
+    label: "市政厅\n屋顶",
   },
   {
     pickup: {
@@ -99,7 +99,7 @@ const DOORS: readonly StaffDoor[] = [
       interior: MERIYA_CUSTOM_INTERIOR,
       world: MERIYA_WORLD,
     },
-    label: "City Hall\nFrom roof",
+    label: "市政厅\n从屋顶进入",
   },
 ];
 
@@ -171,7 +171,7 @@ function tickStaffDoors(): void {
 function tryUse(player: Player, dest: SpawnPoint): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "You need treatment. Take a bed: /hospital.");
+    deny(player, "你需要治疗，请使用/hospital占用病床。");
     return;
   }
 

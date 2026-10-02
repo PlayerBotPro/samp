@@ -188,13 +188,13 @@ function findHouseAt(x: number, y: number, z: number): HouseRecord | null {
 
 function showFreeHouseDialog(player: Player, house: HouseRecord): void {
   const body = [
-    `${LABEL}Type:\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
-    `${LABEL}House number:\t\t${VALUE}${house.id}`,
-    `${LABEL}Price:\t\t${VALUE}${house.price}$`,
-    `${LABEL}Rent:\t\t${VALUE}$${dailyHouseRent(house.price)}/day`,
+    `${LABEL}类型：\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
+    `${LABEL}房屋编号：\t\t${VALUE}${house.id}`,
+    `${LABEL}价格：\t\t${VALUE}${house.price}$`,
+    `${LABEL}房屋费用：\t\t${VALUE}$${dailyHouseRent(house.price)}/天`,
     "",
-    `${LABEL}The house is paid through today when purchased.`,
-    `${LABEL}Renew at the bank.`,
+    `${LABEL}购买时包含今天的房屋费用。`,
+    `${LABEL}请到银行续费。`,
   ].join("\n");
 
   try {
@@ -202,24 +202,24 @@ function showFreeHouseDialog(player: Player, house: HouseRecord): void {
       player,
       HOUSE_BUY_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${FREE_TITLE}Vacant house`,
+      `${FREE_TITLE}空置房屋`,
       body,
-      "Buy",
-      "Close"
+      "购买",
+      "关闭"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Could not open the house window.");
+    player.sendClientMessage(Color.error, "无法打开房屋界面。");
   }
 }
 
 function showOccupiedHouseDialog(player: Player, house: HouseRecord): void {
-  const owner = house.ownerName ?? "Unknown";
+  const owner = house.ownerName ?? "未知";
   const body = [
-    `${LABEL}Owner:\t\t${OWNER_VALUE}${owner}`,
-    `${LABEL}Type:\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
-    `${LABEL}House number:\t\t${VALUE}${house.id}`,
-    `${LABEL}Price:\t\t${VALUE}${house.price}$`,
-    `${LABEL}Status:\t\t${VALUE}${houseLockStatusLabel(house.isLocked)}`,
+    `${LABEL}房主：\t\t${OWNER_VALUE}${owner}`,
+    `${LABEL}类型：\t\t\t${VALUE}${houseClassLabel(house.classId)}`,
+    `${LABEL}房屋编号：\t\t${VALUE}${house.id}`,
+    `${LABEL}价格：\t\t${VALUE}${house.price}$`,
+    `${LABEL}状态：\t\t${VALUE}${houseLockStatusLabel(house.isLocked)}`,
   ].join("\n");
 
   try {
@@ -227,13 +227,13 @@ function showOccupiedHouseDialog(player: Player, house: HouseRecord): void {
       player,
       HOUSE_ENTER_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${OCCUPIED_TITLE}Occupied house`,
+      `${OCCUPIED_TITLE}已有房主的房屋`,
       body,
-      "Enter",
-      "Cancel"
+      "进入",
+      "取消"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Could not open the house window.");
+    player.sendClientMessage(Color.error, "无法打开房屋界面。");
   }
 }
 

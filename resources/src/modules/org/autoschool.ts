@@ -6,7 +6,7 @@ export const AUTOSCHOOL_INTERIOR = 3;
 
 export const AUTOSCHOOL = defineGovOrg(
   ORG_AUTOSCHOOL_ID,
-  "Driving School",
+  "驾校",
   0xfff3b0ff,
   {
     x: -2024.3811,
@@ -17,15 +17,15 @@ export const AUTOSCHOOL = defineGovOrg(
     world: STREET_WORLD,
   },
   defineRanks([
-    { title: "Trainee", male: 185, female: 11, pay: 1700 },
-    { title: "Student", male: 185, female: 11, pay: 2200 },
-    { title: "Cadet", male: 185, female: 11, pay: 2800 },
-    { title: "Instructor Trainee", male: 59, female: 11, pay: 3500 },
-    { title: "Instructor", male: 59, female: 172, pay: 4300 },
-    { title: "Senior Instructor", male: 240, female: 172, pay: 5200 },
-    { title: "Examiner", male: 240, female: 172, pay: 6300 },
-    { title: "Senior Examiner", male: 171, female: 194, pay: 7600 },
-    { title: "Deputy Director", male: 189, female: 194, pay: 9100 },
-    { title: "Driving School Director", male: 295, female: 150, pay: 11000 },
+    { title: "实习生", male: 185, female: 11, pay: 1700 },
+    { title: "学员", male: 185, female: 11, pay: 2200 },
+    { title: "见习警员", male: 185, female: 11, pay: 2800 },
+    { title: "实习教练", male: 59, female: 11, pay: 3500 },
+    { title: "教练", male: 59, female: 172, pay: 4300 },
+    { title: "高级教练", male: 240, female: 172, pay: 5200 },
+    { title: "考官", male: 240, female: 172, pay: 6300 },
+    { title: "高级考官", male: 171, female: 194, pay: 7600 },
+    { title: "副主任", male: 189, female: 194, pay: 9100 },
+    { title: "驾校校长", male: 295, female: 150, pay: 11000 },
   ])
 );

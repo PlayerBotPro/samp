@@ -97,22 +97,22 @@ export function banDaysWord(days: number): string {
   const n = Math.abs(Math.floor(days)) % 100;
   const n1 = n % 10;
   if (n > 10 && n < 20) {
-    return "days";
+    return "天";
   }
   if (n1 === 1) {
-    return "day";
+    return "天";
   }
   if (n1 >= 2 && n1 <= 4) {
-    return "days";
+    return "天";
   }
-  return "days";
+  return "天";
 }
 
 export function kickBannedPlayer(player: Player, untilUnix: number, reason: string): void {
   const days = remainingBanDays(untilUnix);
   const word = banDaysWord(days);
-  const reasonText = reason.trim() || "not specified";
-  const chat = `You are banned for ${days} ${word}. Reason: ${reasonText}.`;
+  const reasonText = reason.trim() || "未填写";
+  const chat = `你被封禁${days}${word}，原因：${reasonText}。`;
 
   try {
     player.sendClientMessage(Color.error, chat);
@@ -125,9 +125,9 @@ export function kickBannedPlayer(player: Player, untilUnix: number, reason: stri
       player,
       BAN_NOTICE_DIALOG_ID,
       DialogStyle.msgbox,
-      "Ban",
-      `You are banned on this server.\nDuration: ${days} ${word}.\nReason: ${reasonText}`,
-      "OK",
+      "封禁",
+      `你已被本服务器封禁。\n期限：${days}${word}。\n原因：${reasonText}`,
+      "确定",
       ""
     );
   } catch {

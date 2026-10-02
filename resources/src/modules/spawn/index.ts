@@ -147,7 +147,7 @@ export const spawnModule: GameModule = {
           applyWallet(player, account);
         }
 
-        player.sendClientMessage(Color.error, "You are serving a prison sentence.");
+        player.sendClientMessage(Color.error, "你正在监狱服刑。");
         return;
       }
 
@@ -168,12 +168,12 @@ export const spawnModule: GameModule = {
           seenWorldSpawn.add(id);
         }
 
-        player.sendClientMessage(Color.info, "You lost consciousness...");
+        player.sendClientMessage(Color.info, "你失去了意识……");
         player.sendClientMessage(
           Color.gray,
-          "Doctors took you to All Saints City Hospital."
+          "医生将你送到了诸圣市立医院。"
         );
-        player.sendClientMessage(Color.gray, "Take a bed: /hospital.");
+        player.sendClientMessage(Color.gray, "使用/hospital占用病床。");
         return;
       }
 
@@ -199,7 +199,7 @@ export const spawnModule: GameModule = {
 
         player.sendClientMessage(
           Color.gray,
-          "Treatment is not complete. Take a bed: /hospital."
+          "治疗尚未完成，请使用/hospital占用病床。"
         );
         return;
       }
@@ -214,7 +214,7 @@ export const spawnModule: GameModule = {
         applyWallet(player, account);
         player.sendClientMessage(
           Color.gray,
-          "You spawned. /help - command list."
+          "你已出生，输入/help查看命令列表。"
         );
       }
 

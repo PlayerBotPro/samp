@@ -21,13 +21,13 @@ const DIALOG_STYLE_LIST = 2;
 type MenuKey = "stats" | "rules" | "report" | "invite";
 
 const MENU_ITEMS: Record<MenuKey, string> = {
-  stats: "Statistics",
-  rules: "Server rules",
-  report: "Contact administration",
-  invite: "Who invited you",
+  stats: "统计",
+  rules: "服务器规则",
+  report: "联系管理员",
+  invite: "邀请人",
 };
 
-registerCommand("mn", "Menu: statistics, rules, and contact administration", (player) => {
+registerCommand("mn", "菜单：统计、规则与联系管理员", (player) => {
   showMenu(player);
 });
 
@@ -94,13 +94,13 @@ function showMenu(player: Player): void {
       player,
       MENU_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Menu",
+      "菜单",
       body,
-      "Select",
-      "Close"
+      "选择",
+      "关闭"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the menu.");
+    player.sendClientMessage(Color.error, "无法打开菜单。");
   }
 }
 
@@ -112,11 +112,11 @@ function showRulesDialog(player: Player): void {
       DIALOG_STYLE_MSGBOX,
       RULES_TITLE,
       SERVER_RULES,
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the rules.");
+    player.sendClientMessage(Color.error, "无法打开规则。");
   }
 }
 
@@ -132,13 +132,13 @@ function showInviteDialog(player: Player, error?: string): void {
       player,
       INVITE_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Who invited you",
-      `${prefix}Enter the name of the player who invited you.\nFormat: Name_Surname`,
-      "Save",
-      "Cancel"
+      "邀请人",
+      `${prefix}请输入邀请你的玩家昵称。\n格式：Name_Surname`,
+      "保存",
+      "取消"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the form.");
+    player.sendClientMessage(Color.error, "无法打开表单。");
   }
 }
 
@@ -162,23 +162,23 @@ async function submitInvite(player: Player, raw: string): Promise<void> {
   }
 
   if (account.invitedBy) {
-    player.sendClientMessage(Color.gray, "The inviter is already specified.");
+    player.sendClientMessage(Color.gray, "邀请人已填写。");
     return;
   }
 
   const nick = raw.trim();
   if (!nick) {
-    showInviteDialog(player, "Enter a name.");
+    showInviteDialog(player, "请输入昵称。");
     return;
   }
 
   if (!isRoleplayName(nick)) {
-    showInviteDialog(player, "Name must use the Name_Surname format.");
+    showInviteDialog(player, "昵称必须使用Name_Surname格式。");
     return;
   }
 
   if (nick.toLowerCase() === account.name.toLowerCase()) {
-    showInviteDialog(player, "You cannot specify yourself.");
+    showInviteDialog(player, "不能填写自己。");
     return;
   }
 
@@ -194,7 +194,7 @@ async function submitInvite(player: Player, raw: string): Promise<void> {
     }
 
     if (!row) {
-      showInviteDialog(player, "This name is not registered.");
+      showInviteDialog(player, "此昵称尚未注册。");
       return;
     }
 
@@ -204,14 +204,14 @@ async function submitInvite(player: Player, raw: string): Promise<void> {
     }
 
     if (!saved) {
-      player.sendClientMessage(Color.gray, "The inviter is already specified.");
+      player.sendClientMessage(Color.gray, "邀请人已填写。");
       return;
     }
 
     patchAccount(player, { invitedBy: row.name });
     player.sendClientMessage(
       Color.info,
-      `Inviter saved: ${row.name}.`
+      `邀请人已保存：${row.name}。`
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -219,7 +219,7 @@ async function submitInvite(player: Player, raw: string): Promise<void> {
     if (isPlayerActive(player)) {
       player.sendClientMessage(
         Color.error,
-        "Failed to save. Try again later."
+        "保存失败，请稍后重试。"
       );
     }
   }

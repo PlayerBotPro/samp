@@ -15,7 +15,7 @@ const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
 const WEAPON_CAMERA = 43;
 const CAMERA_AMMO = 36;
-const DENY = "You are not a member of the radio station.";
+const DENY = "你不是电台成员。";
 
 const POINT = {
   x: 1411.8359,
@@ -28,7 +28,7 @@ const inside = new Set<number>();
 export function bindRadioLocker(): void {
   new Pickup(PICKUP_MODEL, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, RADIO_WORLD);
   new TextLabel(
-    "Camera",
+    "相机",
     Color.info,
     POINT.x,
     POINT.y,
@@ -98,7 +98,7 @@ function tryTake(player: Player): void {
   }
 
   if (account.hospitalized) {
-    tell(player, Color.error, "Complete treatment at the hospital first.");
+    tell(player, Color.error, "请先完成医院治疗。");
     return;
   }
 
@@ -111,11 +111,11 @@ function tryTake(player: Player): void {
   try {
     grantWeapon(player, WEAPON_CAMERA, CAMERA_AMMO);
   } catch {
-    tell(player, Color.error, "Failed to issue a camera.");
+    tell(player, Color.error, "无法发放相机。");
     return;
   }
 
-  tell(player, Color.info, "You took a camera.");
+  tell(player, Color.info, "你领取了相机。");
 }
 
 function tell(player: Player, color: number, text: string): void {

@@ -19,7 +19,7 @@ const DENY_COOLDOWN_MS = 2500;
 /** F / Enter. KEY_SECONDARY_ATTACK = 16. */
 const KEY_ENTER_VEHICLE = 16;
 const ENTER_RANGE = 5;
-const DEFAULT_DENY = "You cannot enter this vehicle.";
+const DEFAULT_DENY = "你不能进入此车辆。";
 
 type OrgVehicleAccess = {
   orgIds: readonly number[];

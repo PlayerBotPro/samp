@@ -12,13 +12,13 @@ import { getMembership } from "../org";
 import { registerCommand } from "./registry";
 
 const BUBBLE_MS = 3000;
-const BUBBLE_TEXT = "Radio message.";
+const BUBBLE_TEXT = "无线电消息。";
 
-registerCommand("r", "Organization radio", (player, args) => {
+registerCommand("r", "组织无线电", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership) {
-    player.sendClientMessage(Color.error, "You are not a member of an organization.");
+    player.sendClientMessage(Color.error, "你不是任何组织的成员。");
     return;
   }
 
@@ -28,12 +28,12 @@ registerCommand("r", "Organization radio", (player, args) => {
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Usage: /r [text]");
+    player.sendClientMessage(Color.error, "用法：/r [内容]");
     return;
   }
 
   const line = clipClientMessage(
-    `[R] ${membership.rank.title} ${playerChatName(player)}: ${text}`
+    `[无线电] ${membership.rank.title} ${playerChatName(player)}：${text}`
   );
   const orgId = membership.org.id;
 

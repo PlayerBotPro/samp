@@ -4,7 +4,7 @@ import { registerOrgVehicle } from "./access";
 import { createServerVehicle } from "./spawn";
 
 const RESPAWN_SEC = 1800;
-const DENY = "Only LSPD, County Police, and FBI personnel may enter.";
+const DENY = "仅限洛圣都警察局、郡警察局和联邦调查局成员进入。";
 
 const PRISON_VEHICLES: ReadonlyArray<{
   model: number;

@@ -46,15 +46,15 @@ type MedcardOffer = {
 /** Medcard offers: target slot -> offer. */
 const pendingOffers = new Map<number, MedcardOffer>();
 
-registerCommand("medcard", "Medcard: view or show it by ID", (player, args) => {
+registerCommand("medcard", "查看医疗卡或按ID出示医疗卡", (player, args) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Log in first.");
+    player.sendClientMessage(Color.error, "请先登录。");
     return;
   }
 
   if (!account.medcard) {
-    player.sendClientMessage(Color.error, "You do not have a medical card.");
+    player.sendClientMessage(Color.error, "你没有医疗卡。");
     return;
   }
 
@@ -66,13 +66,13 @@ registerCommand("medcard", "Medcard: view or show it by ID", (player, args) => {
 
   const slot = Number(rawId);
   if (!Number.isInteger(slot) || slot < 0) {
-    player.sendClientMessage(Color.error, "Usage: /medcard [id]");
+    player.sendClientMessage(Color.error, "用法：/medcard [玩家ID]");
     return;
   }
 
   const target = omp.players.at(slot);
   if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-    player.sendClientMessage(Color.error, "Player not found.");
+    player.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
@@ -82,19 +82,19 @@ registerCommand("medcard", "Medcard: view or show it by ID", (player, args) => {
   }
 
   if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-    player.sendClientMessage(Color.error, "Player is too far away.");
+    player.sendClientMessage(Color.error, "玩家距离太远。");
     return;
   }
 
   showMedcard(target, account);
-  const verb = byGender(account.gender, "showed", "showed");
-  player.sendClientMessage(Color.gray, `You ${verb} your medical card to ${playerName(target)}.`);
-  target.sendClientMessage(Color.gray, `${account.name} ${verb} you their medical card.`);
+  const verb = byGender(account.gender, "出示", "出示");
+  player.sendClientMessage(Color.gray, `你向${playerName(target)}${verb}了医疗卡。`);
+  target.sendClientMessage(Color.gray, `${account.name}向你${verb}了医疗卡。`);
 });
 
 registerCommand(
   "givemedcard",
-  "Issue a medical card (Hospital, rank 6+)",
+  "签发医疗卡（医院职位6级以上）",
   (player, args) => {
     const account = getAccount(player);
     const membership = account ? getMembership(account) : null;
@@ -106,7 +106,7 @@ registerCommand(
     ) {
       player.sendClientMessage(
         Color.error,
-        "Only hospital employees of rank 6 or higher can issue medical cards."
+        "只有职位6级以上的医院员工可以签发医疗卡。"
       );
       return;
     }
@@ -114,7 +114,7 @@ registerCommand(
     if (!isInMedcardIssueZone(player)) {
       player.sendClientMessage(
         Color.error,
-        "Medical cards can only be issued at the hospital."
+        "只能在医院签发医疗卡。"
       );
       return;
     }
@@ -123,7 +123,7 @@ registerCommand(
     if (parts.length < 2) {
       player.sendClientMessage(
         Color.error,
-        `Usage: /givemedcard [id] [amount ${MIN_PRICE}-${MAX_PRICE}]`
+        `用法：/givemedcard [玩家ID] [金额${MIN_PRICE}-${MAX_PRICE}]`
       );
       return;
     }
@@ -131,7 +131,7 @@ registerCommand(
     const slot = Number(parts[0]);
     const price = Math.floor(Number(parts[1]));
     if (!Number.isInteger(slot) || slot < 0) {
-      player.sendClientMessage(Color.error, "Invalid player ID.");
+      player.sendClientMessage(Color.error, "玩家ID无效。");
       return;
     }
 
@@ -143,14 +143,14 @@ registerCommand(
     ) {
       player.sendClientMessage(
         Color.error,
-        `Amount must be between $${MIN_PRICE} and $${MAX_PRICE}.`
+        `金额必须在$${MIN_PRICE}至$${MAX_PRICE}之间。`
       );
       return;
     }
 
     const target = omp.players.at(slot);
     if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-      player.sendClientMessage(Color.error, "Player not found.");
+      player.sendClientMessage(Color.error, "未找到玩家。");
       return;
     }
 
@@ -161,30 +161,30 @@ registerCommand(
     }
 
     if (targetSlot === issuerSlot) {
-      player.sendClientMessage(Color.error, "You cannot issue a medical card to yourself.");
+      player.sendClientMessage(Color.error, "不能给自己签发医疗卡。");
       return;
     }
 
     if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-      player.sendClientMessage(Color.error, "Player is too far away.");
+      player.sendClientMessage(Color.error, "玩家距离太远。");
       return;
     }
 
     const targetAccount = getAccount(target);
     if (!targetAccount) {
-      player.sendClientMessage(Color.error, "Player not found.");
+      player.sendClientMessage(Color.error, "未找到玩家。");
       return;
     }
 
     if (targetAccount.medcard) {
-      player.sendClientMessage(Color.error, "The player already has a medical card.");
+      player.sendClientMessage(Color.error, "玩家已有医疗卡。");
       return;
     }
 
     if (targetAccount.money < price) {
       player.sendClientMessage(
         Color.error,
-        `The player does not have enough money. $${price} required.`
+        `玩家资金不足，需要$${price}。`
       );
       return;
     }
@@ -198,15 +198,15 @@ registerCommand(
 
     player.sendClientMessage(
       Color.info,
-      `You offered a medical card to ${playerName(target)} for $${price}.`
+      `你向${playerName(target)}提出以$${price}签发医疗卡。`
     );
     target.sendClientMessage(
       Color.white,
-      `${playerName(player)} offers you a medical card for $${price}.`
+      `${playerName(player)}提出以$${price}为你签发医疗卡。`
     );
     target.sendClientMessage(
       Color.white,
-      "Press {00CC00}Y {FFFFFF}to view or {FF6600}N {FFFFFF}to decline"
+      "按{00CC00}Y{FFFFFF}查看，或按{FF6600}N{FFFFFF}拒绝"
     );
   }
 );
@@ -230,7 +230,7 @@ export function bindMedcardOffers(): void {
 
     if (Date.now() > offer.expiresAt) {
       pendingOffers.delete(slot);
-      player.sendClientMessage(Color.error, "The medical card offer has expired.");
+      player.sendClientMessage(Color.error, "医疗卡报价已过期。");
       return;
     }
 
@@ -268,40 +268,40 @@ function acceptOffer(target: Player, targetSlot: number, offer: MedcardOffer): v
   }
 
   if (targetAccount.medcard) {
-    target.sendClientMessage(Color.error, "You already have a medical card.");
+    target.sendClientMessage(Color.error, "你已有医疗卡。");
     return;
   }
 
   const issuer = omp.players.at(offer.issuerId);
   if (!issuer || !isPlayerActive(issuer) || !isAuthenticated(issuer)) {
-    target.sendClientMessage(Color.error, "The doctor left the game. Transaction cancelled.");
+    target.sendClientMessage(Color.error, "医生已离线，交易取消。");
     return;
   }
 
   const issuerAccount = getAccount(issuer);
   if (!issuerAccount || issuerAccount.id !== offer.issuerUserId) {
-    target.sendClientMessage(Color.error, "The doctor left the game. Transaction cancelled.");
+    target.sendClientMessage(Color.error, "医生已离线，交易取消。");
     return;
   }
 
   if (!arePlayersNearby(target, issuer, WHISPER_RADIUS)) {
-    target.sendClientMessage(Color.error, "The doctor is too far away. Transaction cancelled.");
-    issuer.sendClientMessage(Color.error, "The patient is too far away. Transaction cancelled.");
+    target.sendClientMessage(Color.error, "医生距离太远，交易取消。");
+    issuer.sendClientMessage(Color.error, "患者距离太远，交易取消。");
     return;
   }
 
   if (!isInMedcardIssueZone(issuer)) {
-    target.sendClientMessage(Color.error, "The doctor must be at the hospital. Transaction cancelled.");
-    issuer.sendClientMessage(Color.error, "Only issue medical cards at the hospital.");
+    target.sendClientMessage(Color.error, "医生必须在医院，交易取消。");
+    issuer.sendClientMessage(Color.error, "请仅在医院签发医疗卡。");
     return;
   }
 
   const price = offer.price;
   if (targetAccount.money < price) {
-    target.sendClientMessage(Color.error, `Not enough money. $${price} required.`);
+    target.sendClientMessage(Color.error, `资金不足，需要$${price}。`);
     issuer.sendClientMessage(
       Color.error,
-      `${playerName(target)} could not pay for the medical card ($${price}).`
+      `${playerName(target)}无法支付医疗卡费用（$${price}）。`
     );
     return;
   }
@@ -309,7 +309,7 @@ function acceptOffer(target: Player, targetSlot: number, offer: MedcardOffer): v
   const nextTargetMoney = targetAccount.money - price;
   const nextIssuerMoney = issuerAccount.money + price;
   if (!Number.isSafeInteger(nextIssuerMoney)) {
-    target.sendClientMessage(Color.error, "Payment failed.");
+    target.sendClientMessage(Color.error, "支付失败。");
     return;
   }
 
@@ -335,24 +335,24 @@ function acceptOffer(target: Player, targetSlot: number, offer: MedcardOffer): v
 
   issuer.sendClientMessage(
     Color.info,
-    `Player ${playerName(target)} bought a medical card for $${price}.`
+    `玩家${playerName(target)}以$${price}购买了医疗卡。`
   );
   target.sendClientMessage(
     Color.info,
-    `You bought a medical card for $${price}. View it with: /medcard`
+    `你以$${price}购买了医疗卡，输入/medcard查看。`
   );
   showMedcard(target, getAccount(target) ?? { ...targetAccount, medcard: true });
 }
 
 function refuseOffer(target: Player, targetSlot: number, offer: MedcardOffer): void {
   pendingOffers.delete(targetSlot);
-  target.sendClientMessage(Color.gray, "You declined the medical card.");
+  target.sendClientMessage(Color.gray, "你拒绝了医疗卡。");
 
   const issuer = omp.players.at(offer.issuerId);
   if (issuer && isPlayerActive(issuer)) {
     issuer.sendClientMessage(
       Color.gray,
-      `${playerName(target)} declined the medical card.`
+      `${playerName(target)}拒绝了医疗卡。`
     );
   }
 }
@@ -375,9 +375,9 @@ function isInMedcardIssueZone(player: Player): boolean {
 
 function showMedcard(viewer: Player, owner: Account): void {
   const body = [
-    row("Name", owner.name),
-    row("Status", "Medical card issued"),
-    row("Fitness", "Fit"),
+    row("姓名", owner.name),
+    row("状态", "已签发医疗卡"),
+    row("健康评估", "合格"),
   ].join("\n");
 
   try {
@@ -385,13 +385,13 @@ function showMedcard(viewer: Player, owner: Account): void {
       viewer,
       MEDCARD_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}Medical card: ${owner.name}`,
+      `${TITLE}医疗卡：${owner.name}`,
       body,
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    viewer.sendClientMessage(Color.error, "Failed to open the medical card.");
+    viewer.sendClientMessage(Color.error, "无法打开医疗卡。");
   }
 }
 

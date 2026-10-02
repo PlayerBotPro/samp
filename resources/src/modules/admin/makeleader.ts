@@ -18,7 +18,7 @@ import { hasAdminAccess } from "./session";
 export const MAKELEADER_DIALOG_ID = 12;
 
 const DIALOG_STYLE_LIST = 2;
-const REMOVE_LABEL = "Remove leader status";
+const REMOVE_LABEL = "取消首领身份";
 
 type PendingMakeleader = {
   slot: number;
@@ -37,11 +37,11 @@ function clearPending(player: Player): void {
 function targetBlocked(target: Player): string | null {
   const account = getAccount(target);
   if (!account) {
-    return "Player not found.";
+    return "未找到玩家。";
   }
 
   if (!account.passport) {
-    return "Player has no passport.";
+    return "玩家没有护照。";
   }
 
   return null;
@@ -78,14 +78,14 @@ function showOrgList(player: Player): boolean {
       player,
       MAKELEADER_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Leader management",
+      "首领管理",
       orgListLines().join("\n"),
-      "Select",
-      "Cancel"
+      "选择",
+      "取消"
     );
     return true;
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the list.");
+    player.sendClientMessage(Color.error, "无法打开列表。");
     return false;
   }
 }
@@ -136,12 +136,12 @@ async function applyLeader(
   try {
     await saveUserOrg(account.id, orgId, orgRank);
   } catch {
-    admin.sendClientMessage(Color.error, "Failed to save to database.");
+    admin.sendClientMessage(Color.error, "无法保存至数据库。");
     return;
   }
 
   if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
-    admin.sendClientMessage(Color.error, "Player not found.");
+    admin.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
@@ -152,19 +152,19 @@ async function applyLeader(
 
   const tag = playerChatName(target);
   if (orgId === ORG_NONE) {
-    admin.sendClientMessage(Color.info, `You removed ${tag} as leader.`);
+    admin.sendClientMessage(Color.info, `你取消了${tag}的首领身份。`);
     if (isPlayerActive(target)) {
-      target.sendClientMessage(Color.info, "You have been removed as leader.");
+      target.sendClientMessage(Color.info, "你的首领身份已被取消。");
     }
     return;
   }
 
   const orgName = getOrganization(orgId)?.name ?? "organization";
-  admin.sendClientMessage(Color.info, `You appointed ${tag} leader of ${orgName}.`);
+  admin.sendClientMessage(Color.info, `你任命${tag}为${orgName}的首领。`);
   if (isPlayerActive(target)) {
     target.sendClientMessage(
       Color.info,
-      `You have been appointed leader of ${orgName}.`
+      `你已被任命为${orgName}的首领。`
     );
   }
 }
@@ -172,7 +172,7 @@ async function applyLeader(
 export function bindAdminMakeleader(): void {
   registerCommand(
     "makeleader",
-    "Appoint an organization leader",
+    "任命组织首领",
     (player, args) => {
       if (!hasAdminAccess(player, 5)) {
         return;
@@ -181,13 +181,13 @@ export function bindAdminMakeleader(): void {
       const rawId = args.trim();
       const slot = Number(rawId);
       if (!rawId || !Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Usage: /makeleader [id]");
+        player.sendClientMessage(Color.error, "用法：/makeleader [玩家ID]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
@@ -234,7 +234,7 @@ export function bindAdminMakeleader(): void {
     const target = findTarget(pending.slot);
     const targetAccount = target ? getAccount(target) : null;
     if (!target || !targetAccount || targetAccount.id !== pending.accountId) {
-      player.sendClientMessage(Color.error, "Player not found.");
+      player.sendClientMessage(Color.error, "未找到玩家。");
       return;
     }
 

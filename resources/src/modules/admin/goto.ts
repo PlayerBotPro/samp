@@ -115,7 +115,7 @@ function broadcastAdmins(text: string): void {
 export function bindAdminGoto(): void {
   registerCommand(
     "goto",
-    "Teleport to a player",
+    "传送至玩家",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -123,38 +123,38 @@ export function bindAdminGoto(): void {
 
       const slot = parseSlot(args);
       if (slot === null) {
-        player.sendClientMessage(Color.error, "Usage: /goto [id]");
+        player.sendClientMessage(Color.error, "用法：/goto [玩家ID]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (isSamePlayer(player, target)) {
-        player.sendClientMessage(Color.error, "You cannot teleport to yourself.");
+        player.sendClientMessage(Color.error, "不能传送到自己。");
         return;
       }
 
       if (!canTeleport(player)) {
-        player.sendClientMessage(Color.error, "You cannot teleport now.");
+        player.sendClientMessage(Color.error, "现在无法传送。");
         return;
       }
 
       const point = readPoint(target);
       if (!point || !teleportPlayer(player, point)) {
-        player.sendClientMessage(Color.error, "Failed to teleport.");
+        player.sendClientMessage(Color.error, "传送失败。");
         return;
       }
 
       player.sendClientMessage(
         Color.info,
-        `You teleported to ${playerChatName(target)}.`
+        `你已传送至${playerChatName(target)}。`
       );
       broadcastAdmins(
-        `Administrator ${playerChatName(player)} teleported to ${playerChatName(target)}.`
+        `管理员${playerChatName(player)}传送至${playerChatName(target)}。`
       );
     },
     true
@@ -162,7 +162,7 @@ export function bindAdminGoto(): void {
 
   registerCommand(
     "gethere",
-    "Teleport a player to yourself",
+    "将玩家传送至自己",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -170,47 +170,47 @@ export function bindAdminGoto(): void {
 
       const slot = parseSlot(args);
       if (slot === null) {
-        player.sendClientMessage(Color.error, "Usage: /gethere [id]");
+        player.sendClientMessage(Color.error, "用法：/gethere [玩家ID]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (isSamePlayer(player, target)) {
-        player.sendClientMessage(Color.error, "You cannot teleport yourself.");
+        player.sendClientMessage(Color.error, "不能传送自己。");
         return;
       }
 
       if (!canTeleport(target)) {
-        player.sendClientMessage(Color.error, "You cannot teleport a player now.");
+        player.sendClientMessage(Color.error, "现在无法传送玩家。");
         return;
       }
 
       const point = readPoint(player);
       if (!point || !teleportPlayer(target, point)) {
-        player.sendClientMessage(Color.error, "Failed to teleport the player.");
+        player.sendClientMessage(Color.error, "玩家传送失败。");
         return;
       }
 
       player.sendClientMessage(
         Color.info,
-        `You teleported ${playerChatName(target)} to yourself.`
+        `你将${playerChatName(target)}传送到了自己身边。`
       );
       try {
         target.sendClientMessage(
           Color.info,
-          `Administrator ${playerChatName(player)} teleported you.`
+          `管理员${playerChatName(player)}传送了你。`
         );
       } catch {
         // Player already disconnected.
       }
 
       broadcastAdmins(
-        `[A] Administrator ${playerChatName(player)} teleported player ${playerChatName(target)} to themselves`
+        `[管理] 管理员${playerChatName(player)}将玩家${playerChatName(target)}传送到了自己身边。`
       );
     },
     true

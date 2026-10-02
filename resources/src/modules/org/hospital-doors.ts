@@ -14,7 +14,7 @@ const Z_BUMP = 0.02;
 const DRAW_DISTANCE = 120;
 const DENY_COOLDOWN_MS = 2500;
 const PLAYER_STATE_ONFOOT = 1;
-const DENY = "You are not a member of the hospital.";
+const DENY = "你不是医院成员。";
 
 type DoorDef = {
   x: number;

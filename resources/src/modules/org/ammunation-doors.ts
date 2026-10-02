@@ -76,7 +76,7 @@ function ammoBranch(
         world: orgId,
       },
       dest: streetExit,
-      label: "Exit",
+      label: "退出",
       allowedOrgIds: null,
       denyMessage,
     },
@@ -89,7 +89,7 @@ const ARMY_ALLOWED = [ORG_ARMY_ID, ORG_FBI_ID] as const;
 const DOORS: readonly AmmoDoor[] = [
   ...ammoBranch(
     ORG_LSPD_ID,
-    "Ammunation\nLSPD",
+    "武器店\n洛圣都警察局",
     { x: 1568.6284, y: -1690.084, z: 6.2188 },
     {
       x: 1568.538,
@@ -100,11 +100,11 @@ const DOORS: readonly AmmoDoor[] = [
       world: STREET_WORLD,
     },
     LSPD_ARMY_ALLOWED,
-    "LSPD and FBI personnel can enter."
+    "洛圣都警察局和联邦调查局成员可进入。"
   ),
   ...ammoBranch(
     ORG_ARMY_ID,
-    "Ammunation\nArmy",
+    "武器店\n军队",
     { x: 2721.2046, y: -2380.3906, z: 17.3403 },
     {
       x: 2721.2527,
@@ -115,7 +115,7 @@ const DOORS: readonly AmmoDoor[] = [
       world: STREET_WORLD,
     },
     ARMY_ALLOWED,
-    "Army and FBI personnel can enter."
+    "军队和联邦调查局成员可进入。"
   ),
 ];
 
@@ -188,7 +188,7 @@ function tryUse(player: Player, door: AmmoDoor): void {
   if (door.allowedOrgIds) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "You need treatment. Take a bed: /hospital.");
+      deny(player, "你需要治疗，请使用/hospital占用病床。");
       return;
     }
 

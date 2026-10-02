@@ -70,7 +70,7 @@ function playAnswerSound(player: Player): void {
 export function bindAdminAns(): void {
   registerCommand(
     "ans",
-    "Reply to a player",
+    "回复玩家",
     (player, args) => {
       if (!hasAdminAccess(player, 1)) {
         return;
@@ -85,25 +85,25 @@ export function bindAdminAns(): void {
       );
 
       if (!idPart || !text) {
-        player.sendClientMessage(Color.error, "Usage: /ans [id] [text]");
+        player.sendClientMessage(Color.error, "用法：/ans [玩家ID] [内容]");
         return;
       }
 
       const slot = Number(idPart);
       if (!Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Usage: /ans [id] [text]");
+        player.sendClientMessage(Color.error, "用法：/ans [玩家ID] [内容]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
-      const verb = byGender(getGender(player), "replied", "replied");
+      const verb = byGender(getGender(player), "回复", "回复");
       const line = clipClientMessage(
-        `[A] Administrator ${playerChatName(player)} ${verb} to player ${playerChatName(target)}: ${text}`
+        `[管理] 管理员${playerChatName(player)}向玩家${playerChatName(target)}${verb}：${text}`
       );
       sendAnswer(line, target);
     },

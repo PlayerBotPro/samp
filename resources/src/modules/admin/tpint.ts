@@ -12,8 +12,8 @@ export const TPINT_DIALOG_ID = 41;
 const MIN_LEVEL = 4;
 const DIALOG_STYLE_LIST = 2;
 const PAGE_SIZE = 16;
-const BACK_LABEL = "<<< Back";
-const NEXT_LABEL = ">>> Next";
+const BACK_LABEL = "<<< 上一页";
+const NEXT_LABEL = ">>> 下一页";
 const PLAYER_STATE_WASTED = 7;
 const PLAYER_STATE_SPECTATING = 9;
 
@@ -79,14 +79,14 @@ function showList(player: Player, page: number): void {
       player,
       TPINT_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      `Interiors (${safePage + 1}/${pageCount()})`,
+      `室内地点（${safePage + 1}/${pageCount()}）`,
       lines.join("\n"),
-      "Select",
-      "Close"
+      "选择",
+      "关闭"
     );
   } catch {
     pageByPlayer.delete(id);
-    player.sendClientMessage(Color.error, "Failed to open the interior list.");
+    player.sendClientMessage(Color.error, "无法打开室内地点列表。");
   }
 }
 
@@ -148,18 +148,18 @@ function teleportToInterior(player: Player, spot: AdminInterior): boolean {
 
 function goToSpot(player: Player, spot: AdminInterior): void {
   if (!canTeleport(player)) {
-    player.sendClientMessage(Color.error, "You cannot teleport now.");
+    player.sendClientMessage(Color.error, "现在无法传送。");
     return;
   }
 
   if (!teleportToInterior(player, spot)) {
-    player.sendClientMessage(Color.error, "Failed to teleport.");
+    player.sendClientMessage(Color.error, "传送失败。");
     return;
   }
 
   player.sendClientMessage(
     Color.info,
-    `Teleported to: ${spot.name} (interior ${spot.interior}).`
+    `已传送至${spot.name}（室内ID：${spot.interior}）。`
   );
 }
 
@@ -173,7 +173,7 @@ function clearPage(player: Player): void {
 export function bindAdminTpint(): void {
   registerCommand(
     "tpint",
-    "Teleport to an interior",
+    "传送至室内地点",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -189,7 +189,7 @@ export function bindAdminTpint(): void {
       if (!Number.isInteger(index) || index < 1 || index > ADMIN_INTERIORS.length) {
         player.sendClientMessage(
           Color.error,
-          `Usage: /tpint [1-${ADMIN_INTERIORS.length}]`
+          `用法：/tpint [1-${ADMIN_INTERIORS.length}]`
         );
         return;
       }
@@ -198,7 +198,7 @@ export function bindAdminTpint(): void {
       if (!spot) {
         player.sendClientMessage(
           Color.error,
-          `Usage: /tpint [1-${ADMIN_INTERIORS.length}]`
+          `用法：/tpint [1-${ADMIN_INTERIORS.length}]`
         );
         return;
       }

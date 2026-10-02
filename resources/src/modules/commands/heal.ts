@@ -1,6 +1,6 @@
 import { tryHealInHouse } from "../houses/heal";
 import { registerCommand } from "./registry";
 
-registerCommand("heal", "Treatment in a house with a first-aid kit", (player) => {
+registerCommand("heal", "在配备急救箱的房屋中治疗", (player) => {
   tryHealInHouse(player);
 });

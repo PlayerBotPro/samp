@@ -13,7 +13,7 @@ import { registerCommand } from "./registry";
 
 const BUBBLE_MS = 3000;
 
-registerCommand("f", "Gang or mafia chat", (player, args) => {
+registerCommand("f", "帮派或黑手党聊天", (player, args) => {
   const account = getAccount(player);
   const membership = account ? getMembership(account) : null;
   if (!account || !membership || !(membership.org.illegal || membership.org.mafia)) {
@@ -22,15 +22,15 @@ registerCommand("f", "Gang or mafia chat", (player, args) => {
 
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Usage: /f [text]");
+    player.sendClientMessage(Color.error, "用法：/f [内容]");
     return;
   }
 
   const line = clipClientMessage(
-    `[F] ${membership.rank.title} ${playerChatName(player)}: ${text}`
+    `[组织] ${membership.rank.title} ${playerChatName(player)}：${text}`
   );
   const orgId = membership.org.id;
-  const bubble = membership.org.mafia ? "Mafia message." : "Gang message.";
+  const bubble = membership.org.mafia ? "黑手党消息。" : "帮派消息。";
 
   omp.players.forEach((other) => {
     if (!isPlayerActive(other)) {

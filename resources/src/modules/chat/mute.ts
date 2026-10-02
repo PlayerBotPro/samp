@@ -21,7 +21,7 @@ export const MUTED_CHAT_COMMANDS = new Set([
 ]);
 
 const BUBBLE_MS = 3500;
-const BUBBLE_TEXT = "Tries to say something...";
+const BUBBLE_TEXT = "试着说些什么……";
 const MUTE_RED = 0xff0000ff;
 
 type MuteTimer = {
@@ -54,7 +54,7 @@ export function notifyIfMuted(player: Player, options?: { bubble?: boolean }): b
 
   player.sendClientMessage(
     Color.error,
-    `You are muted. Remaining: ${formatMuteLeft(left)}.`
+    `你已被禁言，剩余时间：${formatMuteLeft(left)}。`
   );
 
   if (options?.bubble) {
@@ -134,7 +134,7 @@ function expireMute(player: Player, notify: boolean): void {
   });
 
   if (notify && isPlayerActive(player)) {
-    player.sendClientMessage(Color.info, "You can use chat again.");
+    player.sendClientMessage(Color.info, "你可以再次聊天了。");
   }
 }
 
@@ -145,13 +145,13 @@ export function formatMuteLeft(ms: number): string {
   const seconds = totalSec % 60;
   const parts: string[] = [];
   if (hours > 0) {
-    parts.push(`${hours} h`);
+    parts.push(`${hours}小时`);
   }
   if (minutes > 0) {
-    parts.push(`${minutes} min`);
+    parts.push(`${minutes}分钟`);
   }
   if (seconds > 0 || parts.length === 0) {
-    parts.push(`${seconds} sec`);
+    parts.push(`${seconds}秒`);
   }
   return parts.join(" ");
 }

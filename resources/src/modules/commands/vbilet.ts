@@ -16,15 +16,15 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-registerCommand("vbilet", "Military ID: view or show by ID", (player, args) => {
+registerCommand("vbilet", "查看军人证或按ID出示军人证", (player, args) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Log in first.");
+    player.sendClientMessage(Color.error, "请先登录。");
     return;
   }
 
   if (!account.militaryId) {
-    player.sendClientMessage(Color.error, "You do not have a military ID.");
+    player.sendClientMessage(Color.error, "你没有军人证。");
     return;
   }
 
@@ -36,13 +36,13 @@ registerCommand("vbilet", "Military ID: view or show by ID", (player, args) => {
 
   const slot = Number(rawId);
   if (!Number.isInteger(slot) || slot < 0) {
-    player.sendClientMessage(Color.error, "Usage: /vbilet [id]");
+    player.sendClientMessage(Color.error, "用法：/vbilet [玩家ID]");
     return;
   }
 
   const target = omp.players.at(slot);
   if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-    player.sendClientMessage(Color.error, "Player not found.");
+    player.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
@@ -52,19 +52,19 @@ registerCommand("vbilet", "Military ID: view or show by ID", (player, args) => {
   }
 
   if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-    player.sendClientMessage(Color.error, "Player is too far away.");
+    player.sendClientMessage(Color.error, "玩家距离太远。");
     return;
   }
 
   showMilitaryId(target, account);
-  const verb = byGender(account.gender, "showed", "showed");
-  player.sendClientMessage(Color.gray, `You ${verb} your military ID to ${playerName(target)}.`);
-  target.sendClientMessage(Color.gray, `${account.name} ${verb} you their military ID.`);
+  const verb = byGender(account.gender, "出示", "出示");
+  player.sendClientMessage(Color.gray, `你向${playerName(target)}${verb}了军人证。`);
+  target.sendClientMessage(Color.gray, `${account.name}向你${verb}了军人证。`);
 });
 
 registerCommand(
   "givevbilet",
-  "Issue military ID (Army, rank 8+)",
+  "签发军人证（军队职位8级以上）",
   (player, args) => {
     const account = getAccount(player);
     const membership = account ? getMembership(account) : null;
@@ -76,36 +76,36 @@ registerCommand(
     ) {
       player.sendClientMessage(
         Color.error,
-        "Only Army staff of rank 8 or higher may issue military IDs."
+        "只有职位8级以上的军队成员可以签发军人证。"
       );
       return;
     }
 
     const slot = Number(args.trim());
     if (!Number.isInteger(slot) || slot < 0) {
-      player.sendClientMessage(Color.error, "Usage: /givevbilet [id]");
+      player.sendClientMessage(Color.error, "用法：/givevbilet [玩家ID]");
       return;
     }
 
     const target = omp.players.at(slot);
     if (!target || !isPlayerActive(target) || !isAuthenticated(target)) {
-      player.sendClientMessage(Color.error, "Player not found.");
+      player.sendClientMessage(Color.error, "未找到玩家。");
       return;
     }
 
     if (playerId(target) === playerId(player)) {
-      player.sendClientMessage(Color.error, "You cannot issue yourself a military ID.");
+      player.sendClientMessage(Color.error, "不能给自己签发军人证。");
       return;
     }
 
     const targetAccount = getAccount(target);
     if (!targetAccount) {
-      player.sendClientMessage(Color.error, "Player not found.");
+      player.sendClientMessage(Color.error, "未找到玩家。");
       return;
     }
 
     if (targetAccount.militaryId) {
-      player.sendClientMessage(Color.error, "The player already has a military ID.");
+      player.sendClientMessage(Color.error, "玩家已有军人证。");
       return;
     }
 
@@ -116,21 +116,21 @@ registerCommand(
 
     player.sendClientMessage(
       Color.info,
-      `You issued a military ID to ${playerName(target)}.`
+      `你向${playerName(target)}签发了军人证。`
     );
     target.sendClientMessage(
       Color.info,
-      `${playerName(player)} issued you a military ID. View it: /vbilet`
+      `${playerName(player)}为你签发了军人证，输入/vbilet查看。`
     );
   }
 );
 
 function showMilitaryId(viewer: Player, owner: Account): void {
-  const served = byGender(owner.gender, "Served", "Served");
+  const served = byGender(owner.gender, "已服役", "已服役");
   const body = [
-    row("Name", owner.name),
-    row("Status", "Military ID issued"),
-    row("Service", served),
+    row("姓名", owner.name),
+    row("状态", "已签发军人证"),
+    row("服役状态", served),
   ].join("\n");
 
   try {
@@ -138,13 +138,13 @@ function showMilitaryId(viewer: Player, owner: Account): void {
       viewer,
       VBILET_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}${owner.name}'s Military ID`,
+      `${TITLE}${owner.name}的军人证`,
       body,
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    viewer.sendClientMessage(Color.error, "Unable to open military ID.");
+    viewer.sendClientMessage(Color.error, "无法打开军人证。");
   }
 }
 

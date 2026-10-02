@@ -27,7 +27,7 @@ function parseHouseId(args: string): number | null {
 export function bindAdminAsellhouse(): void {
   registerCommand(
     "asellhouse",
-    "Release a house (sell to the state without payment)",
+    "收回房屋（无偿出售给政府）",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -35,12 +35,12 @@ export function bindAdminAsellhouse(): void {
 
       const houseId = parseHouseId(args);
       if (houseId === null) {
-        player.sendClientMessage(Color.error, "Usage: /asellhouse [house id]");
+        player.sendClientMessage(Color.error, "用法：/asellhouse [房屋ID]");
         return;
       }
 
       if (!getHouse(houseId)) {
-        player.sendClientMessage(Color.error, "House with this ID was not found.");
+        player.sendClientMessage(Color.error, "未找到该ID的房屋。");
         return;
       }
 
@@ -62,16 +62,16 @@ async function vacateHouse(admin: Player, houseId: number): Promise<void> {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] asellhouse ${account.name} house ${houseId}: ${message}`);
-    admin.sendClientMessage(Color.error, "Failed to release the house.");
+    admin.sendClientMessage(Color.error, "无法收回房屋。");
     return;
   }
 
   if (!result.ok) {
     if (result.reason === "not_found") {
-      admin.sendClientMessage(Color.error, "House with this ID was not found.");
+      admin.sendClientMessage(Color.error, "未找到该ID的房屋。");
       return;
     }
-    admin.sendClientMessage(Color.error, "Failed to release the house.");
+    admin.sendClientMessage(Color.error, "无法收回房屋。");
     return;
   }
 
@@ -83,10 +83,10 @@ async function vacateHouse(admin: Player, houseId: number): Promise<void> {
   if (result.wasOccupied) {
     admin.sendClientMessage(
       Color.info,
-      `House #${houseId} released. Previous owner: ID ${result.previousOwnerId}.`
+      `已收回${houseId}号房屋，原房主ID：${result.previousOwnerId}。`
     );
     return;
   }
 
-  admin.sendClientMessage(Color.info, `House #${houseId} was already available. State updated.`);
+  admin.sendClientMessage(Color.info, `${houseId}号房屋已可购买，状态已更新。`);
 }

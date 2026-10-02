@@ -10,7 +10,7 @@ const MIN_ADMIN_LEVEL = 5;
 
 function usageLines(): string[] {
   return [
-    "Usage: /gzcolor [id]",
+    "用法：/gzcolor [帮派ID]",
     ...GANGS.map((gang) => `${gang.id} - ${gang.name}`),
   ];
 }
@@ -32,7 +32,7 @@ function parseGangId(args: string): number | null {
 export function bindAdminGzcolor(): void {
   registerCommand(
     "gzcolor",
-    "Change gang zone owner",
+    "更改帮派领地归属",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_ADMIN_LEVEL)) {
         return;
@@ -50,18 +50,18 @@ export function bindAdminGzcolor(): void {
       if (!turf) {
         player.sendClientMessage(
           Color.error,
-          "Stand in the gang zone you want to change."
+          "请站在要更改的帮派领地内。"
         );
         return;
       }
 
       if (turf.orgId === orgId) {
-        player.sendClientMessage(Color.error, "This territory already belongs to this gang.");
+        player.sendClientMessage(Color.error, "该领地已属于这个帮派。");
         return;
       }
 
       if (isZoneUnderCapture(turf.id)) {
-        player.sendClientMessage(Color.error, "You cannot change the owner during a capture.");
+        player.sendClientMessage(Color.error, "争夺期间不能更改领地归属。");
         return;
       }
 
@@ -79,11 +79,11 @@ async function applyOwner(
 ): Promise<void> {
   const saved = await setGangZoneOwner(zoneId, orgId);
   if (!saved) {
-    admin.sendClientMessage(Color.error, "Failed to save the zone owner.");
+    admin.sendClientMessage(Color.error, "无法保存领地归属。");
     return;
   }
 
-  const nextName = getOrganization(orgId)?.name ?? "the gang";
-  const prevName = getOrganization(previousOrgId)?.name ?? "nobody";
-  admin.sendClientMessage(Color.info, `Zone #${zoneId}: ${prevName} -> ${nextName}.`);
+  const nextName = getOrganization(orgId)?.name ?? "帮派";
+  const prevName = getOrganization(previousOrgId)?.name ?? "无人";
+  admin.sendClientMessage(Color.info, `${zoneId}号领地：${prevName} -> ${nextName}。`);
 }

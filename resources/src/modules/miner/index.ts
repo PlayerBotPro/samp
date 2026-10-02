@@ -75,7 +75,7 @@ let metalStockLabel: TextLabel | null = null;
 
 function metalStockLabelText(): string {
   const metal = getWarehouse(WAREHOUSE_MINE_ID)?.metal ?? 0;
-  return `Metal\nin Storage\n${metal} kg`;
+  return `库存\n金属\n${metal}公斤`;
 }
 
 function refreshMetalStockLabel(): void {
@@ -121,7 +121,7 @@ export const minerModule: GameModule = {
     );
 
     new TextLabel(
-      "Mine\nMiner job",
+      "矿场\n采矿工作",
       Color.info,
       HIRE_POINT.x,
       HIRE_POINT.y,
@@ -132,7 +132,7 @@ export const minerModule: GameModule = {
     );
 
     new TextLabel(
-      "Mine\nInformation",
+      "矿场\n信息",
       Color.info,
       INFO_POINT.x,
       INFO_POINT.y,
@@ -172,7 +172,7 @@ export const minerModule: GameModule = {
     );
 
     new TextLabel(
-      "Metal sales\n$15 per 1 kg.",
+      "金属出售\n每公斤$15",
       Color.info,
       METAL_SELL_POINT.x,
       METAL_SELL_POINT.y,
@@ -374,21 +374,21 @@ function showInfoDialog(player: Player): void {
       player,
       MINER_INFO_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Mine",
+      "矿场",
       [
-        "Miner job",
+        "采矿工作",
         "",
-        "Regular ore: 6-16 kg, $15 per kg",
-        "Special ore: rare chance, 3-8 kg, $90 per kg",
+        "普通矿石：6-16公斤，每公斤$15",
+        "特殊矿石：稀有，3-8公斤，每公斤$90",
         "",
-        "Pay accumulates during the shift and is paid",
-        "only when you finish the job.",
+        "工资会在工作期间累计",
+        "仅在结束工作时发放。",
       ].join("\n"),
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -398,13 +398,13 @@ function showMetalBuyDialog(player: Player): void {
       player,
       MINER_METAL_BUY_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Buy metal",
-      "How many kg of metal do you want to buy?\nPrice per kg: $15",
-      "Buy",
-      "Cancel"
+      "购买金属",
+      "你想购买多少公斤金属？\n每公斤$15",
+      "购买",
+      "取消"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -419,13 +419,13 @@ function buyMetal(player: Player, rawInput: string): void {
   }
 
   if (!isOnFootAt(player, METAL_SELL_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Go to the metal sales point.");
+    player.sendClientMessage(Color.error, "请前往金属销售点。");
     return;
   }
 
   const kg = Math.floor(Number(rawInput.trim().replace(",", ".")));
   if (!Number.isFinite(kg) || kg <= 0 || !Number.isSafeInteger(kg)) {
-    player.sendClientMessage(Color.error, "Enter a whole number of kg greater than 0.");
+    player.sendClientMessage(Color.error, "请输入大于0的整数公斤数。");
     showMetalBuyDialog(player);
     return;
   }
@@ -435,8 +435,8 @@ function buyMetal(player: Player, rawInput: string): void {
     player.sendClientMessage(
       Color.error,
       stock <= 0
-        ? "There is no metal in storage."
-        : `Only ${stock} kg of metal is in storage.`
+        ? "仓库没有金属。"
+        : `仓库只有${stock}公斤金属。`
     );
     showMetalBuyDialog(player);
     return;
@@ -444,19 +444,19 @@ function buyMetal(player: Player, rawInput: string): void {
 
   const total = kg * METAL_PRICE_PER_KG;
   if (!Number.isSafeInteger(total) || total <= 0) {
-    player.sendClientMessage(Color.error, "Amount is too large.");
+    player.sendClientMessage(Color.error, "数量过大。");
     showMetalBuyDialog(player);
     return;
   }
 
   if (account.money < total) {
-    player.sendClientMessage(Color.error, `Not enough money. You need $${total}.`);
+    player.sendClientMessage(Color.error, `资金不足，需要$${total}。`);
     showMetalBuyDialog(player);
     return;
   }
 
   if (!takeMineMetal(kg)) {
-    player.sendClientMessage(Color.error, "Not enough metal in storage.");
+    player.sendClientMessage(Color.error, "仓库金属不足。");
     showMetalBuyDialog(player);
     return;
   }
@@ -479,7 +479,7 @@ function buyMetal(player: Player, rawInput: string): void {
 
   player.sendClientMessage(
     Color.info,
-    `You bought ${kg} kg of metal for $${total}.`
+    `你以$${total}购买了${kg}公斤金属。`
   );
 }
 
@@ -489,13 +489,13 @@ function showHireDialog(player: Player): void {
       player,
       MINER_HIRE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Mine",
-      "Do you want to become a miner?",
-      "Yes",
-      "No"
+      "矿场",
+      "你想成为矿工吗？",
+      "是",
+      "否"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -505,13 +505,13 @@ function showQuitDialog(player: Player, job: Job): void {
       player,
       MINER_QUIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Mine",
-      `Finish your shift and collect your reward?\nCurrent: ${job.kg} kg, $${job.salary}`,
-      "Yes",
-      "No"
+      "矿场",
+      `结束工作并领取报酬？\n当前：${job.kg}公斤，$${job.salary}`,
+      "是",
+      "否"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -527,22 +527,22 @@ function hire(player: Player): void {
   }
 
   if (account.hospitalized) {
-    player.sendClientMessage(Color.error, "Finish treatment first.");
+    player.sendClientMessage(Color.error, "请先完成治疗。");
     return;
   }
 
   if (isLoaderOnShift(player)) {
-    player.sendClientMessage(Color.error, "Finish your loader shift first.");
+    player.sendClientMessage(Color.error, "请先结束搬运工作。");
     return;
   }
 
   if (isArmyFactoryOnShift(player)) {
-    player.sendClientMessage(Color.error, "Finish your ammunition factory shift first.");
+    player.sendClientMessage(Color.error, "请先结束弹药工厂工作。");
     return;
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Go to the hiring point.");
+    player.sendClientMessage(Color.error, "请前往招聘点。");
     return;
   }
 
@@ -570,7 +570,7 @@ function hire(player: Player): void {
 
   givePickaxe(player);
   setMineCheckpoint(player, job);
-  player.sendClientMessage(Color.info, "You are now a miner. Go to the marker and mine ore.");
+  player.sendClientMessage(Color.info, "你已成为矿工，请前往标记处采矿。");
 }
 
 function finishShift(player: Player): void {
@@ -582,7 +582,7 @@ function finishShift(player: Player): void {
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Go to the hiring point.");
+    player.sendClientMessage(Color.error, "请前往招聘点。");
     return;
   }
 
@@ -602,7 +602,7 @@ function finishShift(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Shift finished. You mined ${kg} kg of ore and received $${salary}.`
+    `工作结束，采集了${kg}公斤矿石，获得$${salary}。`
   );
 }
 
@@ -623,7 +623,7 @@ function abortShift(player: Player, notify: boolean): void {
   if (notify && isPlayerActive(player)) {
     player.sendClientMessage(
       Color.error,
-      "Shift failed. Your ore and pay have been lost."
+      "工作失败，矿石和工资已丢失。"
     );
   }
 }
@@ -810,7 +810,7 @@ function finishPickup(player: Player, expectedId: number): void {
     return;
   }
 
-  player.sendClientMessage(Color.info, "The ore is in the cart. Take it to storage.");
+  player.sendClientMessage(Color.info, "矿石已装入矿车，请送至仓库。");
 }
 
 function deliver(player: Player, job: Job): void {
@@ -836,12 +836,12 @@ function deliver(player: Player, job: Job): void {
   givePickaxe(player);
   setMineCheckpoint(player, job);
 
-  const kind = special ? "special" : "regular";
+  const kind = special ? "特殊" : "普通";
   player.sendClientMessage(
     Color.info,
-    `Delivered: ${kind} ore, ${kg} kg. +$${pay}`
+    `已送达：${kind}矿石，${kg}公斤，获得$${pay}。`
   );
-  player.sendClientMessage(Color.white, `Shift pay: $${job.salary}`);
+  player.sendClientMessage(Color.white, `本次工作报酬：$${job.salary}`);
 }
 
 function loseLoad(player: Player): void {
@@ -861,7 +861,7 @@ function loseLoad(player: Player): void {
   setMineCheckpoint(player, job);
   player.sendClientMessage(
     Color.error,
-    "You broke the cart. The ore is lost; mine again."
+    "矿车已损坏，矿石丢失，请重新采矿。"
   );
 }
 

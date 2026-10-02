@@ -88,7 +88,7 @@ function spawnFleet(orgId: number, deny: string, cars: readonly MafiaCar[]): voi
 }
 
 export function spawnMafiaVehicles(): void {
-  spawnFleet(ORG_YAKUZA_ID, "You are not a member of the Yakuza.", YAKUZA_CARS);
-  spawnFleet(ORG_LCN_ID, "You are not a member of La Cosa Nostra.", LCN_CARS);
-  spawnFleet(ORG_RUSSIAN_MAFIA_ID, "You are not a member of the Russian Mafia.", RUSSIAN_MAFIA_CARS);
+  spawnFleet(ORG_YAKUZA_ID, "你不是山口组成员。", YAKUZA_CARS);
+  spawnFleet(ORG_LCN_ID, "你不是科萨诺斯特拉成员。", LCN_CARS);
+  spawnFleet(ORG_RUSSIAN_MAFIA_ID, "你不是俄罗斯黑手党成员。", RUSSIAN_MAFIA_CARS);
 }

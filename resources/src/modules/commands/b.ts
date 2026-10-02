@@ -4,14 +4,14 @@ import { playerChatName } from "../../shared/player";
 import { hasAdminAccess } from "../admin/session";
 import { registerCommand } from "./registry";
 
-registerCommand("b", "Nearby out-of-character chat (OOC)", (player, args) => {
+registerCommand("b", "附近角色外聊天", (player, args) => {
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Usage: /b [text]");
+    player.sendClientMessage(Color.error, "用法：/b [内容]");
     return;
   }
 
-  const prefix = hasAdminAccess(player, 1) ? "Administrator " : "";
+  const prefix = hasAdminAccess(player, 1) ? "管理员 " : "";
   sendNearby(
     player,
     CHAT_RADIUS,

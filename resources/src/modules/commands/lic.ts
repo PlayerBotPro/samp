@@ -14,10 +14,10 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-registerCommand("lic", "Licenses: view or show by ID", (player, args) => {
+registerCommand("lic", "查看执照或按ID出示执照", (player, args) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Log in first.");
+    player.sendClientMessage(Color.error, "请先登录。");
     return;
   }
 
@@ -29,13 +29,13 @@ registerCommand("lic", "Licenses: view or show by ID", (player, args) => {
 
   const slot = Number(rawId);
   if (!Number.isInteger(slot) || slot < 0) {
-    player.sendClientMessage(Color.error, "Usage: /lic [id]");
+    player.sendClientMessage(Color.error, "用法：/lic [玩家ID]");
     return;
   }
 
   const target = omp.players.at(slot);
   if (!target || !isPlayerActive(target)) {
-    player.sendClientMessage(Color.error, "Player not found.");
+    player.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
@@ -45,20 +45,20 @@ registerCommand("lic", "Licenses: view or show by ID", (player, args) => {
   }
 
   if (!getAccount(target)) {
-    player.sendClientMessage(Color.error, "Player not found.");
+    player.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
   if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-    player.sendClientMessage(Color.error, "Player is too far away.");
+    player.sendClientMessage(Color.error, "玩家距离太远。");
     return;
   }
 
   showLicenses(target, account);
   const shownTo = playerName(target);
-  const verb = byGender(account.gender, "showed", "showed");
-  player.sendClientMessage(Color.gray, `You ${verb} your licenses to ${shownTo}.`);
-  target.sendClientMessage(Color.gray, `${account.name} ${verb} you their licenses.`);
+  const verb = byGender(account.gender, "出示", "出示");
+  player.sendClientMessage(Color.gray, `你向${shownTo}${verb}了执照。`);
+  target.sendClientMessage(Color.gray, `${account.name}向你${verb}了执照。`);
 });
 
 function licRow(label: string, value: string): string {
@@ -67,7 +67,7 @@ function licRow(label: string, value: string): string {
 
 function showLicenses(viewer: Player, owner: Account): void {
   const body = LICENSE_ROWS.map((row) =>
-    licRow(row.label, owner.licenses[row.key] ? "Yes" : "No")
+    licRow(row.label, owner.licenses[row.key] ? "是" : "否")
   ).join("\n");
 
   try {
@@ -75,12 +75,12 @@ function showLicenses(viewer: Player, owner: Account): void {
       viewer,
       LICENSES_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}${owner.name}'s Licenses`,
+      `${TITLE}${owner.name}的执照`,
       body,
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    viewer.sendClientMessage(Color.error, "Unable to open licenses.");
+    viewer.sendClientMessage(Color.error, "无法打开执照。");
   }
 }

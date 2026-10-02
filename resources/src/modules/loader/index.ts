@@ -84,7 +84,7 @@ export const loaderModule: GameModule = {
     );
 
     new TextLabel(
-      "Warehouse\nLoader job",
+      "仓库\n搬运工作",
       Color.info,
       HIRE_POINT.x,
       HIRE_POINT.y,
@@ -123,13 +123,13 @@ export const loaderModule: GameModule = {
     omp.on("playerKeyStateChange", (player, newKeys, oldKeys) => {
       const pressed = newKeys & ~oldKeys;
       if ((pressed & KEY_JUMP) !== 0 || (pressed & KEY_FIRE) !== 0) {
-        dropBag(player, "You dropped the bag!");
+        dropBag(player, "你丢下了袋子！");
       }
     });
 
     omp.on("playerStateChange", (player, newState) => {
       if (newState === PLAYER_STATE_DRIVER || newState === PLAYER_STATE_PASSENGER) {
-        dropBag(player, "You dropped the bag!");
+        dropBag(player, "你丢下了袋子！");
       }
     });
 
@@ -260,13 +260,13 @@ function showHireDialog(player: Player): void {
       player,
       LOADER_HIRE_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Warehouse",
-      "Do you want to become a loader?",
-      "Yes",
-      "No"
+      "仓库",
+      "你想成为搬运工吗？",
+      "是",
+      "否"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Could not open the dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -276,13 +276,13 @@ function showQuitDialog(player: Player, job: Job): void {
       player,
       LOADER_QUIT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Warehouse",
-      `End your shift and receive payment?\nBags moved: ${job.bags}, $${job.salary}`,
-      "Yes",
-      "No"
+      "仓库",
+      `结束工作并领取工资？\n已搬运${job.bags}袋，工资$${job.salary}`,
+      "是",
+      "否"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Could not open the dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -298,32 +298,32 @@ function hire(player: Player): void {
   }
 
   if (account.hospitalized) {
-    player.sendClientMessage(Color.error, "Finish treatment first.");
+    player.sendClientMessage(Color.error, "请先完成治疗。");
     return;
   }
 
   if (isJailed(player)) {
-    player.sendClientMessage(Color.error, "You cannot work in prison.");
+    player.sendClientMessage(Color.error, "监禁期间无法工作。");
     return;
   }
 
   if (isMinerOnShift(player)) {
-    player.sendClientMessage(Color.error, "Finish your mine shift first.");
+    player.sendClientMessage(Color.error, "请先结束矿场工作。");
     return;
   }
 
   if (isArmyFactoryOnShift(player)) {
-    player.sendClientMessage(Color.error, "Finish your ammunition factory shift first.");
+    player.sendClientMessage(Color.error, "请先结束弹药工厂工作。");
     return;
   }
 
   if (getExam(player)) {
-    player.sendClientMessage(Color.error, "Finish your driving-school exam first.");
+    player.sendClientMessage(Color.error, "请先完成驾校考试。");
     return;
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Move closer to the employment point.");
+    player.sendClientMessage(Color.error, "请靠近招聘点。");
     return;
   }
 
@@ -350,7 +350,7 @@ function hire(player: Player): void {
   setPickupCheckpoint(player);
   player.sendClientMessage(
     Color.info,
-    "Workday started. Carry bags from the loading area to the warehouse - marker on the radar."
+    "工作已开始，请将袋子从装货区搬至仓库，雷达上已标记位置。"
   );
 }
 
@@ -363,7 +363,7 @@ function finishShift(player: Player): void {
   }
 
   if (!isOnFootAt(player, HIRE_POINT, PICKUP_RADIUS + 0.8)) {
-    player.sendClientMessage(Color.error, "Move closer to the employment point.");
+    player.sendClientMessage(Color.error, "请靠近招聘点。");
     return;
   }
 
@@ -383,7 +383,7 @@ function finishShift(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Shift complete. Bags: ${bags}. Pay: $${salary}.`
+    `工作完成，已搬运${bags}袋，报酬：$${salary}。`
   );
 }
 
@@ -400,7 +400,7 @@ function abortShift(player: Player, notify: boolean): void {
   if (notify && isPlayerActive(player)) {
     player.sendClientMessage(
       Color.error,
-      "Shift failed. Unpaid wages were lost."
+      "工作失败，未领取的工资已丢失。"
     );
   }
 }
@@ -453,12 +453,12 @@ function takeBag(player: Player, job: Job): void {
   } catch {
     clearBag(player);
     setPickupCheckpoint(player);
-    player.sendClientMessage(Color.error, "Could not take the bag. Try again.");
+    player.sendClientMessage(Color.error, "无法拿起袋子，请重试。");
     return;
   }
 
   job.phase = "carry";
-  player.sendClientMessage(Color.info, "Bag in hand. Carry it to the unloading point.");
+  player.sendClientMessage(Color.info, "已拿起袋子，请搬至卸货点。");
 }
 
 function deliverBag(player: Player, job: Job): void {
@@ -485,9 +485,9 @@ function deliverBag(player: Player, job: Job): void {
 
   player.sendClientMessage(
     Color.info,
-    `Bags moved: ${job.bags}. +$${PAY_PER_BAG}`
+    `已搬运${job.bags}袋，获得$${PAY_PER_BAG}。`
   );
-  player.sendClientMessage(Color.white, `Shift wages: $${job.salary}`);
+  player.sendClientMessage(Color.white, `本次工作工资：$${job.salary}`);
 }
 
 function dropBag(player: Player, message: string): void {

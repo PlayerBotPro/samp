@@ -19,7 +19,7 @@ const TICK_MS = 200;
 const AMMO_LABEL_HEIGHT = 1.4;
 const AMMO_LABEL_DRAW_DISTANCE = 12;
 const MAX_ARMOR = 100;
-const DENY = "You are not a member of the Army.";
+const DENY = "你不是军队成员。";
 
 /** Army ammunation (interior 6, VW = org_id). */
 const POINT = {
@@ -36,10 +36,10 @@ type LockerItem = {
 };
 
 const ITEMS: readonly LockerItem[] = [
-  { label: "Body Armor", kind: "armor", id: 0 },
-  { label: "Desert Eagle", kind: "weapon", id: 24, ammo: 50 },
-  { label: "M4", kind: "weapon", id: 31, ammo: 150 },
-  { label: "Rifle", kind: "weapon", id: 33, ammo: 50 },
+  { label: "防弹衣", kind: "armor", id: 0 },
+  { label: "沙漠之鹰", kind: "weapon", id: 24, ammo: 50 },
+  { label: "M4步枪", kind: "weapon", id: 31, ammo: 150 },
+  { label: "步枪", kind: "weapon", id: 33, ammo: 50 },
 ];
 
 const inside = new Set<number>();
@@ -47,7 +47,7 @@ let ammoStockLabel: TextLabel | null = null;
 
 function ammoStockLabelText(): string {
   const ammo = getWarehouse(ORG_ARMY_ID)?.ammo ?? 0;
-  return `Ammunition: ${ammo}`;
+  return `弹药：${ammo}`;
 }
 
 export function refreshArmyAmmoStockLabel(): void {
@@ -162,7 +162,7 @@ function canUseLocker(player: Player, tellDeny = false): boolean {
 
   if (account.hospitalized) {
     if (tellDeny) {
-      tell(player, Color.error, "Receive treatment at the hospital first.");
+      tell(player, Color.error, "请先到医院接受治疗。");
     }
     return false;
   }
@@ -184,13 +184,13 @@ function showLocker(player: Player): void {
       player,
       ARMY_LOCKER_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Armory",
+      "军械库",
       ITEMS.map((item, index) => `${index + 1}. ${item.label}`).join("\n"),
-      "Take",
-      "Close"
+      "领取",
+      "关闭"
     );
   } catch {
-    tell(player, Color.error, "Failed to open the warehouse.");
+    tell(player, Color.error, "无法打开仓库。");
   }
 }
 
@@ -208,14 +208,14 @@ function giveItem(player: Player, item: LockerItem): void {
   try {
     if (item.kind === "armor") {
       grantArmour(player, MAX_ARMOR);
-      tell(player, Color.info, "You put on body armor.");
+      tell(player, Color.info, "你穿上了防弹衣。");
       return;
     }
 
     grantWeapon(player, item.id, item.ammo ?? 1);
-    tell(player, Color.info, `You took: ${item.label}.`);
+    tell(player, Color.info, `你领取了${item.label}。`);
   } catch {
-    tell(player, Color.error, "Failed to issue equipment.");
+    tell(player, Color.error, "无法发放装备。");
   }
 }
 

@@ -22,7 +22,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Army and FBI personnel can enter.";
+const DENY = "军队和联邦调查局成员可进入。";
 const ALLOWED = [ORG_ARMY_ID, ORG_FBI_ID] as const;
 
 type FactoryDoor = {
@@ -50,7 +50,7 @@ const DOORS: readonly FactoryDoor[] = [
       interior: ARMY_FACTORY_INTERIOR,
       world: ARMY_FACTORY_WORLD,
     },
-    label: "Factory\nEntrance",
+    label: "工厂\n入口",
     staffOnly: true,
   },
   {
@@ -69,7 +69,7 @@ const DOORS: readonly FactoryDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Exit to base",
+    label: "返回基地",
     staffOnly: false,
   },
 ];
@@ -143,7 +143,7 @@ function tryUse(player: Player, door: FactoryDoor): void {
   if (door.staffOnly) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "You need treatment. Take a bed: /hospital.");
+      deny(player, "你需要治疗，请使用/hospital占用病床。");
       return;
     }
 

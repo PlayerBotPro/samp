@@ -17,7 +17,7 @@ const MAX_ARMOR = 100;
 const WEAPON_NIGHTSTICK = 3;
 const WEAPON_DEAGLE = 24;
 const DEAGLE_AMMO = 50;
-const DENY = "You are not a member of City Hall.";
+const DENY = "你不是市政厅成员。";
 
 const POINT = {
   x: -806.9103,
@@ -30,7 +30,7 @@ const inside = new Set<number>();
 export function bindMeriyaLocker(): void {
   new Pickup(PICKUP_MODEL, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, MERIYA_WORLD);
   new TextLabel(
-    "City Hall Warehouse\nArmor, baton, Deagle",
+    "市政厅仓库\n防弹衣、警棍、沙漠之鹰",
     Color.info,
     POINT.x,
     POINT.y,
@@ -100,7 +100,7 @@ function tryTake(player: Player): void {
   }
 
   if (account.hospitalized) {
-    tell(player, Color.error, "Complete treatment at the hospital first.");
+    tell(player, Color.error, "请先完成医院治疗。");
     return;
   }
 
@@ -115,11 +115,11 @@ function tryTake(player: Player): void {
     grantWeapon(player, WEAPON_NIGHTSTICK, 1);
     grantWeapon(player, WEAPON_DEAGLE, DEAGLE_AMMO);
   } catch {
-    tell(player, Color.error, "Failed to issue equipment.");
+    tell(player, Color.error, "无法发放装备。");
     return;
   }
 
-  tell(player, Color.info, "You took body armor, a baton, and a Desert Eagle.");
+  tell(player, Color.info, "你领取了防弹衣、警棍和沙漠之鹰。");
 }
 
 function tell(player: Player, color: number, text: string): void {

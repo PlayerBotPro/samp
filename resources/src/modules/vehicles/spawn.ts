@@ -149,7 +149,7 @@ function toggleEngine(player: Player): void {
   try {
     player.sendClientMessage(
       Color.info,
-      running ? "Engine stopped." : "Engine started."
+      running ? "发动机已关闭。" : "发动机已启动。"
     );
   } catch {
     // Player has already disconnected.

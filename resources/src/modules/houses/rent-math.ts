@@ -15,7 +15,7 @@ export function currentDateLocal(): string {
 
 export function formatRentDate(isoDate: string | null): string {
   if (!isoDate) {
-    return "unpaid";
+    return "未缴费";
   }
 
   const [year, month, day] = isoDate.split("-");
@@ -54,12 +54,12 @@ export function rentDaysLeftLabel(days: number): string {
   const mod10 = days % 10;
   const mod100 = days % 100;
   if (mod10 === 1 && mod100 !== 11) {
-    return "day";
+    return "天";
   }
   if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return "days";
+    return "天";
   }
-  return "days";
+  return "天";
 }
 
 export function parseRentDate(value: Date | string | null | undefined): string | null {

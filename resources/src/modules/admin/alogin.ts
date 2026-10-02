@@ -60,13 +60,13 @@ function showPasswordDialog(
 ): void {
   setMode(player, mode);
   const prefix = error ? `${error}\n\n` : "";
-  const title = mode === "login" ? "Admin panel: login" : "Admin panel: password";
+  const title = mode === "login" ? "管理面板：登录" : "管理面板：密码";
   const body =
     mode === "login"
-      ? `${prefix}Enter the admin password:`
+      ? `${prefix}请输入管理员密码：`
       : mode === "set"
-        ? `${prefix}No admin password is set yet.\nCreate a password (at least 6 characters):`
-        : `${prefix}Repeat the admin password:`;
+        ? `${prefix}尚未设置管理员密码。\n请创建密码（至少6个字符）：`
+        : `${prefix}请再次输入管理员密码：`;
 
   try {
     Dialog.show(
@@ -75,8 +75,8 @@ function showPasswordDialog(
       DIALOG_STYLE_PASSWORD,
       title,
       body,
-      "OK",
-      "Cancel"
+      "确定",
+      "取消"
     );
   } catch {
     // Player already disconnected.
@@ -90,7 +90,7 @@ export function promptAdminPasswordSetup(player: Player): void {
 function kickAfterFails(player: Player): void {
   player.sendClientMessage(
     Color.error,
-    "Three incorrect admin login attempts. Kicked."
+    "管理员密码连续三次错误，已被踢出。"
   );
   kickSamePlayer(player);
 }
@@ -98,12 +98,12 @@ function kickAfterFails(player: Player): void {
 async function startAlogin(player: Player): Promise<void> {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Log in to your account first.");
+    player.sendClientMessage(Color.error, "请先登录账号。");
     return;
   }
 
   if (isAdminLoggedIn(player)) {
-    player.sendClientMessage(Color.info, "You are already logged in to the admin panel.");
+    player.sendClientMessage(Color.info, "你已登录管理面板。");
     return;
   }
 
@@ -111,7 +111,7 @@ async function startAlogin(player: Player): Promise<void> {
   try {
     creds = await findAdminCredentials(account.id);
   } catch {
-    player.sendClientMessage(Color.error, "Failed to verify the admin panel.");
+    player.sendClientMessage(Color.error, "无法验证管理面板。");
     return;
   }
 
@@ -143,14 +143,14 @@ async function finishSetPassword(
     const hash = await hashPassword(password);
     await saveAdminPassword(account.id, hash);
   } catch {
-    player.sendClientMessage(Color.error, "Failed to save the admin password.");
+    player.sendClientMessage(Color.error, "无法保存管理员密码。");
     return;
   }
 
   markAdminLoggedIn(player);
   player.sendClientMessage(
     Color.info,
-    `Admin password saved. Logged in (lvl ${account.adminLevel}).`
+    `管理员密码已保存，登录成功（${account.adminLevel}级）。`
   );
 }
 
@@ -164,7 +164,7 @@ async function tryLogin(player: Player, password: string): Promise<void> {
   try {
     creds = await findAdminCredentials(account.id);
   } catch {
-    player.sendClientMessage(Color.error, "Failed to verify the password.");
+    player.sendClientMessage(Color.error, "无法验证密码。");
     return;
   }
 
@@ -178,7 +178,7 @@ async function tryLogin(player: Player, password: string): Promise<void> {
     markAdminLoggedIn(player);
     player.sendClientMessage(
       Color.info,
-      `Admin login successful (lvl ${creds.adminLevel}).`
+      `管理员登录成功（${creds.adminLevel}级）。`
     );
     return;
   }
@@ -193,7 +193,7 @@ async function tryLogin(player: Player, password: string): Promise<void> {
   showPasswordDialog(
     player,
     "login",
-    `Incorrect password. Attempts remaining: ${left}`
+    `密码错误，剩余尝试次数：${left}`
   );
 }
 
@@ -235,12 +235,12 @@ async function handleAloginDialog(
   if (mode === "confirm") {
     const pending = takePendingAdminPassword(player);
     if (!pending) {
-      showPasswordDialog(player, "set", "Enter a password first.");
+      showPasswordDialog(player, "set", "请先输入密码。");
       return;
     }
 
     if (input !== pending) {
-      showPasswordDialog(player, "set", "Passwords do not match.");
+      showPasswordDialog(player, "set", "两次输入的密码不一致。");
       return;
     }
 
@@ -249,7 +249,7 @@ async function handleAloginDialog(
   }
 
   if (!input) {
-    showPasswordDialog(player, "login", "Enter the admin password.");
+    showPasswordDialog(player, "login", "请输入管理员密码。");
     return;
   }
 
@@ -259,7 +259,7 @@ async function handleAloginDialog(
 export function bindAlogin(): void {
   registerCommand(
     "alogin",
-    "Admin login",
+    "管理员登录",
     (player) => {
       void startAlogin(player);
     },

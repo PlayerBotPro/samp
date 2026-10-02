@@ -22,7 +22,7 @@ function sendAdminChat(text: string): void {
 export function bindAdminChat(): void {
   registerCommand(
     "a",
-    "Admin chat",
+    "管理员聊天",
     (player, args) => {
       if (!hasAdminAccess(player, 1)) {
         return;
@@ -30,11 +30,11 @@ export function bindAdminChat(): void {
 
       const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
       if (!text) {
-        player.sendClientMessage(Color.error, "Usage: /a [text]");
+        player.sendClientMessage(Color.error, "用法：/a [内容]");
         return;
       }
 
-      sendAdminChat(`[A] ${playerChatName(player)}: ${text}`);
+      sendAdminChat(`[管理] ${playerChatName(player)}：${text}`);
     },
     true
   );

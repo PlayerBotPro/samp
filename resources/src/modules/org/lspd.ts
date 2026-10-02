@@ -13,7 +13,7 @@ const ORG_ARMY_FOR_BARRIER = 1;
 
 export const LSPD = defineGovOrg(
   ORG_LSPD_ID,
-  "LSPD",
+  "洛圣都警察局",
   POLICE_COLOR,
   {
     x: 274.0818,
@@ -36,8 +36,8 @@ const BARRIER_ORG_IDS = [
   ORG_ARMY_FOR_BARRIER,
 ] as const;
 const BARRIER_DENY =
-  "LSPD, county police, FBI, and Army personnel can open this.";
-const GARAGE_DENY = "LSPD, county police, and FBI personnel can open this.";
+  "洛圣都警察局、郡警察局、联邦调查局和军队成员可打开此处。";
+const GARAGE_DENY = "洛圣都警察局、郡警察局和联邦调查局成员可打开此处。";
 
 export const LSPD_GATES: OrgGateDef[] = [
   {

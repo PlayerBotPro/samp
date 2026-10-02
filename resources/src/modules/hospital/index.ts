@@ -157,8 +157,8 @@ export const hospitalModule: GameModule = {
       HOSPITAL_WORLD
     );
 
-    createPickupLabel(STREET_PICKUP, STREET_WORLD, "City Hospital\nEntrance");
-    createPickupLabel(INTERIOR_PICKUP, HOSPITAL_WORLD, "Exit to street");
+    createPickupLabel(STREET_PICKUP, STREET_WORLD, "市立医院\n入口");
+    createPickupLabel(INTERIOR_PICKUP, HOSPITAL_WORLD, "返回街道");
 
     new Pickup(
       PICKUP_MODEL,
@@ -176,8 +176,8 @@ export const hospitalModule: GameModule = {
       SERVICE_TO_HALL_PICKUP.z,
       HOSPITAL_WORLD
     );
-    createPickupLabel(HALL_TO_SERVICE_PICKUP, HOSPITAL_WORLD, "Service block\nEntrance");
-    createPickupLabel(SERVICE_TO_HALL_PICKUP, HOSPITAL_WORLD, "Reception hall\nExit");
+    createPickupLabel(HALL_TO_SERVICE_PICKUP, HOSPITAL_WORLD, "服务楼\n入口");
+    createPickupLabel(SERVICE_TO_HALL_PICKUP, HOSPITAL_WORLD, "接待大厅\n出口");
 
     for (let i = 0; i < BEDS.length; i++) {
       const bed = BEDS[i];
@@ -225,12 +225,12 @@ export function tryOccupyHospitalBed(player: Player): void {
 
   const account = getAccount(player);
   if (!account?.hospitalized) {
-    player.sendClientMessage(Color.error, "You do not need treatment.");
+    player.sendClientMessage(Color.error, "你不需要治疗。");
     return;
   }
 
   if (bedByPlayer.has(id)) {
-    player.sendClientMessage(Color.gray, "You are already in a bed.");
+    player.sendClientMessage(Color.gray, "你已占用病床。");
     return;
   }
 
@@ -244,7 +244,7 @@ export function tryOccupyHospitalBed(player: Player): void {
   }
 
   if (world !== HOSPITAL_WORLD) {
-    player.sendClientMessage(Color.error, "Beds are only available in the hospital.");
+    player.sendClientMessage(Color.error, "只能在医院占用病床。");
     return;
   }
 
@@ -272,7 +272,7 @@ export function tryOccupyHospitalBed(player: Player): void {
     if (dist <= nearestBusyDist) {
       nearestBusyDist = dist;
       const other = getAccountBySlot(occupant);
-      nearestBusyName = other?.name ?? "Player";
+      nearestBusyName = other?.name ?? "玩家";
     }
   }
 
@@ -282,11 +282,11 @@ export function tryOccupyHospitalBed(player: Player): void {
   }
 
   if (nearestBusyName) {
-    player.sendClientMessage(Color.error, `Bed is occupied: ${nearestBusyName}.`);
+    player.sendClientMessage(Color.error, `病床已被${nearestBusyName}占用。`);
     return;
   }
 
-  player.sendClientMessage(Color.error, "Move closer to a free bed.");
+  player.sendClientMessage(Color.error, "请靠近空闲病床。");
 }
 
 function occupyBed(player: Player, playerSlot: number, bedIndex: number): void {
@@ -308,7 +308,7 @@ function occupyBed(player: Player, playerSlot: number, bedIndex: number): void {
 
   player.sendClientMessage(
     Color.info,
-    `You took bed #${bedIndex + 1}. Treatment has started.`
+    `你占用了${bedIndex + 1}号病床，治疗已开始。`
   );
 }
 
@@ -336,7 +336,7 @@ function finishTreatment(player: Player, playerSlot: number): void {
     queueSave(player);
   }
 
-  player.sendClientMessage(Color.info, "Treatment is complete. You may leave to the street.");
+  player.sendClientMessage(Color.info, "治疗完成，可以返回街道。");
 }
 
 function getAccountBySlot(slot: number): ReturnType<typeof getAccount> {
@@ -351,7 +351,7 @@ function getAccountBySlot(slot: number): ReturnType<typeof getAccount> {
 
 function createBedLabels(bed: SpawnPoint, index: number): BedLabelSet {
   const title = new TextLabel(
-    `Bed #${index + 1}`,
+    `${index + 1}号病床`,
     Color.white,
     bed.x,
     bed.y,
@@ -361,7 +361,7 @@ function createBedLabels(bed: SpawnPoint, index: number): BedLabelSet {
     false
   );
   const status = new TextLabel(
-    "Free",
+    "空闲",
     Color.tryOk,
     bed.x,
     bed.y,
@@ -391,14 +391,14 @@ function updateBedLabel(index: number): void {
   }
 
   const occupant = occupantByBed[index];
-  const name = occupant === null ? null : getAccountBySlot(occupant)?.name ?? "Player";
+  const name = occupant === null ? null : getAccountBySlot(occupant)?.name ?? "玩家";
 
   try {
     if (name) {
-      labels.status.updateText(Color.error, `Occupied: ${name}`);
+      labels.status.updateText(Color.error, `已占用：${name}`);
       labels.hint.updateText(Color.gray, " ");
     } else {
-      labels.status.updateText(Color.tryOk, "Free");
+      labels.status.updateText(Color.tryOk, "空闲");
       labels.hint.updateText(Color.gray, "/hospital");
     }
   } catch {
@@ -531,7 +531,7 @@ function healOccupiedBeds(): void {
 
       if (distance3d(pos.x, pos.y, pos.z, bed.x, bed.y, bed.z) > BED_USE_RADIUS) {
         releaseBed(id);
-        player.sendClientMessage(Color.gray, "You left the bed. Treatment stopped.");
+        player.sendClientMessage(Color.gray, "你离开了病床，治疗已停止。");
         return;
       }
     } catch {
@@ -572,7 +572,7 @@ function tryLeaveHospital(player: Player): void {
     lastExitMsgAt.set(id, now);
     player.sendClientMessage(
       Color.error,
-      "You need treatment. Take a bed: /hospital."
+      "你需要治疗，请使用/hospital占用病床。"
     );
     return;
   }

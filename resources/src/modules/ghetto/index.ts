@@ -26,7 +26,7 @@ export const GHETTO_DEALER_MENU_DIALOG_ID = 63;
 export const GHETTO_DEALER_BUY_DIALOG_ID = 64;
 
 const DEALER_SKIN = 28;
-const DEALER_NAME = "Smokey";
+const DEALER_NAME = "斯莫基";
 const KEY_WALK = 1024;
 const PLAYER_STATE_ONFOOT = 1;
 const DIALOG_STYLE_LIST = 2;
@@ -77,7 +77,7 @@ function spawnDealer(): void {
   setTimeout(() => applyDealerAnimation(actor), 250);
 
   new TextLabel(
-    `${DEALER_NAME}\nDealer`,
+    `${DEALER_NAME}\n商贩`,
     Color.info,
     DEALER.x,
     DEALER.y,
@@ -195,12 +195,12 @@ function showMenu(player: Player): void {
       GHETTO_DEALER_MENU_DIALOG_ID,
       DIALOG_STYLE_LIST,
       DEALER_NAME,
-      `Buy drugs\nArmy uniform ($${FORM_PRICE})`,
-      "Select",
-      "Cancel"
+      `购买毒品\n军服（$${FORM_PRICE}）`,
+      "选择",
+      "取消"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -229,7 +229,7 @@ function buyArmyForm(player: Player): void {
   }
 
   if (!isNearDealer(player)) {
-    player.sendClientMessage(Color.error, "Move closer to the dealer.");
+    player.sendClientMessage(Color.error, "请靠近商贩。");
     return;
   }
 
@@ -244,26 +244,26 @@ function buyArmyForm(player: Player): void {
   }
 
   if (account.jailSeconds > 0) {
-    player.sendClientMessage(Color.error, "The uniform is unavailable in prison.");
+    player.sendClientMessage(Color.error, "监禁期间无法使用军服。");
     return;
   }
 
   if (isArmyDisguised(player)) {
-    player.sendClientMessage(Color.error, `${DEALER_NAME}: you are already in uniform.`);
+    player.sendClientMessage(Color.error, `${DEALER_NAME}：你已经穿着军服了。`);
     return;
   }
 
   if (account.money < FORM_PRICE) {
     player.sendClientMessage(
       Color.error,
-      `Insufficient funds. You need $${FORM_PRICE}.`
+      `资金不足，需要$${FORM_PRICE}。`
     );
     return;
   }
 
   // Give the uniform first - otherwise money would already be deducted if it fails.
   if (!startArmyDisguise(player)) {
-    player.sendClientMessage(Color.error, "Failed to issue the uniform.");
+    player.sendClientMessage(Color.error, "无法发放军服。");
     return;
   }
 
@@ -280,11 +280,11 @@ function buyArmyForm(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `${DEALER_NAME}: here's your uniform for $${FORM_PRICE}. The Army gates will open.`
+    `${DEALER_NAME}：这是你花$${FORM_PRICE}买的军服，军队大门会为你打开。`
   );
   player.sendClientMessage(
     Color.gray,
-    "The uniform will be removed after death or disconnecting."
+    "死亡或断线后军服会被移除。"
   );
 }
 
@@ -294,13 +294,13 @@ function showBuyDialog(player: Player): void {
       player,
       GHETTO_DEALER_BUY_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Buy drugs",
-      `How many units would you like to buy?\nPrice per unit: $${DRUG_PRICE}`,
-      "Buy",
-      "Cancel"
+      "购买毒品",
+      `你想购买多少份？\n单价：$${DRUG_PRICE}`,
+      "购买",
+      "取消"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open dialog.");
+    player.sendClientMessage(Color.error, "无法打开对话框。");
   }
 }
 
@@ -314,7 +314,7 @@ function onBuyResponse(player: Player, accepted: boolean, rawInput: string): voi
   }
 
   if (!isNearDealer(player)) {
-    player.sendClientMessage(Color.error, "Move closer to the dealer.");
+    player.sendClientMessage(Color.error, "请靠近商贩。");
     return;
   }
 
@@ -330,33 +330,33 @@ function onBuyResponse(player: Player, accepted: boolean, rawInput: string): voi
 
   const amount = Math.floor(Number(rawInput.trim().replace(",", ".")));
   if (!Number.isFinite(amount) || amount <= 0 || !Number.isSafeInteger(amount)) {
-    player.sendClientMessage(Color.error, "Enter an integer greater than 0.");
+    player.sendClientMessage(Color.error, "请输入大于0的整数。");
     showBuyDialog(player);
     return;
   }
 
   if (amount > MAX_BUY) {
-    player.sendClientMessage(Color.error, `You can buy no more than ${MAX_BUY} units at once.`);
+    player.sendClientMessage(Color.error, `单次最多购买${MAX_BUY}份。`);
     showBuyDialog(player);
     return;
   }
 
   const total = amount * DRUG_PRICE;
   if (!Number.isSafeInteger(total) || total <= 0) {
-    player.sendClientMessage(Color.error, "Quantity is too large.");
+    player.sendClientMessage(Color.error, "数量过大。");
     showBuyDialog(player);
     return;
   }
 
   if (account.money < total) {
-    player.sendClientMessage(Color.error, `Insufficient funds. You need $${total}.`);
+    player.sendClientMessage(Color.error, `资金不足，需要$${total}。`);
     showBuyDialog(player);
     return;
   }
 
   const nextDrugs = account.drugs + amount;
   if (!Number.isSafeInteger(nextDrugs) || nextDrugs < account.drugs) {
-    player.sendClientMessage(Color.error, "Quantity is too large.");
+    player.sendClientMessage(Color.error, "数量过大。");
     showBuyDialog(player);
     return;
   }
@@ -377,9 +377,9 @@ function onBuyResponse(player: Player, accepted: boolean, rawInput: string): voi
 
   player.sendClientMessage(
     Color.info,
-    `${DEALER_NAME}: here are ${amount} units for $${total}.`
+    `${DEALER_NAME}：这是你花$${total}买的${amount}份。`
   );
-  player.sendClientMessage(Color.white, `Drugs: ${nextDrugs} units.`);
+  player.sendClientMessage(Color.white, `毒品：${nextDrugs}份。`);
 }
 
 function denyOutsider(player: Player): void {
@@ -395,7 +395,7 @@ function denyOutsider(player: Player): void {
   }
 
   lastDenyAt.set(id, now);
-  player.sendClientMessage(Color.gray, `${DEALER_NAME}: I only deal with locals.`);
+  player.sendClientMessage(Color.gray, `${DEALER_NAME}：我只和本地人做生意。`);
 }
 
 function isGhettoGangMember(player: Player): boolean {

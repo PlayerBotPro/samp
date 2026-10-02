@@ -11,22 +11,22 @@ import {
 
 const PLAYER_STATE_DRIVER = 2;
 
-registerCommand("limit", "Vehicle speed limiter", (player, args) => {
+registerCommand("limit", "车辆限速器", (player, args) => {
   let vehicle;
   try {
     if (player.getState() !== PLAYER_STATE_DRIVER) {
-      player.sendClientMessage(Color.error, "You must be driving.");
+      player.sendClientMessage(Color.error, "你必须正在驾驶。");
       return;
     }
 
     vehicle = omp.vehicles.at(player.getVehicleID());
   } catch {
-    player.sendClientMessage(Color.error, "You must be driving.");
+    player.sendClientMessage(Color.error, "你必须正在驾驶。");
     return;
   }
 
   if (!vehicle) {
-    player.sendClientMessage(Color.error, "You must be driving.");
+    player.sendClientMessage(Color.error, "你必须正在驾驶。");
     return;
   }
 
@@ -36,8 +36,8 @@ registerCommand("limit", "Vehicle speed limiter", (player, args) => {
     player.sendClientMessage(
       Color.info,
       current
-        ? `This vehicle's limit: ${current} km/h.`
-        : `Usage: /limit [kmh] (${MIN_SPEED_LIMIT}-${MAX_SPEED_LIMIT}, 0 - disable)`
+        ? `此车辆限速：${current}公里/小时。`
+        : `用法：/limit [公里/小时]（${MIN_SPEED_LIMIT}-${MAX_SPEED_LIMIT}，0关闭）`
     );
     return;
   }
@@ -46,30 +46,30 @@ registerCommand("limit", "Vehicle speed limiter", (player, args) => {
   if (!Number.isInteger(kmh) || kmh < 0) {
     player.sendClientMessage(
       Color.error,
-      `Usage: /limit [kmh] (${MIN_SPEED_LIMIT}-${MAX_SPEED_LIMIT}, 0 - disable)`
+      `用法：/limit [公里/小时]（${MIN_SPEED_LIMIT}-${MAX_SPEED_LIMIT}，0关闭）`
     );
     return;
   }
 
   if (kmh === 0) {
     clearVehicleLimit(vehicle);
-    player.sendClientMessage(Color.info, "Speed limit removed.");
+    player.sendClientMessage(Color.info, "限速已解除。");
     return;
   }
 
   if (kmh < MIN_SPEED_LIMIT || kmh > MAX_SPEED_LIMIT) {
     player.sendClientMessage(
       Color.error,
-      `Usage: /limit [kmh] (${MIN_SPEED_LIMIT}-${MAX_SPEED_LIMIT}, 0 - disable)`
+      `用法：/limit [公里/小时]（${MIN_SPEED_LIMIT}-${MAX_SPEED_LIMIT}，0关闭）`
     );
     return;
   }
 
   const applied = setVehicleLimit(vehicle, kmh);
   if (applied === null) {
-    player.sendClientMessage(Color.error, "Could not set speed limit.");
+    player.sendClientMessage(Color.error, "无法设置限速。");
     return;
   }
 
-  player.sendClientMessage(Color.info, `Speed limit: ${applied} km/h.`);
+  player.sendClientMessage(Color.info, `限速：${applied}公里/小时。`);
 });

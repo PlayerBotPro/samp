@@ -119,7 +119,7 @@ function showDialog(
     Dialog.show(player, id, style, title, body, button1, button2);
     return true;
   } catch {
-    tell(player, Color.error, "Could not open exam window.");
+    tell(player, Color.error, "无法打开考试窗口。");
     return false;
   }
 }
@@ -198,7 +198,7 @@ function showRaceCp(player: Player, exam: ExamSession): void {
       RACE_CP_RADIUS
     );
   } catch {
-    tell(player, Color.error, "Could not set checkpoint.");
+    tell(player, Color.error, "无法设置检查点。");
   }
 }
 
@@ -224,7 +224,7 @@ function beginRoute(player: Player, exam: ExamSession, vehicle: Vehicle): void {
     tell(
       player,
       Color.info,
-      "Drive through all red arrow checkpoints to the end of the route."
+      "请依次通过所有红色箭头检查点，直至路线终点。"
     );
   }
 }
@@ -246,13 +246,13 @@ function availableKinds(player: Player): ExamKind[] {
 }
 
 function kindLabel(kind: ExamKind): string {
-  return kind === "car" ? "Cars" : "Motorcycles";
+  return kind === "car" ? "汽车" : "摩托车";
 }
 
 function openKindMenu(player: Player): void {
   const kinds = availableKinds(player);
   if (kinds.length === 0) {
-    tell(player, Color.error, "You already have car and motorcycle licenses.");
+    tell(player, Color.error, "你已有汽车和摩托车驾照。");
     return;
   }
 
@@ -277,10 +277,10 @@ function openKindMenu(player: Player): void {
     player,
     AUTOSCHOOL_EXAM_KIND_DIALOG_ID,
     DIALOG_STYLE_LIST,
-    `Traffic Rules Exam - $${THEORY_FEE}`,
+    `交通规则考试 - $${THEORY_FEE}`,
     kinds.map(kindLabel).join("\n"),
-    "Next",
-    "Cancel"
+    "下一步",
+    "取消"
   );
 }
 
@@ -291,10 +291,10 @@ function openRules(player: Player, exam: ExamSession): void {
     player,
     AUTOSCHOOL_EXAM_RULES_DIALOG_ID,
     DIALOG_STYLE_MSGBOX,
-    "Traffic Rules",
+    "交通规则",
     EXAM_RULES,
-    "Next",
-    "Cancel"
+    "下一步",
+    "取消"
   );
 }
 
@@ -311,10 +311,10 @@ function openQuestion(player: Player, exam: ExamSession): void {
     player,
     AUTOSCHOOL_EXAM_QUESTION_DIALOG_ID,
     DIALOG_STYLE_LIST,
-    `Question ${exam.question + 1}/${QUESTION_COUNT}`,
+    `第${exam.question + 1}/${QUESTION_COUNT}题`,
     item.answers.join("\n"),
-    "Answer",
-    "Cancel"
+    "作答",
+    "取消"
   );
 }
 
@@ -329,9 +329,9 @@ function finishTheory(player: Player, exam: ExamSession): void {
       player,
       AUTOSCHOOL_EXAM_RESULT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      "Exam",
-      `You did not pass the test.\nCorrect answers: ${exam.correct}/${total}.`,
-      "Close",
+      "考试",
+      `考试未通过。\n答对：${exam.correct}/${total}题。`,
+      "关闭",
       ""
     );
     return;
@@ -344,8 +344,8 @@ function finishTheory(player: Player, exam: ExamSession): void {
     player,
     Color.info,
     exam.kind === "car"
-      ? "You passed the theory test. Go to the parking lot and enter a driving school car."
-      : "You passed the theory test. Go to the parking lot and enter a driving school motorcycle."
+      ? "理论考试通过，请到停车场进入驾校汽车。"
+      : "理论考试通过，请到停车场骑上驾校摩托车。"
   );
 }
 
@@ -367,29 +367,29 @@ function tryStartMarker(player: Player): void {
   standingOnMarker.add(id);
 
   if (isJailed(player)) {
-    tell(player, Color.error, "You are in prison.");
+    tell(player, Color.error, "你正在服刑。");
     return;
   }
 
   const account = getAccount(player);
   if (account?.hospitalized) {
-    tell(player, Color.error, "You need treatment. Take a bed: /hospital.");
+    tell(player, Color.error, "你需要治疗，请使用/hospital占用病床。");
     return;
   }
 
   if (isMinerOnShift(player)) {
-    tell(player, Color.error, "Finish your mine shift first.");
+    tell(player, Color.error, "请先结束矿场工作。");
     return;
   }
 
   if (isLoaderOnShift(player)) {
-    tell(player, Color.error, "Finish your loader shift first.");
+    tell(player, Color.error, "请先结束搬运工作。");
     return;
   }
 
   const cash = Math.max(0, Math.floor(account?.money ?? 0));
   if (cash < THEORY_FEE) {
-    tell(player, Color.error, `Traffic rules test costs $${THEORY_FEE}. Insufficient cash.`);
+    tell(player, Color.error, `交通规则考试费用为$${THEORY_FEE}，现金不足。`);
     return;
   }
 
@@ -399,8 +399,8 @@ function tryStartMarker(player: Player): void {
       player,
       Color.info,
       exam.kind === "car"
-        ? "Go to the parking lot and enter a driving school car."
-        : "Go to the parking lot and enter a driving school motorcycle."
+        ? "请到停车场进入驾校汽车。"
+        : "请到停车场骑上驾校摩托车。"
     );
     return;
   }
@@ -486,14 +486,14 @@ function onKindPicked(player: Player, response: number, listItem: number, inputT
 
   if (!kind) {
     exams.delete(id);
-    tell(player, Color.error, "Choose cars or motorcycles.");
+    tell(player, Color.error, "请选择汽车或摩托车。");
     return;
   }
 
   const account = getAccount(player);
   if (!account || account.licenses[kind]) {
     exams.delete(id);
-    tell(player, Color.error, "You already have this license.");
+    tell(player, Color.error, "你已有此驾照。");
     return;
   }
 
@@ -520,28 +520,28 @@ function onRules(player: Player, response: number): void {
 async function startPaidTest(player: Player, exam: ExamSession): Promise<void> {
   const account = getAccount(player);
   if (!account || account.id !== exam.accountId) {
-    abortExam(player, "Exam cancelled.");
+    abortExam(player, "考试已取消。");
     return;
   }
 
   if (account.licenses[exam.kind]) {
-    abortExam(player, "You already have this license.");
+    abortExam(player, "你已有此驾照。");
     return;
   }
 
   if (busy.has(account.id)) {
-    tell(player, Color.error, "Please wait, another operation is in progress.");
+    tell(player, Color.error, "有其他操作正在进行，请稍候。");
     return;
   }
 
   if (!inSchoolInterior(player)) {
-    abortExam(player, "The test can only be paid for at the driving school.");
+    abortExam(player, "只能在驾校缴纳考试费用。");
     return;
   }
 
   const cash = Math.max(0, Math.floor(account.money));
   if (cash < THEORY_FEE) {
-    abortExam(player, `Traffic rules test costs $${THEORY_FEE}. Insufficient cash.`);
+    abortExam(player, `交通规则考试费用为$${THEORY_FEE}，现金不足。`);
     return;
   }
 
@@ -553,7 +553,7 @@ async function startPaidTest(player: Player, exam: ExamSession): Promise<void> {
     busy.delete(account.id);
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] autoschool fee ${account.name}: ${message}`);
-    abortExam(player, "Test payment failed. Try again.");
+    abortExam(player, "考试缴费失败，请重试。");
     return;
   }
   busy.delete(account.id);
@@ -574,7 +574,7 @@ async function startPaidTest(player: Player, exam: ExamSession): Promise<void> {
     applyWallet(player, live);
   }
 
-  tell(player, Color.info, `You paid for the traffic rules test: $${THEORY_FEE}.`);
+  tell(player, Color.info, `你支付了交通规则考试费用：$${THEORY_FEE}。`);
   exam.question = 0;
   exam.correct = 0;
   openQuestion(player, exam);
@@ -645,8 +645,8 @@ function onDriver(player: Player): void {
         player,
         Color.error,
         exam.kind === "car"
-          ? "A car is required for the exam."
-          : "A motorcycle is required for the exam."
+          ? "考试需要使用汽车。"
+          : "考试需要使用摩托车。"
       );
       return;
     }
@@ -665,7 +665,7 @@ function onLeftVehicle(player: Player): void {
 
   exam.vehicleId = null;
   clearRace(player);
-  tell(player, Color.error, "You left the vehicle. Get back in to continue the exam.");
+  tell(player, Color.error, "你离开了车辆，请返回车辆继续考试。");
 }
 
 function onRaceEnter(player: Player): void {
@@ -704,19 +704,19 @@ async function finishPractice(player: Player, exam: ExamSession): Promise<void> 
   const id = playerId(player);
   const account = getAccount(player);
   if (id === null || !account || account.id !== exam.accountId) {
-    abortExam(player, "Exam cancelled.");
+    abortExam(player, "考试已取消。");
     return;
   }
 
   if (account.licenses[exam.kind]) {
-    abortExam(player, "You already have this license.");
+    abortExam(player, "你已有此驾照。");
     return;
   }
 
   if (busy.has(account.id)) {
     exam.cpIndex = Math.max(0, EXAM_ROUTE.length - 1);
     showRaceCp(player, exam);
-    tell(player, Color.error, "Please wait, another operation is in progress.");
+    tell(player, Color.error, "有其他操作正在进行，请稍候。");
     return;
   }
 
@@ -732,7 +732,7 @@ async function finishPractice(player: Player, exam: ExamSession): Promise<void> 
     showRaceCp(player, exam);
     const message = error instanceof Error ? error.message : String(error);
     omp.log(`[${SERVER_TAG}] autoschool exam ${account.name}: ${message}`);
-    tell(player, Color.error, "Could not save license. Try again.");
+    tell(player, Color.error, "无法保存驾照，请重试。");
     return;
   }
   busy.delete(account.id);
@@ -759,13 +759,13 @@ async function finishPractice(player: Player, exam: ExamSession): Promise<void> 
   }
 
   patchAccount(player, { licenses: nextLicenses });
-  tell(player, Color.info, "You passed the practical exam.");
+  tell(player, Color.info, "路考通过。");
   tell(
     player,
     Color.info,
     exam.kind === "car"
-      ? "You received a car license."
-      : "You received a motorcycle license."
+      ? "你获得了汽车驾照。"
+      : "你获得了摩托车驾照。"
   );
 }
 
@@ -773,7 +773,7 @@ export const autoschoolModule: GameModule = {
   name: "autoschool",
   start() {
     new TextLabel(
-      "License\nExam",
+      "驾照\n考试",
       Color.info,
       MARKER.x,
       MARKER.y,
@@ -828,7 +828,7 @@ export const autoschoolModule: GameModule = {
     });
 
     omp.on("playerDeath", (player) => {
-      abortExam(player, "Exam cancelled.");
+      abortExam(player, "考试已取消。");
     });
 
     omp.on("playerConnect", (player) => {
@@ -859,18 +859,18 @@ function tickExam(): void {
 
     const exam = getExam(player);
     if (exam?.phase === "drive" && exam.driveUntil !== null && Date.now() > exam.driveUntil) {
-      abortExam(player, "Practical exam time expired.");
+      abortExam(player, "路考时间已到。");
       return;
     }
 
     const account = getAccount(player);
     if (exam && account?.hospitalized) {
-      abortExam(player, "Exam cancelled: treatment is required.");
+      abortExam(player, "考试已取消：你需要治疗。");
       return;
     }
 
     if (exam && isJailed(player)) {
-      abortExam(player, "Exam cancelled.");
+      abortExam(player, "考试已取消。");
       return;
     }
 

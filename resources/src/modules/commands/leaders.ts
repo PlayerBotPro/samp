@@ -11,7 +11,7 @@ type OnlineLeader = {
   slot: number;
 };
 
-registerCommand("leaders", "List online leaders", (player) => {
+registerCommand("leaders", "列出在线首领", (player) => {
   const list: OnlineLeader[] = [];
 
   omp.players.forEach((other) => {
@@ -46,9 +46,9 @@ registerCommand("leaders", "List online leaders", (player) => {
 
   list.sort((a, b) => a.orgName.localeCompare(b.orgName) || a.slot - b.slot);
 
-  player.sendClientMessage(Color.info, "Online leaders:");
+  player.sendClientMessage(Color.info, "在线首领：");
   if (list.length === 0) {
-    player.sendClientMessage(Color.white, "There are currently no leaders online.");
+    player.sendClientMessage(Color.white, "当前没有首领在线。");
     return;
   }
 

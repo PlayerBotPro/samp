@@ -20,7 +20,7 @@ const PICKUP_RADIUS = 1.5;
 const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
-const DENY = "Only LSPD, County Police, and FBI employees can open this.";
+const DENY = "只有洛圣都警察局、郡警察局和联邦调查局员工可以打开此处。";
 
 const POINT = {
   x: 1810.8636,
@@ -52,7 +52,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Prison",
+    label: "监狱",
     staffOnly: true,
   },
   {
@@ -65,7 +65,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: STREET_WORLD,
     },
-    label: "Exit to street",
+    label: "返回街道",
     staffOnly: true,
   },
   {
@@ -78,7 +78,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Prison cells",
+    label: "监狱牢房",
     staffOnly: false,
   },
   {
@@ -91,7 +91,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Exit\nKitchen\nDuty room\nGuard room",
+    label: "出口\n厨房\n值班室\n警卫室",
     staffOnly: false,
   },
   {
@@ -104,7 +104,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_YARD_WORLD,
     },
-    label: "Prison yard",
+    label: "监狱院子",
     staffOnly: false,
     liveLabel: true,
   },
@@ -118,7 +118,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Prison cells",
+    label: "监狱牢房",
     staffOnly: false,
   },
   {
@@ -131,7 +131,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Gym",
+    label: "健身房",
     staffOnly: false,
   },
   {
@@ -144,7 +144,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Prison cells",
+    label: "监狱牢房",
     staffOnly: false,
   },
   {
@@ -157,7 +157,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Kitchen",
+    label: "厨房",
     staffOnly: false,
   },
   {
@@ -170,7 +170,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Duty room",
+    label: "值班室",
     staffOnly: false,
   },
   {
@@ -183,7 +183,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Guard room",
+    label: "警卫室",
     staffOnly: true,
   },
   {
@@ -196,7 +196,7 @@ const DOORS: readonly PrisonDoor[] = [
       interior: 0,
       world: PRISON_WORLD,
     },
-    label: "Duty room",
+    label: "值班室",
     staffOnly: true,
   },
 ];
@@ -311,7 +311,7 @@ function tryUse(player: Player, door: PrisonDoor): void {
   if (door.staffOnly) {
     const account = getAccount(player);
     if (account?.hospitalized) {
-      deny(player, "You need treatment. Take a bed: /hospital.");
+      deny(player, "你需要治疗，请使用/hospital占用病床。");
       return;
     }
 
@@ -324,7 +324,7 @@ function tryUse(player: Player, door: PrisonDoor): void {
   }
 
   if (door.dest.world === PRISON_YARD_WORLD && !isPrisonYardOpen()) {
-    deny(player, "The yard is locked.");
+    deny(player, "院子已锁定。");
     return;
   }
 

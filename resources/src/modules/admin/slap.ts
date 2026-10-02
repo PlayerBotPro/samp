@@ -52,7 +52,7 @@ function slapPlayer(target: Player): boolean {
 export function bindAdminSlap(): void {
   registerCommand(
     "slap",
-    "Launch a player upward",
+    "将玩家弹向空中",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -60,39 +60,39 @@ export function bindAdminSlap(): void {
 
       const idPart = args.trim();
       if (!idPart) {
-        player.sendClientMessage(Color.error, "Usage: /slap [id]");
+        player.sendClientMessage(Color.error, "用法：/slap [玩家ID]");
         return;
       }
 
       const slot = Number(idPart);
       if (!Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Usage: /slap [id]");
+        player.sendClientMessage(Color.error, "用法：/slap [玩家ID]");
         return;
       }
 
       const target = omp.players.at(slot);
       if (!target || !isPlayerActive(target)) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       try {
         if (target.isNPC()) {
-          player.sendClientMessage(Color.error, "Player not found.");
+          player.sendClientMessage(Color.error, "未找到玩家。");
           return;
         }
       } catch {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (!slapPlayer(target)) {
-        player.sendClientMessage(Color.error, "Failed to launch the player.");
+        player.sendClientMessage(Color.error, "无法弹起玩家。");
         return;
       }
 
       broadcastAdmins(
-        `Administrator ${playerChatName(player)} launched ${playerChatName(target)}.`
+        `管理员${playerChatName(player)}弹起了${playerChatName(target)}。`
       );
     },
     true

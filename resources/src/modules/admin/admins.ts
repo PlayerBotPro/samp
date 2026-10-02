@@ -14,7 +14,7 @@ type OnlineAdmin = {
 export function bindAdminsList(): void {
   registerCommand(
     "admins",
-    "List online administrators",
+    "列出在线管理员",
     (player) => {
       if (!hasAdminAccess(player, 1)) {
         return;
@@ -41,19 +41,19 @@ export function bindAdminsList(): void {
         }
 
         const slot = playerId(other) ?? 0;
-        const logged = isAdminLoggedIn(other) ? "yes" : "no";
+        const logged = isAdminLoggedIn(other) ? "是" : "否";
         list.push({
           level: account.adminLevel,
           slot,
-          line: `${playerChatName(other)} | ${account.adminLevel} lvl | alogin: ${logged}`,
+          line: `${playerChatName(other)} | ${account.adminLevel}级 | 管理登录：${logged}`,
         });
       });
 
       list.sort((a, b) => b.level - a.level || a.slot - b.slot);
 
-      player.sendClientMessage(Color.info, "Online administrators:");
+      player.sendClientMessage(Color.info, "在线管理员：");
       if (list.length === 0) {
-        player.sendClientMessage(Color.white, "Nobody is online.");
+        player.sendClientMessage(Color.white, "目前无人在线。");
         return;
       }
 

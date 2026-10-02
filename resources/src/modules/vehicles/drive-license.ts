@@ -18,9 +18,9 @@ const NO_LICENSE = new Set([
 ]);
 
 const DENY: Record<"car" | "moto" | "fly", string> = {
-  car: "You do not have a car license.",
-  moto: "You do not have a motorcycle license.",
-  fly: "You do not have a flight license.",
+  car: "你没有汽车驾照。",
+  moto: "你没有摩托车驾照。",
+  fly: "你没有飞行执照。",
 };
 
 export type DriveLicense = Extract<LicenseKey, "car" | "moto" | "fly">;
@@ -48,7 +48,7 @@ export function requiredDriveLicense(model: number): DriveLicense | null {
 export function driveLicenseDeny(player: Player, vehicle: Vehicle): string | null {
   const account = getAccount(player);
   if (!account) {
-    return "Log in first.";
+    return "请先登录。";
   }
 
   let model = 0;

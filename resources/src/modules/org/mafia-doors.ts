@@ -69,13 +69,13 @@ function hqDoors(
         world,
       },
       dest: streetExit,
-      label: "Exit to Street",
+      label: "返回街道",
     },
   ];
 }
 
 const DOORS: readonly MafiaDoor[] = [
-  ...hqDoors("LCN\nEntrance", LCN_WORLD, { x: 1122.7086, y: -2036.9874, z: 69.8942 }, {
+  ...hqDoors("科萨诺斯特拉\n入口", LCN_WORLD, { x: 1122.7086, y: -2036.9874, z: 69.8942 }, {
     x: 1125.1136,
     y: -2036.9993,
     z: 69.8822,
@@ -83,7 +83,7 @@ const DOORS: readonly MafiaDoor[] = [
     interior: 0,
     world: STREET_WORLD,
   }),
-  ...hqDoors("Yakuza\nEntrance", YAKUZA_WORLD, { x: 678.3608, y: -1281.7167, z: 13.6332 }, {
+  ...hqDoors("山口组\n入口", YAKUZA_WORLD, { x: 678.3608, y: -1281.7167, z: 13.6332 }, {
     x: 675.7552,
     y: -1281.6864,
     z: 13.6332,
@@ -92,7 +92,7 @@ const DOORS: readonly MafiaDoor[] = [
     world: STREET_WORLD,
   }),
   ...hqDoors(
-    "Russian Mafia\nEntrance",
+    "俄罗斯黑手党\n入口",
     RUSSIAN_MAFIA_WORLD,
     { x: 952.5553, y: -909.2405, z: 45.7656 },
     {
@@ -174,7 +174,7 @@ function tickMafiaDoors(): void {
 function tryUse(player: Player, door: MafiaDoor): void {
   const account = getAccount(player);
   if (account?.hospitalized) {
-    deny(player, "You need treatment. Take a bed: /hospital.");
+    deny(player, "你需要治疗，请使用/hospital占用病床。");
     return;
   }
 

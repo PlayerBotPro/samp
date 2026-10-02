@@ -30,7 +30,7 @@ function parseSethpArgs(args: string): { slot: number; hp: number } | null {
 export function bindAdminSethp(): void {
   registerCommand(
     "sethp",
-    "Set a player's HP",
+    "设置玩家生命值",
     (player, args) => {
       if (!hasAdminAccess(player, 4)) {
         return;
@@ -40,24 +40,24 @@ export function bindAdminSethp(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /sethp [id] [hp] (0-100)"
+          "用法：/sethp [玩家ID] [生命值]（0-100）"
         );
         return;
       }
 
       const target = omp.players.at(parsed.slot);
       if (!target || !isPlayerActive(target)) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       try {
         if (target.isNPC()) {
-          player.sendClientMessage(Color.error, "Player not found.");
+          player.sendClientMessage(Color.error, "未找到玩家。");
           return;
         }
       } catch {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
@@ -65,7 +65,7 @@ export function bindAdminSethp(): void {
       if (!samePlayer && isAdminLoggedIn(target)) {
         player.sendClientMessage(
           Color.error,
-          "Administrators cannot change health."
+          "不能更改管理员的生命值。"
         );
         return;
       }
@@ -78,7 +78,7 @@ export function bindAdminSethp(): void {
 
       player.sendClientMessage(
         Color.info,
-        `Player ${parsed.slot} HP set to: ${parsed.hp}`
+        `玩家${parsed.slot}的生命值已设为${parsed.hp}。`
       );
     },
     true

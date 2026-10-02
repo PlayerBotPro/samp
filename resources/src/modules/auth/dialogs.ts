@@ -67,8 +67,8 @@ export function showRulesDialog(player: Player): void {
     DialogStyle.msgbox,
     RULES_TITLE,
     SERVER_RULES,
-    "Accept",
-    "Decline"
+    "接受",
+    "拒绝"
   );
 }
 
@@ -77,10 +77,10 @@ export function showLoginDialog(player: Player, name: string, error?: string): v
   showAuthDialog(
     player,
     DialogStyle.password,
-    "Login",
-    `${prefix}Nickname ${name} is already registered.\nEnter your password:`,
-    "Log in",
-    "Exit"
+    "登录",
+    `${prefix}昵称${name}已注册。\n请输入密码：`,
+    "登录",
+    "退出"
   );
 }
 
@@ -89,10 +89,10 @@ export function showEmailDialog(player: Player, name: string, error?: string): v
   showAuthDialog(
     player,
     DialogStyle.input,
-    "Registration",
-    `${prefix}Nickname ${name} is available.\nEnter your email:`,
-    "Next",
-    "Back"
+    "注册",
+    `${prefix}昵称${name}可用。\n请输入邮箱：`,
+    "下一步",
+    "返回"
   );
 }
 
@@ -101,10 +101,10 @@ export function showPasswordDialog(player: Player, error?: string): void {
   showAuthDialog(
     player,
     DialogStyle.password,
-    "Registration",
-    `${prefix}Create a password (at least 6 characters):`,
-    "Next",
-    "Back"
+    "注册",
+    `${prefix}请创建密码（至少6个字符）：`,
+    "下一步",
+    "返回"
   );
 }
 
@@ -113,10 +113,10 @@ export function showPasswordConfirmDialog(player: Player, error?: string): void 
   showAuthDialog(
     player,
     DialogStyle.password,
-    "Registration",
-    `${prefix}Repeat your password:`,
-    "Next",
-    "Back"
+    "注册",
+    `${prefix}请再次输入密码：`,
+    "下一步",
+    "返回"
   );
 }
 
@@ -125,10 +125,10 @@ export function showBirthDateDialog(player: Player, error?: string): void {
   showAuthDialog(
     player,
     DialogStyle.input,
-    "Registration",
-    `${prefix}Date of birth (DD.MM.YYYY):\nFor example, 15.04.1998`,
-    "Next",
-    "Back"
+    "注册",
+    `${prefix}出生日期（日.月.年）：\n例如：15.04.1998`,
+    "下一步",
+    "返回"
   );
 }
 
@@ -136,10 +136,10 @@ export function showGenderDialog(player: Player): void {
   showAuthDialog(
     player,
     DialogStyle.list,
-    "Character gender",
+    "角色性别",
     `${GENDER_LIST_MALE}\n${GENDER_LIST_FEMALE}`,
-    "Select",
-    "Back"
+    "选择",
+    "返回"
   );
 }
 
@@ -147,10 +147,10 @@ export function showSkinDialog(player: Player, gender: Gender): void {
   showAuthDialog(
     player,
     DialogStyle.list,
-    "Skin selection",
+    "外观选择",
     skinListBody(gender),
-    "Select",
-    "Back"
+    "选择",
+    "返回"
   );
 }
 
@@ -158,9 +158,9 @@ export function showRegisterConfirmDialog(player: Player, body: string): void {
   showAuthDialog(
     player,
     DialogStyle.msgbox,
-    "Confirmation",
+    "确认",
     body,
-    "Done",
-    "Back"
+    "完成",
+    "返回"
   );
 }

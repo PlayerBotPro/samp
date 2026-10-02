@@ -3,8 +3,8 @@ import { findOwnedHouse } from "./repository";
 export function residenceLabel(userId: number): string {
   const house = findOwnedHouse(userId);
   if (!house) {
-    return "Homeless";
+    return "无家可归";
   }
 
-  return `House (No. ${house.id})`;
+  return `房屋（${house.id}号）`;
 }

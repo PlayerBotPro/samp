@@ -10,20 +10,20 @@ export const ORG_ARMY_ID = 1;
 const ARMY_COLOR = 0x9c7a4bff;
 const ARMY_GATE_ORG_IDS = [ORG_ARMY_ID, ORG_POLICE_ID, ORG_LSPD_ID, ORG_FBI_ID] as const;
 const ARMY_GATE_DENY =
-  "Army, county police, LSPD, and FBI personnel can open this.";
+  "军队、郡警察局、洛圣都警察局和联邦调查局成员可打开此处。";
 
 function armyRanks(): OrgRankDef[] {
   const rows: Array<{ title: string; male: number; female: number; pay: number }> = [
-    { title: "Private", male: 287, female: 191, pay: 1500 },
-    { title: "Corporal", male: 287, female: 191, pay: 1900 },
-    { title: "Sergeant", male: 179, female: 191, pay: 2400 },
-    { title: "Staff Sergeant", male: 179, female: 191, pay: 3000 },
-    { title: "Lieutenant", male: 255, female: 191, pay: 3700 },
-    { title: "Captain", male: 255, female: 191, pay: 4500 },
-    { title: "Major", male: 255, female: 191, pay: 5400 },
-    { title: "Lieutenant Colonel", male: 61, female: 191, pay: 6400 },
-    { title: "Colonel", male: 61, female: 191, pay: 7500 },
-    { title: "General", male: 61, female: 191, pay: 9000 },
+    { title: "列兵", male: 287, female: 191, pay: 1500 },
+    { title: "下士", male: 287, female: 191, pay: 1900 },
+    { title: "中士", male: 179, female: 191, pay: 2400 },
+    { title: "上士", male: 179, female: 191, pay: 3000 },
+    { title: "中尉", male: 255, female: 191, pay: 3700 },
+    { title: "上尉", male: 255, female: 191, pay: 4500 },
+    { title: "少校", male: 255, female: 191, pay: 5400 },
+    { title: "中校", male: 61, female: 191, pay: 6400 },
+    { title: "上校", male: 61, female: 191, pay: 7500 },
+    { title: "将军", male: 61, female: 191, pay: 9000 },
   ];
 
   return rows.map((row, index) => ({
@@ -36,7 +36,7 @@ function armyRanks(): OrgRankDef[] {
 
 export const ARMY: OrganizationDef = {
   id: ORG_ARMY_ID,
-  name: "Army",
+  name: "军队",
   color: ARMY_COLOR,
   gov: true,
   illegal: false,

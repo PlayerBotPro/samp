@@ -96,7 +96,7 @@ async function applyBan(
 ): Promise<void> {
   const account = getAccount(target);
   if (!account) {
-    admin.sendClientMessage(Color.error, "Player is not logged in.");
+    admin.sendClientMessage(Color.error, "玩家尚未登录。");
     return;
   }
 
@@ -105,7 +105,7 @@ async function applyBan(
   try {
     await saveUserBan(account.id, untilUnix, reason);
   } catch {
-    admin.sendClientMessage(Color.error, "Failed to save the ban.");
+    admin.sendClientMessage(Color.error, "无法保存封禁。");
     return;
   }
 
@@ -114,7 +114,7 @@ async function applyBan(
   const targetTag = playerChatName(target);
   broadcastAll(
     Color.error,
-    `Administrator ${adminTag} banned player ${targetTag} for ${days} ${word}. Reason: ${reason}.`
+    `管理员${adminTag}封禁了玩家${targetTag}，期限${days}${word}。原因：${reason}。`
   );
 
   if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
@@ -127,7 +127,7 @@ async function applyBan(
 async function applyUnban(admin: Player, rawName: string): Promise<void> {
   const name = rawName.trim();
   if (!name || name.includes(" ") || name.length > 24) {
-    admin.sendClientMessage(Color.error, "Usage: /unban [Nick_Name]");
+    admin.sendClientMessage(Color.error, "用法：/unban [Nick_Name]");
     return;
   }
 
@@ -135,35 +135,35 @@ async function applyUnban(admin: Player, rawName: string): Promise<void> {
   try {
     row = await findUserByName(name);
   } catch {
-    admin.sendClientMessage(Color.error, "Failed to check the ban.");
+    admin.sendClientMessage(Color.error, "无法查询封禁。");
     return;
   }
 
   if (!row) {
-    admin.sendClientMessage(Color.error, "Player not found.");
+    admin.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
   const until = parseBannedUntil(row.banned_until);
   if (!isBanActive(until)) {
-    admin.sendClientMessage(Color.error, "Player is not banned.");
+    admin.sendClientMessage(Color.error, "玩家未被封禁。");
     return;
   }
 
   try {
     await clearUserBan(row.id);
   } catch {
-    admin.sendClientMessage(Color.error, "Failed to remove the ban.");
+    admin.sendClientMessage(Color.error, "无法解除封禁。");
     return;
   }
 
-  broadcastAdmins(`Administrator ${playerChatName(admin)} unbanned player ${row.name}.`);
+  broadcastAdmins(`管理员${playerChatName(admin)}解除了玩家${row.name}的封禁。`);
 }
 
 export function bindAdminBan(): void {
   registerCommand(
     "ban",
-    "Ban a player",
+    "封禁玩家",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -173,19 +173,19 @@ export function bindAdminBan(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /ban [id] [days] [reason]"
+          "用法：/ban [玩家ID] [天数] [原因]"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (!getAccount(target)) {
-        player.sendClientMessage(Color.error, "Player is not logged in.");
+        player.sendClientMessage(Color.error, "玩家尚未登录。");
         return;
       }
 
@@ -196,7 +196,7 @@ export function bindAdminBan(): void {
 
   registerCommand(
     "unban",
-    "Unban a player",
+    "解除玩家封禁",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;

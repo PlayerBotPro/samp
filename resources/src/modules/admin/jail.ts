@@ -68,7 +68,7 @@ function broadcastAll(color: number, text: string): void {
 export function bindAdminJail(): void {
   registerCommand(
     "jail",
-    "Jail a player",
+    "监禁玩家",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -78,30 +78,30 @@ export function bindAdminJail(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /jail [id] [minutes] [reason (optional)]"
+          "用法：/jail [玩家ID] [分钟数] [原因（可选）]"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (isJailed(target)) {
-        player.sendClientMessage(Color.error, "Player is already in jail.");
+        player.sendClientMessage(Color.error, "玩家已在监狱中。");
         return;
       }
 
       if (account.adminLevel >= 1) {
-        player.sendClientMessage(Color.error, "You cannot jail an administrator.");
+        player.sendClientMessage(Color.error, "不能监禁管理员。");
         return;
       }
 
@@ -112,7 +112,7 @@ export function bindAdminJail(): void {
 
   registerCommand(
     "unjail",
-    "Release a player from jail",
+    "释放监狱中的玩家",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -121,24 +121,24 @@ export function bindAdminJail(): void {
       const raw = args.trim();
       const slot = Number(raw);
       if (!raw || !Number.isInteger(slot) || slot < 0) {
-        player.sendClientMessage(Color.error, "Usage: /unjail [id]");
+        player.sendClientMessage(Color.error, "用法：/unjail [玩家ID]");
         return;
       }
 
       const target = findTarget(slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (!isJailed(target)) {
-        player.sendClientMessage(Color.error, "Player is not in jail.");
+        player.sendClientMessage(Color.error, "玩家未被监禁。");
         return;
       }
 
@@ -156,22 +156,22 @@ async function applyAndAnnounce(
 ): Promise<void> {
   const ok = await applyJail(target, minutes);
   if (!ok) {
-    admin.sendClientMessage(Color.error, "Failed to jail player.");
+    admin.sendClientMessage(Color.error, "无法监禁玩家。");
     return;
   }
 
   const adminTag = playerChatName(admin);
   const targetTag = playerChatName(target);
   const line = reason
-    ? `Administrator ${adminTag} jailed player ${targetTag} for ${minutes} min. Reason: ${reason}.`
-    : `Administrator ${adminTag} jailed player ${targetTag} for ${minutes} min.`;
+    ? `管理员${adminTag}将玩家${targetTag}监禁${minutes}分钟。原因：${reason}。`
+    : `管理员${adminTag}将玩家${targetTag}监禁${minutes}分钟。`;
   broadcastAll(Color.error, line);
 }
 
 async function applyUnjailAndAnnounce(admin: Player, target: Player): Promise<void> {
   const ok = await applyUnjail(target);
   if (!ok) {
-    admin.sendClientMessage(Color.error, "Failed to release player.");
+    admin.sendClientMessage(Color.error, "无法释放玩家。");
     return;
   }
 
@@ -179,6 +179,6 @@ async function applyUnjailAndAnnounce(admin: Player, target: Player): Promise<vo
   const targetTag = playerChatName(target);
   broadcastAll(
     Color.error,
-    `Administrator ${adminTag} released player ${targetTag} from jail.`
+    `管理员${adminTag}释放了玩家${targetTag}。`
   );
 }

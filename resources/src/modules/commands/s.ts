@@ -4,10 +4,10 @@ import { playerChatName } from "../../shared/player";
 import { playLocalSpeech } from "../chat/talk";
 import { registerCommand } from "./registry";
 
-registerCommand("s", "Shout over a long distance", (player, args) => {
+registerCommand("s", "远距离喊话", (player, args) => {
   const text = sanitizeChatText(args.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    player.sendClientMessage(Color.error, "Usage: /s [text]");
+    player.sendClientMessage(Color.error, "用法：/s [内容]");
     return;
   }
 
@@ -15,7 +15,7 @@ registerCommand("s", "Shout over a long distance", (player, args) => {
     player,
     SHOUT_RADIUS,
     Color.shout,
-    `${playerChatName(player)} shouts: ${text}`
+    `${playerChatName(player)}喊道：${text}`
   );
   playLocalSpeech(player, text, { radius: SHOUT_RADIUS, color: Color.shout });
 });

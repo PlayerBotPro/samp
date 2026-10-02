@@ -25,7 +25,7 @@ import {
 
 const SAVE_EVERY_MS = 30_000;
 const TICK_MS = 1000;
-const INMATE_DENY = "You are serving a sentence. This exit is locked.";
+const INMATE_DENY = "你正在服刑，此出口已锁定。";
 
 const CELLS: readonly SpawnPoint[] = [
   { x: -86.0985, y: 2444.3215, z: 1179.3195, angle: 179.9293, interior: 0, world: PRISON_WORLD },
@@ -141,7 +141,7 @@ export async function applyJail(player: Player, minutes: number): Promise<boolea
   placeInJail(player);
   clearArmyDisguise(player);
   applyOrgVisuals(player);
-  tell(player, Color.error, `You were sent to prison. Sentence: ${minutes} min.`);
+  tell(player, Color.error, `你被送入监狱，刑期：${minutes}分钟。`);
   return true;
 }
 
@@ -168,7 +168,7 @@ export async function applyUnjail(player: Player): Promise<boolean> {
 
   placeAtSpawn(player, resolveOrgSpawn(account) ?? DEFAULT_SPAWN);
   applyOrgVisuals(player);
-  tell(player, Color.info, "You were released from prison.");
+  tell(player, Color.info, "你已被释放。");
   return true;
 }
 
@@ -244,7 +244,7 @@ async function releaseFromJail(player: Player): Promise<void> {
 
   placeAtSpawn(player, FREEDOM);
   applyOrgVisuals(player);
-  tell(player, Color.info, "You served your sentence and are now free.");
+  tell(player, Color.info, "你已服刑完毕，重获自由。");
 }
 
 function confineInmate(player: Player): void {

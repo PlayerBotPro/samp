@@ -29,129 +29,129 @@ type GpsTarget = {
 };
 
 const TARGETS: readonly GpsTarget[] = [
-  { key: "hall", label: "City Hall", x: 1481.1039, y: -1767.4878, z: 18.7958 },
+  { key: "hall", label: "市政厅", x: 1481.1039, y: -1767.4878, z: 18.7958 },
   {
     key: "hospital",
-    label: "City Hospital",
+    label: "市立医院",
     x: 1177.869,
     y: -1323.4761,
     z: 14.092,
   },
   {
     key: "mine",
-    label: "Mine",
+    label: "矿场",
     x: 1023.8627,
     y: -368.1405,
     z: 73.8935,
   },
   {
     key: "loader",
-    label: "Warehouse (Loader)",
+    label: "仓库（搬运工作）",
     x: 2236.532,
     y: -2212.7854,
     z: 13.5469,
   },
   {
     key: "station",
-    label: "LS Railway Station",
+    label: "洛圣都火车站",
     x: 1814.2401,
     y: -1889.4424,
     z: 13.4141,
   },
   {
     key: "prison",
-    label: "Prison",
+    label: "监狱",
     x: 1810.8636,
     y: -1576.4412,
     z: 13.5167,
   },
   {
     key: "police",
-    label: "County Police",
+    label: "郡警察局",
     x: 635.6895,
     y: -571.6663,
     z: 16.3359,
   },
   {
     key: "lspd",
-    label: "LSPD",
+    label: "洛圣都警察局",
     x: 1543.1873,
     y: -1675.8076,
     z: 13.556,
   },
   {
     key: "fbi",
-    label: "FBI",
+    label: "联邦调查局",
     x: 617.4481,
     y: -1458.5858,
     z: 14.4322,
   },
   {
     key: "autoschool",
-    label: "Driving School",
+    label: "驾校",
     x: 738.8304,
     y: -1412.7374,
     z: 13.5284,
   },
   {
     key: "bank",
-    label: "Bank",
+    label: "银行",
     x: 1458.5426,
     y: -1024.3342,
     z: 23.8281,
   },
   {
     key: "lcn",
-    label: "LCN",
+    label: "科萨诺斯特拉",
     x: 1288.8087,
     y: -2056.6206,
     z: 58.6303,
   },
   {
     key: "yakuza",
-    label: "Yakuza",
+    label: "山口组",
     x: 664.9431,
     y: -1315.2083,
     z: 13.4496,
   },
   {
     key: "russian_mafia",
-    label: "Russian Mafia",
+    label: "俄罗斯黑手党",
     x: 962.1949,
     y: -946.551,
     z: 40.2929,
   },
   {
     key: "grove",
-    label: "Grove Street",
+    label: "格罗夫街帮",
     x: 2506.6667,
     y: -1684.4637,
     z: 13.5469,
   },
   {
     key: "ballas",
-    label: "Ballas",
+    label: "巴拉斯帮",
     x: 2023.1401,
     y: -1129.0132,
     z: 24.8482,
   },
   {
     key: "vagos",
-    label: "Vagos",
+    label: "瓦戈斯帮",
     x: 2745.1252,
     y: -1177.5881,
     z: 69.4024,
   },
   {
     key: "rifa",
-    label: "Rifa",
+    label: "里法帮",
     x: 2776.4692,
     y: -1924.9092,
     z: 13.5394,
   },
   {
     key: "aztecas",
-    label: "Aztecas",
+    label: "阿兹特卡斯帮",
     x: 2185.4087,
     y: -1807.8779,
     z: 13.3734,
@@ -178,7 +178,7 @@ export function showGpsMenu(player: Player): void {
   const id = playerId(player);
   if (id !== null && activeByPlayer.has(id)) {
     clearRoute(player, id);
-    player.sendClientMessage(Color.gray, "You disabled GPS.");
+    player.sendClientMessage(Color.gray, "导航已关闭。");
     return;
   }
 
@@ -188,13 +188,13 @@ export function showGpsMenu(player: Player): void {
       player,
       GPS_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "GPS",
+      "导航",
       body,
-      "Select",
-      "Close"
+      "选择",
+      "关闭"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Unable to open GPS.");
+    player.sendClientMessage(Color.error, "无法打开导航。");
   }
 }
 
@@ -256,7 +256,7 @@ function setRoute(player: Player, target: GpsTarget): void {
       Checkpoint.set(player, target.x, target.y, target.z, CHECKPOINT_RADIUS);
     }
   } catch {
-    player.sendClientMessage(Color.error, "Unable to set the marker.");
+    player.sendClientMessage(Color.error, "无法设置标记。");
     return;
   }
 
@@ -267,7 +267,7 @@ function setRoute(player: Player, target: GpsTarget): void {
   );
   player.sendClientMessage(
     Color.info,
-    `Marker: ${target.label}. Distance: ${meters} m.`
+    `标记：${target.label}，距离：${meters}米。`
   );
 }
 
@@ -321,7 +321,7 @@ function arrive(player: Player): void {
   clearRoute(player, id);
   player.sendClientMessage(
     Color.info,
-    `You arrived at: ${target.label}.`
+    `你已到达${target.label}。`
   );
 }
 

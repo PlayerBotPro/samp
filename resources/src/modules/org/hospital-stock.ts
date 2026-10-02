@@ -21,7 +21,7 @@ let medsStockLabel: TextLabel | null = null;
 
 function medsStockLabelText(): string {
   const meds = getWarehouse(ORG_HOSPITAL_ID)?.meds ?? 0;
-  return `Medicine Warehouse\nMedicine: ${meds}`;
+  return `药品仓库\n药品：${meds}`;
 }
 
 export function refreshHospitalMedsStockLabel(): void {

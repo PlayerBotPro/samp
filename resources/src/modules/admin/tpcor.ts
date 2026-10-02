@@ -89,7 +89,7 @@ function teleportToCoords(player: Player, x: number, y: number, z: number): bool
 export function bindAdminTpcor(): void {
   registerCommand(
     "tpcor",
-    "Teleport by XYZ coordinates",
+    "按坐标传送",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -99,24 +99,24 @@ export function bindAdminTpcor(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /tpcor [x] [y] [z]"
+          "用法：/tpcor [x] [y] [z]"
         );
         return;
       }
 
       if (!canTeleport(player)) {
-        player.sendClientMessage(Color.error, "You cannot teleport now.");
+        player.sendClientMessage(Color.error, "现在无法传送。");
         return;
       }
 
       if (!teleportToCoords(player, parsed.x, parsed.y, parsed.z)) {
-        player.sendClientMessage(Color.error, "Failed to teleport.");
+        player.sendClientMessage(Color.error, "传送失败。");
         return;
       }
 
       player.sendClientMessage(
         Color.info,
-        `You teleported to: ${formatCoord(parsed.x)}, ${formatCoord(parsed.y)}, ${formatCoord(parsed.z)}.`
+        `你已传送至：${formatCoord(parsed.x)}，${formatCoord(parsed.y)}，${formatCoord(parsed.z)}。`
       );
     },
     true

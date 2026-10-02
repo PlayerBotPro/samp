@@ -141,7 +141,7 @@ function tryLootCrate(player: Player): void {
 
   const nextAmmo = account.ammo + take;
   if (!Number.isSafeInteger(nextAmmo)) {
-    player.sendClientMessage(Color.error, "You are carrying too much ammunition.");
+    player.sendClientMessage(Color.error, "你携带的弹药过多。");
     return;
   }
 
@@ -155,7 +155,7 @@ function tryLootCrate(player: Player): void {
     // Cache already updated.
   });
   refreshArmyAmmoStockLabel();
-  player.sendClientMessage(Color.info, `+${take} ammunition (Army warehouse).`);
+  player.sendClientMessage(Color.info, `获得${take}弹药（军队仓库）。`);
 }
 
 function notifyEmpty(player: Player, id: number, now: number): void {
@@ -164,7 +164,7 @@ function notifyEmpty(player: Player, id: number, now: number): void {
   }
 
   lastEmptyMsgAt.set(id, now);
-  player.sendClientMessage(Color.error, "The crate is empty: the Army warehouse has no ammunition.");
+  player.sendClientMessage(Color.error, "箱子为空：军队仓库没有弹药。");
 }
 
 function onDeathInArmyBase(player: Player): void {
@@ -202,7 +202,7 @@ function onDeathInArmyBase(player: Player): void {
   });
   player.sendClientMessage(
     Color.error,
-    `You lost ${lost} ammunition at the military base.`
+    `你在军事基地丢失了${lost}弹药。`
   );
 }
 

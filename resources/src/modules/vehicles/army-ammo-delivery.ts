@@ -76,21 +76,21 @@ type DropPoint = {
 const DROP_POINTS: readonly DropPoint[] = [
   {
     orgId: ORG_FBI_ID,
-    name: "FBI",
+    name: "联邦调查局",
     x: 607.3113,
     y: -1520.4983,
     z: 15.034,
   },
   {
     orgId: ORG_POLICE_ID,
-    name: "County Police",
+    name: "郡警察局",
     x: 618.8522,
     y: -586.4384,
     z: 17.233,
   },
   {
     orgId: ORG_LSPD_ID,
-    name: "LSPD",
+    name: "洛圣都警察局",
     x: 1593.8608,
     y: -1614.2993,
     z: 13.3955,
@@ -154,7 +154,7 @@ export function bindArmyAmmoDelivery(): void {
     STREET_WORLD
   );
   new TextLabel(
-    "Ammunition storage\nDelivery crates",
+    "弹药仓库\n运输箱",
     Color.info,
     STOCK_POINT.x,
     STOCK_POINT.y,
@@ -164,10 +164,10 @@ export function bindArmyAmmoDelivery(): void {
     false
   );
 
-  registerCommand("putammo", "Put an ammunition crate into a truck", (player) => {
+  registerCommand("putammo", "将弹药箱装入卡车", (player) => {
     onPutAmmo(player);
   });
-  registerCommand("takeammo", "Take an ammunition crate from a truck", (player) => {
+  registerCommand("takeammo", "从卡车取出弹药箱", (player) => {
     onTakeAmmo(player);
   });
 
@@ -186,12 +186,12 @@ export function bindArmyAmmoDelivery(): void {
       newState === PLAYER_STATE_DRIVER ||
       newState === PLAYER_STATE_PASSENGER
     ) {
-      returnCarried(player, "You entered a vehicle - the ammunition was returned to storage.");
+      returnCarried(player, "你进入了车辆，弹药已退回仓库。");
     }
   });
 
   omp.on("playerDeath", (player) => {
-    returnCarried(player, "You lost the crate - the ammunition was returned to storage.");
+    returnCarried(player, "你丢失了箱子，弹药已退回仓库。");
   });
 
   omp.on("playerDisconnect", (player) => {
@@ -268,7 +268,7 @@ function tickStockPickup(player: Player, id: number): void {
 
 function tryTakeFromStock(player: Player, id: number): void {
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "Only the Army can take crates.");
+    player.sendClientMessage(Color.error, "只有军队成员可以领取箱子。");
     return;
   }
 
@@ -281,7 +281,7 @@ function tryTakeFromStock(player: Player, id: number): void {
     atStock.delete(id);
     player.sendClientMessage(
       Color.error,
-      `Not enough ammunition in Army storage (need ${AMMO_PER_CRATE}).`
+      `军队仓库弹药不足（需要${AMMO_PER_CRATE}）。`
     );
     return;
   }
@@ -290,7 +290,7 @@ function tryTakeFromStock(player: Player, id: number): void {
     addWarehouseAmmo(ORG_ARMY_ID, AMMO_PER_CRATE);
     refreshArmyAmmoStockLabel();
     atStock.delete(id);
-    player.sendClientMessage(Color.error, "Failed to take the crate. Try again.");
+    player.sendClientMessage(Color.error, "无法领取箱子，请重试。");
     return;
   }
 
@@ -298,7 +298,7 @@ function tryTakeFromStock(player: Player, id: number): void {
   carrying.set(id, { source: "stock", dropOrgId: null });
   player.sendClientMessage(
     Color.info,
-    `Crate in hand (+${AMMO_PER_CRATE} ammunition). Go to a Barracks and enter /putammo.`
+    `已拿起箱子（${AMMO_PER_CRATE}弹药），请靠近军用卡车并输入/putammo。`
   );
 }
 
@@ -326,7 +326,7 @@ function tickDropProximity(player: Player, id: number): void {
       atDrop.add(id);
       player.sendClientMessage(
         Color.info,
-        `Unloading point: ${near.name}. Stand on the checkpoint.`
+        `卸货点：${near.name}，请站在检查点上。`
       );
     }
   } catch {
@@ -376,7 +376,7 @@ function onDropCheckpoint(player: Player): void {
   }
 
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "Only the Army can unload.");
+    player.sendClientMessage(Color.error, "只有军队成员可以卸货。");
     return;
   }
 
@@ -395,7 +395,7 @@ function onDropCheckpoint(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `${drop.name}: delivered +${AMMO_PER_CRATE} ammunition (storage: ${total}). +$${PAY_PER_CRATE}`
+    `${drop.name}：送达${AMMO_PER_CRATE}弹药（库存：${total}），获得$${PAY_PER_CRATE}。`
   );
 }
 
@@ -410,19 +410,19 @@ function onPutAmmo(player: Player): void {
   }
 
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "This command is for the Army only.");
+    player.sendClientMessage(Color.error, "此命令仅供军队成员使用。");
     return;
   }
 
   const carry = carrying.get(id);
   if (!carry) {
-    player.sendClientMessage(Color.error, "You do not have a crate in hand.");
+    player.sendClientMessage(Color.error, "你手中没有箱子。");
     return;
   }
 
   try {
     if (player.getState() !== PLAYER_STATE_ONFOOT) {
-      player.sendClientMessage(Color.error, "You must be on foot near the truck.");
+      player.sendClientMessage(Color.error, "你必须步行站在卡车附近。");
       return;
     }
   } catch {
@@ -431,7 +431,7 @@ function onPutAmmo(player: Player): void {
 
   const truck = nearestArmyTruck(player, TRUCK_RANGE);
   if (!truck) {
-    player.sendClientMessage(Color.error, "No Barracks (433) truck is nearby.");
+    player.sendClientMessage(Color.error, "附近没有军用卡车（433）。");
     return;
   }
 
@@ -449,7 +449,7 @@ function onPutAmmo(player: Player): void {
   if (cargo.crates >= MAX_CRATES) {
     player.sendClientMessage(
       Color.error,
-      `The truck already has the maximum number of crates (${MAX_CRATES}).`
+      `卡车已装满箱子（${MAX_CRATES}）。`
     );
     return;
   }
@@ -462,7 +462,7 @@ function onPutAmmo(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Crate loaded. In the cargo bed: ${cargo.crates}/${MAX_CRATES}.`
+    `箱子已装车，货厢内：${cargo.crates}/${MAX_CRATES}。`
   );
 }
 
@@ -477,18 +477,18 @@ function onTakeAmmo(player: Player): void {
   }
 
   if (!isArmyMember(player)) {
-    player.sendClientMessage(Color.error, "This command is for the Army only.");
+    player.sendClientMessage(Color.error, "此命令仅供军队成员使用。");
     return;
   }
 
   if (carrying.has(id)) {
-    player.sendClientMessage(Color.error, "You already have a crate in hand.");
+    player.sendClientMessage(Color.error, "你手中已有箱子。");
     return;
   }
 
   try {
     if (player.getState() !== PLAYER_STATE_ONFOOT) {
-      player.sendClientMessage(Color.error, "You must be on foot near the truck.");
+      player.sendClientMessage(Color.error, "你必须步行站在卡车附近。");
       return;
     }
   } catch {
@@ -497,7 +497,7 @@ function onTakeAmmo(player: Player): void {
 
   const truck = nearestArmyTruck(player, TRUCK_RANGE);
   if (!truck) {
-    player.sendClientMessage(Color.error, "No Barracks (433) truck is nearby.");
+    player.sendClientMessage(Color.error, "附近没有军用卡车（433）。");
     return;
   }
 
@@ -509,7 +509,7 @@ function onTakeAmmo(player: Player): void {
   ensureTruck(truckId, truck);
   const cargo = trucks.get(truckId);
   if (!cargo || cargo.crates <= 0) {
-    player.sendClientMessage(Color.error, "There are no crates in the truck.");
+    player.sendClientMessage(Color.error, "卡车内没有箱子。");
     return;
   }
 
@@ -519,7 +519,7 @@ function onTakeAmmo(player: Player): void {
   if (!giveCrate(player)) {
     cargo.crates += 1;
     updateTruckLabel(truckId, cargo);
-    player.sendClientMessage(Color.error, "Failed to take the crate. Try again.");
+    player.sendClientMessage(Color.error, "无法领取箱子，请重试。");
     return;
   }
 
@@ -527,7 +527,7 @@ function onTakeAmmo(player: Player): void {
 
   player.sendClientMessage(
     Color.info,
-    `Crate in hand. Remaining in the cargo bed: ${cargo.crates}/${MAX_CRATES}.`
+    `已拿起箱子，货厢剩余：${cargo.crates}/${MAX_CRATES}。`
   );
 }
 
@@ -654,7 +654,7 @@ function updateTruckLabel(truckId: number, cargo: TruckCargo): void {
 }
 
 function cratesLabelText(crates: number): string {
-  return `Crates loaded: ${crates}`;
+  return `已装箱数：${crates}`;
 }
 
 function destroyLabel(label: TextLabel | null): void {

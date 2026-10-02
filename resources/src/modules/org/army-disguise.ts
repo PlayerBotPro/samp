@@ -104,7 +104,7 @@ export function bindArmyDisguise(): void {
     }
 
     if (isPlayerActive(player)) {
-      player.sendClientMessage(Color.gray, "Army uniform removed.");
+      player.sendClientMessage(Color.gray, "军服已移除。");
     }
   });
 

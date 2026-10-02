@@ -32,7 +32,7 @@ export function startSpawnHealthPickup(): void {
   try {
     new Pickup(HEART_PICKUP, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, STREET_WORLD);
     new TextLabel(
-      "Health",
+      "生命值",
       Color.info,
       POINT.x,
       POINT.y,
@@ -89,12 +89,12 @@ function tryHeal(player: Player): void {
   }
 
   if (account.hospitalized) {
-    tell(player, Color.error, "Complete hospital treatment first.");
+    tell(player, Color.error, "请先完成医院治疗。");
     return;
   }
 
   if (account.level > MAX_FREE_LEVEL) {
-    tell(player, Color.error, "This aid point is available through level 5.");
+    tell(player, Color.error, "此救助点仅供5级及以下玩家使用。");
     return;
   }
 
@@ -114,7 +114,7 @@ function tryHeal(player: Player): void {
 
   applyHealth(player, MAX_HEALTH);
   patchAccount(player, { health: MAX_HEALTH });
-  tell(player, Color.info, "Health restored.");
+  tell(player, Color.info, "生命值已恢复。");
 }
 
 function tell(player: Player, color: number, text: string): void {

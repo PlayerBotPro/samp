@@ -63,17 +63,17 @@ function notifyGive(
 ): void {
   const targetTag = playerChatName(target);
   const adminTag = playerChatName(admin);
-  const where = toBank ? "to the bank account" : "in cash";
+  const where = toBank ? "至银行账户" : "以现金形式";
 
   admin.sendClientMessage(
     Color.info,
-    `You gave player ${targetTag} $${credited} ${where}.`
+    `你向玩家${targetTag}发放了$${credited}，${where}。`
   );
 
   if (isPlayerActive(target)) {
     target.sendClientMessage(
       Color.info,
-      `Administrator ${adminTag} gave you $${credited} ${where}.`
+      `管理员${adminTag}向你发放了$${credited}，${where}。`
     );
   }
 }
@@ -81,7 +81,7 @@ function notifyGive(
 export function bindAdminGivemoney(): void {
   registerCommand(
     "givemoney",
-    "Give cash or bank money",
+    "发放现金或银行存款",
     (player, args) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -91,19 +91,19 @@ export function bindAdminGivemoney(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /givemoney [id] [0-1] [amount] (0 - cash, 1 - bank)"
+          "用法：/givemoney [玩家ID] [0-1] [金额]（0：现金，1：银行）"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (!getAccount(target)) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
@@ -125,7 +125,7 @@ async function applyGive(
   }
 
   if (pending.has(account.id)) {
-    admin.sendClientMessage(Color.error, "Money is already being given to this player. Please wait.");
+    admin.sendClientMessage(Color.error, "正在向该玩家发放资金，请稍候。");
     return;
   }
 
@@ -136,7 +136,7 @@ async function applyGive(
   if (credited <= 0) {
     admin.sendClientMessage(
       Color.error,
-      toBank ? "Bank account is full." : "Cash balance is full."
+      toBank ? "银行账户余额已达上限。" : "现金余额已达上限。"
     );
     return;
   }
@@ -164,7 +164,7 @@ async function applyGive(
     if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
       admin.sendClientMessage(
         Color.info,
-        `You gave $${credited}. The player disconnected; the amount was saved.`
+        `已发放$${credited}。玩家已断线，金额已保存。`
       );
       return;
     }
@@ -198,7 +198,7 @@ async function applyGive(
         applyWallet(target, fresh);
       }
     }
-    admin.sendClientMessage(Color.error, "Failed to save money.");
+    admin.sendClientMessage(Color.error, "无法保存资金。");
   } finally {
     pending.delete(account.id);
   }

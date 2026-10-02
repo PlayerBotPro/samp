@@ -6,7 +6,7 @@ Quick start: [README.md](../README.md). Deployment: [deploy.md](deploy.md). Pipe
 
 `npm run typecheck` passed without errors when this documentation was written.
 
-Player-facing chat and dialog text uses **Russian UTF-8**. The DLL/component handles encoding for the 0.3.7 client.
+Player-facing chat and dialog text uses **Simplified Chinese UTF-8**. The DLL/component handles encoding for the 0.3.7 client.
 
 ## Startup
 

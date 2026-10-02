@@ -7,7 +7,7 @@ import { hasAdminAccess } from "./session";
 export function bindAdminHelp(): void {
   registerCommand(
     "ahelp",
-    "Admin command list",
+    "管理员命令列表",
     (player) => {
       if (!hasAdminAccess(player, 1)) {
         return;
@@ -16,11 +16,11 @@ export function bindAdminHelp(): void {
       const account = getAccount(player);
       const level = Math.min(MAX_ADMIN_LEVEL, account?.adminLevel ?? 1);
 
-      player.sendClientMessage(Color.info, "Available commands:");
+      player.sendClientMessage(Color.info, "可用命令：");
       for (let n = 1; n <= level; n += 1) {
         const cmds = ADMIN_COMMANDS_BY_LEVEL[n] ?? [];
         const suffix = cmds.length > 0 ? ` ${cmds.join(" ")}` : "";
-        player.sendClientMessage(Color.white, `${n} level:${suffix}`);
+        player.sendClientMessage(Color.white, `${n}级：${suffix}`);
       }
     },
     true

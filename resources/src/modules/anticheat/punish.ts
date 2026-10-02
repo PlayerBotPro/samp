@@ -66,7 +66,7 @@ function kickPlayer(player: Player, label: string): void {
   try {
     player.sendClientMessage(
       Color.error,
-      `Anticheat: ${label}. You have been disconnected from the server.`
+      `反作弊：${label}。你已与服务器断开连接。`
     );
   } catch {
     // Already disconnected.
@@ -114,17 +114,17 @@ export function reportCheat(
   const softHit = !instant && strike < need;
 
   const line = softHit
-    ? `[AC] ${name} - ${label}${suffix} [${strike}/${need}]`
-    : `[AC] ${name} - ${label}${suffix}`;
+    ? `[反作弊] ${name} - ${label}${suffix} [${strike}/${need}]`
+    : `[反作弊] ${name} - ${label}${suffix}`;
 
   omp.log(`[${SERVER_TAG}] ${line} ip=${ip} code=${code}`);
-  notifyAdmins(softHit ? `[AC] ${name}: ${label} (${strike}/${need})` : `[AC] ${name}: ${label}`);
+  notifyAdmins(softHit ? `[反作弊] ${name}：${label}（${strike}/${need}）` : `[反作弊] ${name}：${label}`);
 
   if (softHit) {
     try {
       player.sendClientMessage(
         Color.error,
-        `Anticheat: suspicious activity (${label}). Warning ${strike}/${need}.`
+        `反作弊：可疑行为（${label}），警告${strike}/${need}。`
       );
     } catch {
       // Already disconnected.
@@ -134,7 +134,7 @@ export function reportCheat(
 
   if (!cfg.kickOnDetect) {
     try {
-      player.sendClientMessage(Color.error, `Anticheat: ${label} (kick disabled).`);
+      player.sendClientMessage(Color.error, `反作弊：${label}（踢出功能已关闭）。`);
     } catch {
       // ignore
     }

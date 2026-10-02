@@ -154,13 +154,13 @@ function sendToSides(current: CaptureState, color: number, text: string): void {
 }
 
 function scoreLine(orgId: number, kills: number): string {
-  const name = getOrganization(orgId)?.name ?? "Gang";
+  const name = getOrganization(orgId)?.name ?? "帮派";
   return `${name}: ~r~${kills}`;
 }
 
 function paintHud(current: CaptureState): void {
   updateCaptureHud(
-    `Time: ${formatClock(remainingSeconds(current))}`,
+    `时间：${formatClock(remainingSeconds(current))}`,
     scoreLine(current.attackerId, current.attackerKills),
     scoreLine(current.defenderId, current.defenderKills)
   );
@@ -287,8 +287,8 @@ async function finishCapture(current: CaptureState): Promise<void> {
   clearInterval(current.timer);
 
   const turf = getTurf(current.zoneId);
-  const attackerName = getOrganization(current.attackerId)?.name ?? "Gang";
-  const defenderName = getOrganization(current.defenderId)?.name ?? "Gang";
+  const attackerName = getOrganization(current.attackerId)?.name ?? "帮派";
+  const defenderName = getOrganization(current.defenderId)?.name ?? "帮派";
   let transferred = false;
 
   try {
@@ -308,13 +308,13 @@ async function finishCapture(current: CaptureState): Promise<void> {
       sendToSides(
         current,
         NEWS_COLOR,
-        `${attackerName} captured territory from ${defenderName} in ${current.district}`
+        `${attackerName}夺取了${defenderName}位于${current.district}的领地。`
       );
     } else {
       sendToSides(
         current,
         NEWS_COLOR,
-        `${attackerName}'s attempt to capture territory from ${defenderName} failed`
+        `${attackerName}夺取${defenderName}领地的行动失败。`
       );
     }
   } catch (error) {
@@ -354,8 +354,8 @@ function beginCapture(
 ): void {
   const gen = ++generation;
   const district = districtNameAt((turf.minX + turf.maxX) / 2, (turf.minY + turf.maxY) / 2);
-  const attackerName = getOrganization(attackerId)?.name ?? "Gang";
-  const defenderName = getOrganization(defenderId)?.name ?? "Gang";
+  const attackerName = getOrganization(attackerId)?.name ?? "帮派";
+  const defenderName = getOrganization(defenderId)?.name ?? "帮派";
 
   const current: CaptureState = {
     gen,
@@ -380,13 +380,13 @@ function beginCapture(
   sendToSides(
     current,
     NEWS_COLOR,
-    `${attackerName} started capturing ${defenderName}'s territory in ${district}`
+    `${attackerName}开始争夺${defenderName}位于${district}的领地。`
   );
-  sendToGang(attackerId, GANG_HINT_COLOR, `${rankTitle} ${playerChatName(player)} initiated a capture`);
+  sendToGang(attackerId, GANG_HINT_COLOR, `${rankTitle} ${playerChatName(player)}发起了领地争夺。`);
   sendToSides(
     current,
     GPS_HINT_COLOR,
-    "The location is marked on GPS. Go there and support your gang"
+    "地点已在导航中标记，请前往支援你的帮派。"
   );
 }
 
@@ -402,12 +402,12 @@ export function tryStartCapture(player: Player): void {
   }
 
   if (membership.rank.id < CAPTURE_MIN_RANK) {
-    tell(player, 0xb4b5b7ff, "Captures are available from rank 8.");
+    tell(player, 0xb4b5b7ff, "职位8级以上可以发起领地争夺。");
     return;
   }
 
   if (ending) {
-    tell(player, 0xb4b5b7ff, "A zone capture is already underway. Wait for it to end!");
+    tell(player, 0xb4b5b7ff, "已有领地争夺正在进行，请等待结束！");
     return;
   }
 
@@ -416,28 +416,28 @@ export function tryStartCapture(player: Player): void {
     tell(
       player,
       0xb4b5b7ff,
-      "You must be on the gang territory you want to capture."
+      "你必须站在想要争夺的帮派领地内。"
     );
     return;
   }
 
   if (turf.orgId === membership.org.id) {
-    tell(player, 0xb4b5b7ff, "This territory belongs to your gang.");
+    tell(player, 0xb4b5b7ff, "此领地属于你的帮派。");
     return;
   }
 
   if (state) {
-    tell(player, 0xb4b5b7ff, "A zone capture is already underway. Wait for it to end!");
+    tell(player, 0xb4b5b7ff, "已有领地争夺正在进行，请等待结束！");
     return;
   }
 
   if (turf.spawnProtected) {
-    tell(player, 0xb4b5b7ff, "You cannot capture a gang spawn territory!");
+    tell(player, 0xb4b5b7ff, "不能争夺帮派出生点领地！");
     return;
   }
 
   if (!isGangOrgId(turf.orgId)) {
-    tell(player, 0xb4b5b7ff, "This territory does not belong to a gang.");
+    tell(player, 0xb4b5b7ff, "此领地不属于任何帮派。");
     return;
   }
 
@@ -445,7 +445,7 @@ export function tryStartCapture(player: Player): void {
     tell(
       player,
       0xb4b5b7ff,
-      "No members of the gang that owns this territory are online."
+      "领地所属帮派没有成员在线。"
     );
     return;
   }

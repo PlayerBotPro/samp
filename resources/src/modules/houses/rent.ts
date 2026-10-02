@@ -47,17 +47,17 @@ export function notifyHouseRentReminder(player: Player): void {
     if (daysLeft === 0) {
       player.sendClientMessage(
         Color.error,
-        "Today is the last day to pay for the house. Otherwise, the state will seize it tomorrow."
+        "今天是房屋缴费的最后一天，否则明天政府将收回房屋。"
       );
-      player.sendClientMessage(Color.gray, "Pay for housing at the bank.");
+      player.sendClientMessage(Color.gray, "请到银行缴纳房屋费用。");
       return;
     }
 
     player.sendClientMessage(
       Color.tryOk,
-      `${daysLeft} ${rentDaysLeftLabel(daysLeft)} remain to pay for house #${house.id}.`
+      `${house.id}号房屋还有${daysLeft}${rentDaysLeftLabel(daysLeft)}需要缴费。`
     );
-    player.sendClientMessage(Color.gray, "Pay for housing at the bank.");
+    player.sendClientMessage(Color.gray, "请到银行缴纳房屋费用。");
   } catch {
     // The player has already disconnected.
   }
@@ -118,15 +118,15 @@ type VacateHouseMessages = {
 
 export function applyForfeitedHouse(houseId: number): void {
   applyHouseVacated(houseId, {
-    insideMessage: `House #${houseId} was seized by the state for nonpayment.`,
-    ownerMessage: `House #${houseId} was seized by the state for nonpayment. No compensation is paid.`,
+    insideMessage: `${houseId}号房屋因未缴费被政府收回。`,
+    ownerMessage: `${houseId}号房屋因未缴费被政府收回，不予补偿。`,
   });
 }
 
 export function applyAdminVacatedHouse(houseId: number): void {
   applyHouseVacated(houseId, {
-    insideMessage: `House #${houseId} was released by an administrator.`,
-    ownerMessage: `An administrator sold your house #${houseId} to the state.`,
+    insideMessage: `管理员收回了${houseId}号房屋。`,
+    ownerMessage: `管理员将你的${houseId}号房屋出售给了政府。`,
   });
 }
 

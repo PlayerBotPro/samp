@@ -7,67 +7,67 @@ export type ExamQuestion = {
 };
 
 export const EXAM_RULES =
-  "Brief traffic rules:\n" +
-  "1. Come to a full stop at a red light.\n" +
-  "2. In the city - no more than 60 km/h.\n" +
-  "3. At an uncontrolled intersection, yield to traffic on the right.\n" +
-  "4. Overtaking across a solid line is prohibited.\n" +
-  "5. Seat belt / helmet required.\n\n" +
-  "Next is a 5-question test. You must answer all questions correctly.\n" +
-  "Test fee: $500.";
+  "交通规则简要说明：\n" +
+  "1. 红灯时必须完全停车。\n" +
+  "2. 市区限速60公里/小时。\n" +
+  "3. 无信号灯路口须让右侧来车先行。\n" +
+  "4. 禁止跨越实线超车。\n" +
+  "5. 必须系安全带或佩戴头盔。\n\n" +
+  "接下来有5道题，必须全部答对。\n" +
+  "考试费用：$500。";
 
 const CAR_QUESTIONS: readonly ExamQuestion[] = [
   {
-    text: "What should you do at a red traffic light?",
-    answers: ["Stop", "Drive through faster", "Honk and drive"],
+    text: "遇到红灯应该怎么做？",
+    answers: ["停车", "加速通过", "鸣笛通过"],
     correct: 0,
   },
   {
-    text: "What is the maximum speed in the city?",
-    answers: ["120 km/h", "60 km/h", "200 km/h"],
+    text: "市区最高限速是多少？",
+    answers: ["120公里/小时", "60公里/小时", "200公里/小时"],
     correct: 1,
   },
   {
-    text: "Who must you yield to at an uncontrolled intersection?",
-    answers: ["Traffic on the left", "No one", "Traffic on the right"],
+    text: "在无信号灯路口应让谁先行？",
+    answers: ["左侧来车", "无需让行", "右侧来车"],
     correct: 2,
   },
   {
-    text: "Can you overtake across a solid line?",
-    answers: ["No", "Yes", "Only at night"],
+    text: "可以跨越实线超车吗？",
+    answers: ["否", "是", "仅限夜间"],
     correct: 0,
   },
   {
-    text: "Is a seat belt required?",
-    answers: ["No", "Only on highways", "Yes, it is required"],
+    text: "必须系安全带吗？",
+    answers: ["否", "仅限高速公路", "是，必须"],
     correct: 2,
   },
 ];
 
 const MOTO_QUESTIONS: readonly ExamQuestion[] = [
   {
-    text: "What should you do at a red traffic light?",
-    answers: ["Stop", "Drive around on the shoulder", "Drive through if no one is around"],
+    text: "遇到红灯应该怎么做？",
+    answers: ["停车", "从路肩绕行", "无人时直接通过"],
     correct: 0,
   },
   {
-    text: "Is a helmet required on a motorcycle?",
-    answers: ["No", "Yes, it is required", "Only outside the city"],
+    text: "骑摩托车必须佩戴头盔吗？",
+    answers: ["否", "是，必须", "仅限市区外"],
     correct: 1,
   },
   {
-    text: "Can you ride between lanes of cars?",
-    answers: ["Yes, always", "Only on an empty highway", "No"],
+    text: "可以在车道间穿行吗？",
+    answers: ["是，随时可以", "仅限空旷的高速公路", "否"],
     correct: 2,
   },
   {
-    text: "What is the maximum speed in the city?",
-    answers: ["60 km/h", "140 km/h", "No limit"],
+    text: "市区最高限速是多少？",
+    answers: ["60公里/小时", "140公里/小时", "无限制"],
     correct: 0,
   },
   {
-    text: "Can you overtake across a solid line?",
-    answers: ["Yes, on a motorcycle", "No", "Only on the right"],
+    text: "可以跨越实线超车吗？",
+    answers: ["是，骑摩托车时可以", "否", "仅限右侧"],
     correct: 1,
   },
 ];

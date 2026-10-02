@@ -14,7 +14,7 @@ const DRAW_DISTANCE = 120;
 const DENY_COOLDOWN_MS = 2500;
 const PLAYER_STATE_ONFOOT = 1;
 const DOOR_MODEL = 19859;
-const DENY = "Only City Hall and FBI personnel can open it.";
+const DENY = "只有市政厅和联邦调查局成员可以打开。";
 
 const ALLOWED_ORGS: ReadonlySet<number> = new Set([ORG_MERIYA_ID, ORG_FBI_ID]);
 

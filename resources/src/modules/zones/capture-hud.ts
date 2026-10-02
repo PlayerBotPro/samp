@@ -52,7 +52,7 @@ function createHud(): CaptureHud | null {
     return draw;
   });
   const time = tryDraw(() => {
-    const draw = new TextDraw(13.0, 278.0, "Time:");
+    const draw = new TextDraw(13.0, 278.0, "时间：");
     styleLine(draw, TIME_COLOR);
     return draw;
   });

@@ -47,7 +47,7 @@ function findTarget(slot: number) {
 export function bindAdminMakeadmin(): void {
   registerCommand(
     "makeadmin",
-    "Grant or revoke admin rights",
+    "授予或撤销管理员权限",
     (player, args) => {
       if (!hasAdminAccess(player, 7)) {
         return;
@@ -57,28 +57,28 @@ export function bindAdminMakeadmin(): void {
       if (!parsed) {
         player.sendClientMessage(
           Color.error,
-          "Usage: /makeadmin [id] [lvl] (0-7)"
+          "用法：/makeadmin [玩家ID] [等级]（0-7）"
         );
         return;
       }
 
       const target = findTarget(parsed.slot);
       if (!target) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
       if (playerId(player) === playerId(target)) {
         player.sendClientMessage(
           Color.error,
-          "You cannot grant or revoke your own admin rights."
+          "不能授予或撤销自己的管理员权限。"
         );
         return;
       }
 
       const account = getAccount(target);
       if (!account) {
-        player.sendClientMessage(Color.error, "Player not found.");
+        player.sendClientMessage(Color.error, "未找到玩家。");
         return;
       }
 
@@ -101,12 +101,12 @@ async function grantAdmin(
   try {
     await saveAdminAccess(account.id, level);
   } catch {
-    admin.sendClientMessage(Color.error, "Failed to save admin rights.");
+    admin.sendClientMessage(Color.error, "无法保存管理员权限。");
     return;
   }
 
   if (!isPlayerActive(target) || getAccount(target)?.id !== account.id) {
-    admin.sendClientMessage(Color.error, "Player not found.");
+    admin.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
@@ -116,15 +116,15 @@ async function grantAdmin(
   const tag = playerChatName(target);
 
   if (level < 1) {
-    admin.sendClientMessage(Color.info, `You revoked admin rights from ${tag}.`);
-    target.sendClientMessage(Color.info, "Your admin rights have been revoked.");
+    admin.sendClientMessage(Color.info, `你撤销了${tag}的管理员权限。`);
+    target.sendClientMessage(Color.info, "你的管理员权限已被撤销。");
     return;
   }
 
-  admin.sendClientMessage(Color.info, `You granted ${tag} admin level ${level}.`);
+  admin.sendClientMessage(Color.info, `你授予${tag}${level}级管理员权限。`);
   target.sendClientMessage(
     Color.info,
-    `You have been granted admin access. Level: ${level}. Set an admin password.`
+    `你已获得${level}级管理员权限，请设置管理员密码。`
   );
   promptAdminPasswordSetup(target);
 }

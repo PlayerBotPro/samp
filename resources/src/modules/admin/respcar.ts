@@ -76,7 +76,7 @@ function respawnEmptyVehicles(): void {
 export function bindAdminRespcar(): void {
   registerCommand(
     "respcar",
-    "Respawn all vehicles in 30 seconds",
+    "30秒后重置全部车辆",
     (player) => {
       if (!hasAdminAccess(player, MIN_LEVEL)) {
         return;
@@ -85,7 +85,7 @@ export function bindAdminRespcar(): void {
       if (pending) {
         player.sendClientMessage(
           Color.error,
-          "Vehicle respawn timer is already running."
+          "车辆重置倒计时已在运行。"
         );
         return;
       }
@@ -93,7 +93,7 @@ export function bindAdminRespcar(): void {
       const tag = playerChatName(player);
       broadcastAll(
         Color.info,
-        `Administrator ${tag} started a vehicle respawn. Unoccupied vehicles will return to their spawn points in 30 seconds.`
+        `管理员${tag}启动了车辆重置，无人乘坐的车辆将在30秒后返回出生点。`
       );
 
       pending = setTimeout(() => {
@@ -101,7 +101,7 @@ export function bindAdminRespcar(): void {
         respawnEmptyVehicles();
         broadcastAll(
           Color.info,
-          `Administrator ${tag} respawned all unoccupied vehicles on the server.`
+          `管理员${tag}重置了服务器中所有无人乘坐的车辆。`
         );
       }, DELAY_MS);
     },

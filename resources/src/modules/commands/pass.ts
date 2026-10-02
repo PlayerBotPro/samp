@@ -15,17 +15,17 @@ const TITLE = "{FFCC00}";
 const LABEL = "{FFFFFF}";
 const VALUE = "{33CCFF}";
 
-registerCommand("pass", "Passport: view or show by ID", (player, args) => {
+registerCommand("pass", "查看护照或按ID出示护照", (player, args) => {
   const account = getAccount(player);
   if (!account) {
-    player.sendClientMessage(Color.error, "Log in first.");
+    player.sendClientMessage(Color.error, "请先登录。");
     return;
   }
 
   if (!account.passport) {
     player.sendClientMessage(
       Color.error,
-      "You do not have a passport. Visit City Hall."
+      "你没有护照，请前往市政厅办理。"
     );
     return;
   }
@@ -38,13 +38,13 @@ registerCommand("pass", "Passport: view or show by ID", (player, args) => {
 
   const slot = Number(rawId);
   if (!Number.isInteger(slot) || slot < 0) {
-    player.sendClientMessage(Color.error, "Usage: /pass [id]");
+    player.sendClientMessage(Color.error, "用法：/pass [玩家ID]");
     return;
   }
 
   const target = omp.players.at(slot);
   if (!target || !isPlayerActive(target)) {
-    player.sendClientMessage(Color.error, "Player not found.");
+    player.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
@@ -54,20 +54,20 @@ registerCommand("pass", "Passport: view or show by ID", (player, args) => {
   }
 
   if (!isAuthenticatedTarget(target)) {
-    player.sendClientMessage(Color.error, "Player not found.");
+    player.sendClientMessage(Color.error, "未找到玩家。");
     return;
   }
 
   if (!arePlayersNearby(player, target, WHISPER_RADIUS)) {
-    player.sendClientMessage(Color.error, "Player is too far away.");
+    player.sendClientMessage(Color.error, "玩家距离太远。");
     return;
   }
 
   showPassport(target, account);
   const shownTo = playerName(target);
-  const verb = byGender(account.gender, "showed", "showed");
-  player.sendClientMessage(Color.gray, `You ${verb} your passport to ${shownTo}.`);
-  target.sendClientMessage(Color.gray, `${account.name} ${verb} you their passport.`);
+  const verb = byGender(account.gender, "出示", "出示");
+  player.sendClientMessage(Color.gray, `你向${shownTo}${verb}了护照。`);
+  target.sendClientMessage(Color.gray, `${account.name}向你${verb}了护照。`);
 });
 
 function isAuthenticatedTarget(player: Player): boolean {
@@ -81,14 +81,14 @@ function passRow(label: string, value: string): string {
 function showPassport(viewer: Player, owner: Account): void {
   const membership = getMembership(owner);
   const body = [
-    passRow("Name", owner.name),
-    passRow("Residence", residenceLabel(owner.id)),
-    passRow("Years in country", String(ageFromBirthDate(owner.birthDate))),
-    passRow("Gender", genderLabel(owner.gender)),
-    passRow("Date of birth", formatBirthDate(owner.birthDate)),
-    passRow("Organization", membership?.org.name ?? "None"),
-    passRow("Position", membership?.rank.title ?? "None"),
-    passRow("Lawfulness", String(owner.lawfulness)),
+    passRow("姓名", owner.name),
+    passRow("住所", residenceLabel(owner.id)),
+    passRow("在本国居住年数", String(ageFromBirthDate(owner.birthDate))),
+    passRow("性别", genderLabel(owner.gender)),
+    passRow("出生日期", formatBirthDate(owner.birthDate)),
+    passRow("组织", membership?.org.name ?? "无"),
+    passRow("职位", membership?.rank.title ?? "无"),
+    passRow("守法度", String(owner.lawfulness)),
   ].join("\n");
 
   try {
@@ -96,12 +96,12 @@ function showPassport(viewer: Player, owner: Account): void {
       viewer,
       PASSPORT_DIALOG_ID,
       DIALOG_STYLE_MSGBOX,
-      `${TITLE}${owner.name}'s Passport`,
+      `${TITLE}${owner.name}的护照`,
       body,
-      "Close",
+      "关闭",
       ""
     );
   } catch {
-    viewer.sendClientMessage(Color.error, "Unable to open passport.");
+    viewer.sendClientMessage(Color.error, "无法打开护照。");
   }
 }

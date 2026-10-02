@@ -1,6 +1,6 @@
 # LSRP - Version 2
 
-This document describes additions after [docs.md](docs.md): the baseline covers login, hospital, city hall, mine, the Army, and admin levels 1-7 with `/alogin`. Player-facing text is Russian (UTF-8).
+This document describes additions after [docs.md](docs.md): the baseline covers login, hospital, city hall, mine, the Army, and admin levels 1-7 with `/alogin`. Player-facing text is Simplified Chinese (UTF-8).
 
 ## Startup
 

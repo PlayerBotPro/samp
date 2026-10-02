@@ -5,7 +5,7 @@ import { createServerVehicle } from "./spawn";
 import type { Vehicle } from "@omp-node/core";
 
 const RESPAWN_SEC = 100;
-const DENY = "You are not a member of the radio station.";
+const DENY = "你不是电台成员。";
 
 const RADIO_VEHICLES: ReadonlyArray<{
   model: number;

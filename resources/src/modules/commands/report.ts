@@ -14,7 +14,7 @@ const COOLDOWN_MS = 30_000;
 
 const lastReportAt = new Map<number, number>();
 
-registerCommand("report", "Contact administration", (player) => {
+registerCommand("report", "联系管理员", (player) => {
   showReportDialog(player);
 });
 
@@ -45,7 +45,7 @@ export function showReportDialog(player: Player, error?: string): void {
   if (wait > 0 && !error) {
     player.sendClientMessage(
       Color.error,
-      `You can send another report in ${formatWait(wait)}.`
+      `${formatWait(wait)}后可再次提交报告。`
     );
     return;
   }
@@ -56,13 +56,13 @@ export function showReportDialog(player: Player, error?: string): void {
       player,
       REPORT_DIALOG_ID,
       DIALOG_STYLE_INPUT,
-      "Contact administration",
-      `${prefix}Describe your question or complaint.`,
-      "Send",
-      "Cancel"
+      "联系管理员",
+      `${prefix}请描述你的问题或投诉。`,
+      "发送",
+      "取消"
     );
   } catch {
-    player.sendClientMessage(Color.error, "Failed to open the report dialog.");
+    player.sendClientMessage(Color.error, "无法打开报告对话框。");
   }
 }
 
@@ -76,21 +76,21 @@ function sendReport(player: Player, raw: string): void {
   if (wait > 0) {
     player.sendClientMessage(
       Color.error,
-      `You can send another report in ${formatWait(wait)}.`
+      `${formatWait(wait)}后可再次提交报告。`
     );
     return;
   }
 
   const text = sanitizeChatText(raw.trim()).slice(0, CHAT_MAX_LENGTH);
   if (!text) {
-    showReportDialog(player, "Enter a message.");
+    showReportDialog(player, "请输入内容。");
     return;
   }
 
-  const verb = byGender(account.gender, "wrote", "wrote");
+  const verb = byGender(account.gender, "写道", "写道");
   const authorId = playerId(player);
   const authorLine = clipClientMessage(`${playerChatName(player)}: ${text}`);
-  const adminLine = clipClientMessage(`Player ${playerChatName(player)} ${verb}: ${text}`);
+  const adminLine = clipClientMessage(`玩家${playerChatName(player)}${verb}：${text}`);
 
   try {
     player.sendClientMessage(Color.info, authorLine);
@@ -129,5 +129,5 @@ function reportWaitMs(player: Player): number {
 
 function formatWait(ms: number): string {
   const seconds = Math.max(1, Math.ceil(ms / 1000));
-  return `${seconds} sec.`;
+  return `${seconds}秒`;
 }

@@ -34,7 +34,7 @@ function teleportToMapMark(player: Player, x: number, y: number, z: number): voi
     refreshStreamForPlayer(player);
     player.sendClientMessage(
       Color.white,
-      "You successfully teleported to the marker!"
+      "已成功传送到标记处！"
     );
   } catch {
     // Player already disconnected.

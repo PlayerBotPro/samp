@@ -88,9 +88,9 @@ function spawnFleet(orgId: number, deny: string, cars: readonly GangCar[]): void
 }
 
 export function spawnGangVehicles(): void {
-  spawnFleet(ORG_GROVE_ID, "You are not a member of Grove Street.", GROVE_CARS);
-  spawnFleet(ORG_BALLAS_ID, "You are not a member of The Ballas.", BALLAS_CARS);
-  spawnFleet(ORG_AZTECAS_ID, "You are not a member of Varios Los Aztecas.", AZTECAS_CARS);
-  spawnFleet(ORG_VAGOS_ID, "You are not a member of Los Santos Vagos.", VAGOS_CARS);
-  spawnFleet(ORG_RIFA_ID, "You are not a member of The Rifa.", RIFA_CARS);
+  spawnFleet(ORG_GROVE_ID, "你不是格罗夫街帮成员。", GROVE_CARS);
+  spawnFleet(ORG_BALLAS_ID, "你不是巴拉斯帮成员。", BALLAS_CARS);
+  spawnFleet(ORG_AZTECAS_ID, "你不是阿兹特卡斯帮成员。", AZTECAS_CARS);
+  spawnFleet(ORG_VAGOS_ID, "你不是洛圣都瓦戈斯帮成员。", VAGOS_CARS);
+  spawnFleet(ORG_RIFA_ID, "你不是里法帮成员。", RIFA_CARS);
 }

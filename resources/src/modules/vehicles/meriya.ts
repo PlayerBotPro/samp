@@ -5,7 +5,7 @@ import { createServerVehicle } from "./spawn";
 
 const RESPAWN_SEC = 100;
 const WHITE = 1;
-const DENY = "You are not a member of City Hall.";
+const DENY = "你不是市政厅成员。";
 
 const MERIYA_VEHICLES: ReadonlyArray<{
   model: number;

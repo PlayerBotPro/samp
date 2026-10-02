@@ -18,7 +18,7 @@ const TICK_MS = 200;
 const LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
 const MAX_ARMOR = 100;
-const DENY = "Only LSPD, County Police, and FBI employees can open this.";
+const DENY = "只有洛圣都警察局、郡警察局和联邦调查局员工可以打开此处。";
 
 const POINT = {
   x: -100.0232,
@@ -34,8 +34,8 @@ type LockerItem = {
 };
 
 const ITEMS: readonly LockerItem[] = [
-  { label: "Body armor", kind: "armor", id: 0 },
-  { label: "Nightstick", kind: "weapon", id: 3, ammo: 1 },
+  { label: "防弹衣", kind: "armor", id: 0 },
+  { label: "警棍", kind: "weapon", id: 3, ammo: 1 },
 ];
 
 const inside = new Set<number>();
@@ -43,7 +43,7 @@ const inside = new Set<number>();
 export function bindPrisonLocker(): void {
   new Pickup(PICKUP_MODEL, PICKUP_TYPE, POINT.x, POINT.y, POINT.z, PRISON_WORLD);
   new TextLabel(
-    "Armory\nPrison warehouse",
+    "军械库\n监狱仓库",
     Color.info,
     POINT.x,
     POINT.y,
@@ -137,7 +137,7 @@ function canUseLocker(player: Player, tellDeny = false): boolean {
 
   if (account.hospitalized) {
     if (tellDeny) {
-      tell(player, Color.error, "Complete hospital treatment first.");
+      tell(player, Color.error, "请先完成医院治疗。");
     }
     return false;
   }
@@ -160,13 +160,13 @@ function showLocker(player: Player): void {
       player,
       PRISON_LOCKER_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Armory",
+      "军械库",
       ITEMS.map((item, index) => `${index + 1}. ${item.label}`).join("\n"),
-      "Take",
-      "Close"
+      "领取",
+      "关闭"
     );
   } catch {
-    tell(player, Color.error, "Could not open the warehouse.");
+    tell(player, Color.error, "无法打开仓库。");
   }
 }
 
@@ -184,14 +184,14 @@ function giveItem(player: Player, item: LockerItem): void {
   try {
     if (item.kind === "armor") {
       grantArmour(player, MAX_ARMOR);
-      tell(player, Color.info, "You equipped body armor.");
+      tell(player, Color.info, "你穿上了防弹衣。");
       return;
     }
 
     grantWeapon(player, item.id, item.ammo ?? 1);
-    tell(player, Color.info, `You took: ${item.label}.`);
+    tell(player, Color.info, `你领取了${item.label}。`);
   } catch {
-    tell(player, Color.error, "Could not issue equipment.");
+    tell(player, Color.error, "无法发放装备。");
   }
 }
 

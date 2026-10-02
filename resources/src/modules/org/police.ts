@@ -7,7 +7,7 @@ export const POLICE_INTERIOR = 6;
 
 export const POLICE = defineGovOrg(
   ORG_POLICE_ID,
-  "County Police",
+  "郡警察局",
   POLICE_COLOR,
   {
     x: 219.4583,

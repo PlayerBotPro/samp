@@ -16,7 +16,7 @@ const LABEL_HEIGHT = 0.25;
 const PICKUP_LABEL_HEIGHT = 0.85;
 const LABEL_DRAW_DISTANCE = 12;
 const CMD_RADIUS = 2.5;
-const DENY = "Only LSPD, County Police, and FBI employees can open this.";
+const DENY = "只有洛圣都警察局、郡警察局和联邦调查局员工可以打开此处。";
 
 const POINT = {
   x: -96.0945,
@@ -38,7 +38,7 @@ export function isPrisonYardOpen(): boolean {
 }
 
 function yardLabelText(): string {
-  return yardOpen ? "Prison yard\nOpen" : "Prison yard\nLocked";
+  return yardOpen ? "监狱院子\n已开放" : "监狱院子\n已锁定";
 }
 
 function yardLabelColor(): number {
@@ -59,7 +59,7 @@ function refreshYardLabel(): void {
 
 export function bindPrisonControl(): void {
   new TextLabel(
-    "Enter /pult to manage it.",
+    "输入/pult进行管理。",
     Color.info,
     POINT.x,
     POINT.y,
@@ -108,7 +108,7 @@ export function bindPrisonControl(): void {
 
 registerCommand(
   "pult",
-  "Prison control",
+  "监狱控制",
   (player) => {
     if (!isAuthenticated(player)) {
       return;
@@ -119,13 +119,13 @@ registerCommand(
     }
 
     if (isJailed(player)) {
-      tell(player, Color.error, "You are serving a sentence.");
+      tell(player, Color.error, "你正在服刑。");
       return;
     }
 
     try {
       if (player.getState() !== PLAYER_STATE_ONFOOT) {
-        tell(player, Color.error, "Controls are available only on foot.");
+        tell(player, Color.error, "只能步行操作控制器。");
         return;
       }
     } catch {
@@ -133,7 +133,7 @@ registerCommand(
     }
 
     if (!atPanel(player)) {
-      tell(player, Color.error, "Controls are available only at the control panel.");
+      tell(player, Color.error, "只能在控制面板处操作。");
       return;
     }
 
@@ -150,7 +150,7 @@ function handleCmdMenu(player: Player, listItem: number, inputText: string): voi
   }
 
   if (choice === 1) {
-    tell(player, Color.info, "Cells are still under development.");
+    tell(player, Color.info, "牢房功能仍在开发中。");
   }
 }
 
@@ -158,25 +158,25 @@ function handleYardMenu(player: Player, listItem: number, inputText: string): vo
   const choice = pickChoice(listItem, inputText, ["open", "lock"]);
   if (choice === 0) {
     if (yardOpen) {
-      tell(player, Color.info, "The yard is already open.");
+      tell(player, Color.info, "院子已处于开放状态。");
       return;
     }
 
     yardOpen = true;
     refreshYardLabel();
-    tell(player, Color.info, "The yard is open.");
+    tell(player, Color.info, "院子已开放。");
     return;
   }
 
   if (choice === 1) {
     if (!yardOpen) {
-      tell(player, Color.info, "The yard is already locked.");
+      tell(player, Color.info, "院子已处于锁定状态。");
       return;
     }
 
     yardOpen = false;
     refreshYardLabel();
-    tell(player, Color.info, "The yard is locked.");
+    tell(player, Color.info, "院子已锁定。");
   }
 }
 
@@ -186,13 +186,13 @@ function showCmdMenu(player: Player): void {
       player,
       PRISON_CMD_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Control",
-      "1. Yard\n2. Cells",
-      "Select",
-      "Close"
+      "控制",
+      "1. 院子\n2. 牢房",
+      "选择",
+      "关闭"
     );
   } catch {
-    tell(player, Color.error, "Could not open the menu.");
+    tell(player, Color.error, "无法打开菜单。");
   }
 }
 
@@ -202,13 +202,13 @@ function showYardMenu(player: Player): void {
       player,
       PRISON_YARD_DIALOG_ID,
       DIALOG_STYLE_LIST,
-      "Yard",
-      "1. Open\n2. Lock",
-      "Select",
-      "Back"
+      "院子",
+      "1. 开放\n2. 锁定",
+      "选择",
+      "返回"
     );
   } catch {
-    tell(player, Color.error, "Could not open the menu.");
+    tell(player, Color.error, "无法打开菜单。");
   }
 }
 
@@ -224,7 +224,7 @@ function isLawStaff(player: Player, tellDeny: boolean): boolean {
 
   if (account.hospitalized) {
     if (tellDeny) {
-      tell(player, Color.error, "Complete hospital treatment first.");
+      tell(player, Color.error, "请先完成医院治疗。");
     }
     return false;
   }

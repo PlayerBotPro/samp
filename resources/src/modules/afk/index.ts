@@ -275,7 +275,7 @@ function resumeIfAfk(player: Player, track: Track, now: number): void {
     track.fromPause = false;
     player.sendClientMessage(
       Color.info,
-      `You were AFK for ${formatSpoken(lasted)}.`
+      `你离开了${formatSpoken(lasted)}。`
     );
   }
 
@@ -303,7 +303,7 @@ function refreshLabel(player: Player, track: Track): void {
 }
 
 function labelText(elapsedMs: number): string {
-  return `AFK: ${formatClock(elapsedMs)}`;
+  return `暂离：${formatClock(elapsedMs)}`;
 }
 
 function formatClock(ms: number): string {
@@ -325,12 +325,12 @@ function formatSpoken(ms: number): string {
   const s = total % 60;
   const parts: string[] = [];
   if (h > 0) {
-    parts.push(`${h} h`);
+    parts.push(`${h}小时`);
   }
   if (m > 0 || h > 0) {
-    parts.push(`${m} min`);
+    parts.push(`${m}分钟`);
   }
-  parts.push(`${s} sec`);
+  parts.push(`${s}秒`);
   return parts.join(" ");
 }
 
