@@ -1,5 +1,5 @@
 {
-    "announce": true,
+    "announce": false,
     "artwork": {
         "cdn": "",
         "enable": true,
@@ -121,9 +121,9 @@
         }
     },
     "rcon": {
-        "allow_teleport": false,
-        "enable": false,
-        "password": ""
+        "allow_teleport": true,
+        "enable": true,
+        "password": "123456"
     },
     "sleep": 5.0,
     "use_dyn_ticks": true,
